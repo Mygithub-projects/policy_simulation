@@ -151,3 +151,31 @@ def get_smtp_password() -> str:
 
 def get_smtp_from_address() -> str:
     return os.getenv("SMTP_FROM_ADDRESS", "").strip()
+
+
+def get_postgres_host() -> str:
+    return os.getenv("POSTGRES_HOST", "localhost").strip()
+
+
+def get_postgres_port() -> int:
+    return int(os.getenv("POSTGRES_PORT", "5432").strip() or "5432")
+
+
+def get_postgres_db() -> str:
+    return os.getenv("POSTGRES_DB", "workforce_policy_agent").strip()
+
+
+def get_postgres_user() -> str:
+    return os.getenv("POSTGRES_USER", "postgres").strip()
+
+
+def get_postgres_password() -> str:
+    return os.getenv("POSTGRES_PASSWORD", "").strip()
+
+
+def get_postgres_dsn() -> str:
+    return (
+        f"host={get_postgres_host()} port={get_postgres_port()} "
+        f"dbname={get_postgres_db()} user={get_postgres_user()} "
+        f"password={get_postgres_password()}"
+    )
