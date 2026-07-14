@@ -5,7 +5,7 @@ from __future__ import annotations
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, Literal
-import duckdb
+import db
 import hashlib
 import hmac
 import json
@@ -114,13 +114,13 @@ def hash_password(password: str) -> str:
 
 
 def write_audit_log(actor_username: str, actor_role: str, action: str, details: str = "") -> None:
-    connection = duckdb.connect(str(get_database_path()), read_only=False)
+    connection = db.get_connection(read_only=False)
     try:
-        max_id = connection.execute("SELECT COALESCE(MAX(id), 0) FROM audit_log").fetchone()[0]
-        connection.execute(
-            "INSERT INTO audit_log (id, actor_username, actor_role, action, details) VALUES (?, ?, ?, ?, ?)",
-            [max_id + 1, actor_username, actor_role, action, details],
-        )
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "INSERT INTO audit_log (actor_username, actor_role, action, details) VALUES (%s, %s, %s, %s)",
+                [actor_username, actor_role, action, details],
+            )
         connection.commit()
     finally:
         connection.close()
@@ -130,13 +130,14 @@ def _write_run_log(output: dict[str, Any], session: dict[str, Any], run_type: st
     scenario = output["scenario"]
     run_id = output["artifacts"]["run_id"]
     target_scope = f"{scenario.subject}/{scenario.negeri}/{scenario.ppd}"
-    connection = duckdb.connect(str(get_database_path()), read_only=False)
+    connection = db.get_connection(read_only=False)
     try:
-        connection.execute(
-            "INSERT INTO simulation_run_log (run_id, scenario_id, run_timestamp, run_by, run_type, target_scope, notes) "
-            "VALUES (?, ?, CURRENT_TIMESTAMP, ?, ?, ?, ?)",
-            [run_id, run_id, session["username"], run_type, target_scope, output.get("scenario_source", "")],
-        )
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "INSERT INTO simulation_run_log (run_id, scenario_id, run_timestamp, run_by, run_type, target_scope, notes) "
+                "VALUES (%s, %s, CURRENT_TIMESTAMP, %s, %s, %s, %s)",
+                [run_id, run_id, session["username"], run_type, target_scope, output.get("scenario_source", "")],
+            )
         connection.commit()
     finally:
         connection.close()
@@ -241,14 +242,16 @@ def verify_password(password: str, password_hash: str) -> bool:
 
 @app.post("/api/auth/login")
 def login(payload: LoginInput) -> dict[str, Any]:
-    connection = duckdb.connect(str(get_database_path()), read_only=True)
+    connection = db.get_connection(read_only=True)
     try:
-        row = connection.execute(
-            "SELECT username, email, password_hash, role_name, is_active, is_first_login, "
-            "COALESCE(can_view_audit_log, FALSE) "
-            "FROM users WHERE username = ? LIMIT 1",
-            [payload.username],
-        ).fetchone()
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT username, email, password_hash, role_name, is_active, is_first_login, "
+                "COALESCE(can_view_audit_log, FALSE) "
+                "FROM users WHERE username = %s LIMIT 1",
+                [payload.username],
+            )
+            row = cursor.fetchone()
     finally:
         connection.close()
 
@@ -264,12 +267,13 @@ def login(payload: LoginInput) -> dict[str, Any]:
         write_audit_log(username, role_name, "login_failed", "bad password")
         raise HTTPException(status_code=401, detail="Invalid username or password")
 
-    write_connection = duckdb.connect(str(get_database_path()), read_only=False)
+    write_connection = db.get_connection(read_only=False)
     try:
-        write_connection.execute(
-            "UPDATE users SET last_login_at = CURRENT_TIMESTAMP WHERE username = ?",
-            [username],
-        )
+        with write_connection.cursor() as cursor:
+            cursor.execute(
+                "UPDATE users SET last_login_at = CURRENT_TIMESTAMP WHERE username = %s",
+                [username],
+            )
         write_connection.commit()
     finally:
         write_connection.close()
@@ -308,12 +312,14 @@ def create_user(
 ) -> dict[str, Any]:
     """Create a new user account. Superadmin only. Password is always
     auto-generated and emailed — never admin-typed, never returned here."""
-    connection = duckdb.connect(str(get_database_path()), read_only=True)
+    connection = db.get_connection(read_only=True)
     try:
-        existing = connection.execute(
-            "SELECT id FROM users WHERE username = ? LIMIT 1",
-            [payload.username],
-        ).fetchone()
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT id FROM users WHERE username = %s LIMIT 1",
+                [payload.username],
+            )
+            existing = cursor.fetchone()
     finally:
         connection.close()
 
@@ -323,17 +329,18 @@ def create_user(
     temp_password = email_utils.generate_temp_password()
     password_hash = hash_password(temp_password)
 
-    connection = duckdb.connect(str(get_database_path()), read_only=False)
+    connection = db.get_connection(read_only=False)
     try:
-        max_id = connection.execute("SELECT COALESCE(MAX(id), 0) FROM users").fetchone()[0]
-        new_id = max_id + 1
-
-        connection.execute(
-            "INSERT INTO users (id, username, email, password_hash, role_name, is_active, is_first_login, can_view_audit_log) "
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-            [new_id, payload.username, payload.email, password_hash, payload.role_name, True, True, payload.can_view_audit_log],
-        )
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "INSERT INTO users (username, email, password_hash, role_name, is_active, is_first_login, can_view_audit_log) "
+                "VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING id",
+                [payload.username, payload.email, password_hash, payload.role_name, True, True, payload.can_view_audit_log],
+            )
+            new_id = cursor.fetchone()[0]
         connection.commit()
+    except HTTPException:
+        raise
     except Exception as error:
         raise HTTPException(status_code=500, detail=f"Failed to create user: {str(error)}")
     finally:
@@ -363,12 +370,14 @@ def create_user(
 def list_users(
     session: dict[str, Any] = Depends(require_role("superadmin")),
 ) -> dict[str, Any]:
-    connection = duckdb.connect(str(get_database_path()), read_only=True)
+    connection = db.get_connection(read_only=True)
     try:
-        rows = connection.execute(
-            "SELECT id, username, email, role_name, is_active, created_at, last_login_at "
-            "FROM users ORDER BY id"
-        ).fetchall()
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT id, username, email, role_name, is_active, created_at, last_login_at "
+                "FROM users ORDER BY id"
+            )
+            rows = cursor.fetchall()
     finally:
         connection.close()
 
@@ -393,11 +402,13 @@ def reset_password(
     user_id: int,
     session: dict[str, Any] = Depends(require_role("superadmin")),
 ) -> dict[str, Any]:
-    connection = duckdb.connect(str(get_database_path()), read_only=True)
+    connection = db.get_connection(read_only=True)
     try:
-        row = connection.execute(
-            "SELECT username, email FROM users WHERE id = ? LIMIT 1", [user_id]
-        ).fetchone()
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT username, email FROM users WHERE id = %s LIMIT 1", [user_id]
+            )
+            row = cursor.fetchone()
     finally:
         connection.close()
 
@@ -408,12 +419,13 @@ def reset_password(
     temp_password = email_utils.generate_temp_password()
     password_hash = hash_password(temp_password)
 
-    write_connection = duckdb.connect(str(get_database_path()), read_only=False)
+    write_connection = db.get_connection(read_only=False)
     try:
-        write_connection.execute(
-            "UPDATE users SET password_hash = ?, is_first_login = TRUE WHERE id = ?",
-            [password_hash, user_id],
-        )
+        with write_connection.cursor() as cursor:
+            cursor.execute(
+                "UPDATE users SET password_hash = %s, is_first_login = TRUE WHERE id = %s",
+                [password_hash, user_id],
+            )
         write_connection.commit()
     finally:
         write_connection.close()
@@ -439,14 +451,17 @@ def deactivate_user(
     user_id: int,
     session: dict[str, Any] = Depends(require_role("superadmin")),
 ) -> dict[str, Any]:
-    connection = duckdb.connect(str(get_database_path()), read_only=True)
+    connection = db.get_connection(read_only=True)
     try:
-        row = connection.execute(
-            "SELECT username, role_name, is_active FROM users WHERE id = ? LIMIT 1", [user_id]
-        ).fetchone()
-        active_superadmins = connection.execute(
-            "SELECT COUNT(*) FROM users WHERE role_name = 'superadmin' AND is_active = TRUE"
-        ).fetchone()[0]
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT username, role_name, is_active FROM users WHERE id = %s LIMIT 1", [user_id]
+            )
+            row = cursor.fetchone()
+            cursor.execute(
+                "SELECT COUNT(*) FROM users WHERE role_name = 'superadmin' AND is_active = TRUE"
+            )
+            active_superadmins = cursor.fetchone()[0]
     finally:
         connection.close()
 
@@ -459,9 +474,10 @@ def deactivate_user(
     if role_name == "superadmin" and is_active and active_superadmins <= 1:
         raise HTTPException(status_code=400, detail="Cannot deactivate the last remaining active superadmin")
 
-    write_connection = duckdb.connect(str(get_database_path()), read_only=False)
+    write_connection = db.get_connection(read_only=False)
     try:
-        write_connection.execute("UPDATE users SET is_active = FALSE WHERE id = ?", [user_id])
+        with write_connection.cursor() as cursor:
+            cursor.execute("UPDATE users SET is_active = FALSE WHERE id = %s", [user_id])
         write_connection.commit()
     finally:
         write_connection.close()
@@ -479,12 +495,14 @@ def change_password(
     session: dict[str, Any] = Depends(require_role("superadmin", "admin", "user")),
     x_auth_token: str | None = Header(default=None),
 ) -> dict[str, Any]:
-    connection = duckdb.connect(str(get_database_path()), read_only=True)
+    connection = db.get_connection(read_only=True)
     try:
-        row = connection.execute(
-            "SELECT password_hash FROM users WHERE username = ? LIMIT 1",
-            [session["username"]],
-        ).fetchone()
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT password_hash FROM users WHERE username = %s LIMIT 1",
+                [session["username"]],
+            )
+            row = cursor.fetchone()
     finally:
         connection.close()
 
@@ -493,13 +511,14 @@ def change_password(
 
     password_hash = hash_password(payload.new_password)
 
-    write_connection = duckdb.connect(str(get_database_path()), read_only=False)
+    write_connection = db.get_connection(read_only=False)
     try:
-        write_connection.execute(
-            "UPDATE users SET password_hash = ?, is_first_login = FALSE, password_changed_at = CURRENT_TIMESTAMP "
-            "WHERE username = ?",
-            [password_hash, session["username"]],
-        )
+        with write_connection.cursor() as cursor:
+            cursor.execute(
+                "UPDATE users SET password_hash = %s, is_first_login = FALSE, password_changed_at = CURRENT_TIMESTAMP "
+                "WHERE username = %s",
+                [password_hash, session["username"]],
+            )
         write_connection.commit()
     finally:
         write_connection.close()
@@ -624,14 +643,17 @@ def get_audit_log(
     if session["role_name"] == "admin" and not session.get("can_view_audit_log"):
         raise HTTPException(status_code=403, detail="Audit log is not enabled for this account")
 
-    connection = duckdb.connect(str(get_database_path()), read_only=True)
+    connection = db.get_connection(read_only=True)
     try:
-        audit_rows = connection.execute(
-            "SELECT occurred_at, actor_username, actor_role, action, details FROM audit_log"
-        ).fetchall()
-        run_rows = connection.execute(
-            "SELECT run_timestamp, run_by, run_type, target_scope, notes FROM simulation_run_log"
-        ).fetchall()
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT occurred_at, actor_username, actor_role, action, details FROM audit_log"
+            )
+            audit_rows = cursor.fetchall()
+            cursor.execute(
+                "SELECT run_timestamp, run_by, run_type, target_scope, notes FROM simulation_run_log"
+            )
+            run_rows = cursor.fetchall()
     finally:
         connection.close()
 
@@ -691,14 +713,16 @@ def _read_run_scenario(run_id: str) -> dict[str, Any] | None:
 def get_my_runs(
     session: dict[str, Any] = Depends(require_role("user")),
 ) -> dict[str, Any]:
-    connection = duckdb.connect(str(get_database_path()), read_only=True)
+    connection = db.get_connection(read_only=True)
     try:
-        rows = connection.execute(
-            "SELECT run_id, run_timestamp FROM simulation_run_log "
-            "WHERE run_by = ? AND run_type IN ('simulate', 'agent') "
-            "ORDER BY run_timestamp DESC LIMIT 20",
-            [session["username"]],
-        ).fetchall()
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT run_id, run_timestamp FROM simulation_run_log "
+                "WHERE run_by = %s AND run_type IN ('simulate', 'agent') "
+                "ORDER BY run_timestamp DESC LIMIT 20",
+                [session["username"]],
+            )
+            rows = cursor.fetchall()
     finally:
         connection.close()
 
