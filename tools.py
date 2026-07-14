@@ -8,7 +8,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-import duckdb
+import db
 import joblib
 import numpy as np
 import pandas as pd
@@ -71,18 +71,22 @@ class WorkforceTools:
         self.health_check()
 
     def _connect(self):
-        return duckdb.connect(str(self.database_path), read_only=True)
+        return db.get_connection(read_only=True)
 
     def health_check(self) -> dict[str, Any]:
         connection = self._connect()
         try:
-            access_mode = connection.execute(
-                "SELECT current_setting('access_mode')"
-            ).fetchone()[0]
-            tables = {row[0] for row in connection.execute("SHOW TABLES").fetchall()}
+            with connection.cursor() as cursor:
+                cursor.execute("SHOW transaction_read_only")
+                is_read_only = cursor.fetchone()[0] == "on"
+                cursor.execute(
+                    "SELECT table_name FROM information_schema.tables "
+                    "WHERE table_schema = 'public'"
+                )
+                tables = {row[0] for row in cursor.fetchall()}
         finally:
             connection.close()
-        if str(access_mode).lower() != "read_only":
+        if not is_read_only:
             raise RuntimeError("Source database is not opened read-only.")
         required_tables = {
             "master_model_2022_2026",
@@ -96,8 +100,8 @@ class WorkforceTools:
         if not hasattr(self.model, "predict"):
             raise RuntimeError("The supplied model does not expose predict().")
         return {
-            "database": self.database_path.name,
-            "access_mode": access_mode,
+            "database": "PostgreSQL",
+            "access_mode": "read_only",
             "model": self.model_path.name,
         }
 
@@ -110,20 +114,24 @@ class WorkforceTools:
         allowed = {"negeri", "ppd", "kod_sekolah", "kodtingkatantahun"}
         if field not in allowed:
             raise ValueError(f"Unsupported filter field: {field}")
-        clauses = ["tahun = 2026"]
-        parameters: list[Any] = []
+        clauses = ["tahun = %s"]
+        parameters: list[Any] = ["2026"]
         if field in {"ppd", "kod_sekolah", "kodtingkatantahun"} and negeri != "SEMUA":
-            clauses.append("negeri = ?")
+            clauses.append("negeri = %s")
             parameters.append(negeri)
         if field in {"kod_sekolah", "kodtingkatantahun"} and ppd != "SEMUA":
-            clauses.append("ppd = ?")
+            clauses.append("ppd = %s")
             parameters.append(ppd)
         source_table = (
             "base_murid_detail_2022_2026"
             if field == "kodtingkatantahun"
             else "master_model_2022_2026"
         )
-        source_column = "KODTINGKATANTAHUN" if field == "kodtingkatantahun" else field
+        # KODTINGKATANTAHUN is a mixed-case column name and must be quoted for
+        # Postgres; the other supported fields are already lower-case.
+        source_column = (
+            '"KODTINGKATANTAHUN"' if field == "kodtingkatantahun" else field
+        )
         query = f"""
             SELECT DISTINCT {source_column}
             FROM {source_table}
@@ -132,7 +140,9 @@ class WorkforceTools:
         """
         connection = self._connect()
         try:
-            values = [row[0] for row in connection.execute(query, parameters).fetchall()]
+            with connection.cursor() as cursor:
+                cursor.execute(query, parameters)
+                values = [row[0] for row in cursor.fetchall()]
         finally:
             connection.close()
         return ["SEMUA", *values]
@@ -143,8 +153,8 @@ class WorkforceTools:
         The selected grade composition from 2026 is used as the assumption for
         the 2027 forecast. The source database remains read-only.
         """
-        clauses = ["tahun = 2026", "subjek IN ('MATEMATIK', 'SAINS')"]
-        parameters: list[Any] = []
+        clauses = ["tahun = %s", "subjek IN ('MATEMATIK', 'SAINS')"]
+        parameters: list[Any] = ["2026"]
         for column, value in [
             ("subjek", scenario.subject),
             ("negeri", scenario.negeri),
@@ -152,29 +162,30 @@ class WorkforceTools:
             ("kod_sekolah", scenario.kod_sekolah),
         ]:
             if value != "SEMUA":
-                clauses.append(f"{column} = ?")
+                clauses.append(f"{column} = %s")
                 parameters.append(value)
 
         selected_levels = scenario.kodtingkatantahun
         level_condition = "TRUE"
         level_parameters: list[Any] = []
         if selected_levels != ["SEMUA"]:
-            placeholders = ", ".join("?" for _ in selected_levels)
-            level_condition = f"KODTINGKATANTAHUN IN ({placeholders})"
+            placeholders = ", ".join("%s" for _ in selected_levels)
+            # KODTINGKATANTAHUN is a mixed-case column name and must be quoted.
+            level_condition = f'"KODTINGKATANTAHUN" IN ({placeholders})'
             level_parameters.extend(selected_levels)
 
         query = f"""
             SELECT
                 kod_sekolah,
                 subjek,
-                SUM(CAST(FTE_guru_diperlukan AS DOUBLE)) AS total_detail_fte_2026,
+                SUM(CAST("FTE_guru_diperlukan" AS DOUBLE PRECISION)) AS total_detail_fte_2026,
                 SUM(
                     CASE WHEN {level_condition}
-                         THEN CAST(FTE_guru_diperlukan AS DOUBLE) ELSE 0 END
+                         THEN CAST("FTE_guru_diperlukan" AS DOUBLE PRECISION) ELSE 0 END
                 ) AS selected_detail_fte_2026,
                 SUM(
                     CASE WHEN {level_condition}
-                         THEN CAST(beban_jam_tahunan AS DOUBLE) ELSE 0 END
+                         THEN CAST(beban_jam_tahunan AS DOUBLE PRECISION) ELSE 0 END
                 ) AS selected_workload_hours_2026
             FROM base_murid_detail_2022_2026
             WHERE {' AND '.join(clauses)}
@@ -184,14 +195,16 @@ class WorkforceTools:
         query_parameters = [*level_parameters, *level_parameters, *parameters]
         connection = self._connect()
         try:
-            scope = connection.execute(query, query_parameters).df()
+            import pandas as pd
+
+            scope = pd.read_sql(query, connection, params=query_parameters)
         finally:
             connection.close()
         return scope
 
     def load_2026_features(self, scenario: ScenarioRequest) -> pd.DataFrame:
-        clauses = ["tahun = 2026", "subjek IN ('MATEMATIK', 'SAINS')"]
-        parameters: list[Any] = []
+        clauses = ["tahun = %s", "subjek IN ('MATEMATIK', 'SAINS')"]
+        parameters: list[Any] = ["2026"]
         for column, value in [
             ("subjek", scenario.subject),
             ("negeri", scenario.negeri),
@@ -199,30 +212,32 @@ class WorkforceTools:
             ("kod_sekolah", scenario.kod_sekolah),
         ]:
             if value != "SEMUA":
-                clauses.append(f"{column} = ?")
+                clauses.append(f"{column} = %s")
                 parameters.append(value)
         query = f"""
             SELECT
-                tahun AS source_year,
+                CAST(tahun AS INTEGER) AS source_year,
                 kod_sekolah,
                 negeri,
                 ppd,
                 subjek,
-                CAST(enrolmen_murid AS DOUBLE) AS prev_enrolment,
-                CAST(bil_kelas AS DOUBLE) AS prev_classes,
-                FTE_guru_diperlukan_akhir AS prev_fte_required,
-                guru_diperlukan_akhir AS prev_teachers_required,
-                CAST(guru_sedia_ada AS DOUBLE) AS prev_teachers_available,
-                CAST(guru_opsyen_semasa AS DOUBLE) AS prev_option_teachers,
-                CAST(guru_bukan_opsyen_semasa AS DOUBLE) AS prev_nonoption_teachers,
-                nisbah_opsyen_semasa AS prev_option_ratio
+                CAST(enrolmen_murid AS DOUBLE PRECISION) AS prev_enrolment,
+                CAST(bil_kelas AS DOUBLE PRECISION) AS prev_classes,
+                CAST("FTE_guru_diperlukan_akhir" AS DOUBLE PRECISION) AS prev_fte_required,
+                CAST(guru_diperlukan_akhir AS DOUBLE PRECISION) AS prev_teachers_required,
+                CAST(guru_sedia_ada AS DOUBLE PRECISION) AS prev_teachers_available,
+                CAST(guru_opsyen_semasa AS DOUBLE PRECISION) AS prev_option_teachers,
+                CAST(guru_bukan_opsyen_semasa AS DOUBLE PRECISION) AS prev_nonoption_teachers,
+                CAST(nisbah_opsyen_semasa AS DOUBLE PRECISION) AS prev_option_ratio
             FROM master_model_2022_2026
             WHERE {' AND '.join(clauses)}
             ORDER BY kod_sekolah, subjek
         """
         connection = self._connect()
         try:
-            data = connection.execute(query, parameters).df()
+            import pandas as pd
+
+            data = pd.read_sql(query, connection, params=parameters)
         finally:
             connection.close()
         if data.empty:
