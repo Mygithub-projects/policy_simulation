@@ -1,0 +1,608 @@
+[
+  {
+    "id": "api_health",
+    "status": "passed",
+    "duration_seconds": 0.013244867324829102,
+    "error": null,
+    "details": {
+      "status_code": 200,
+      "response": {
+        "database": "workforce_policy_agent_preclean_20260619_144113.duckdb",
+        "access_mode": "read_only",
+        "model": "random_forest_teacher_demand.pk1",
+        "openai_enabled": false,
+        "ai_enabled": true,
+        "ai_provider": "Groq",
+        "ai_model": "llama-3.3-70b-versatile",
+        "source_database_mutable": false
+      }
+    }
+  },
+  {
+    "id": "api_filters",
+    "status": "passed",
+    "duration_seconds": 0.0,
+    "error": null,
+    "details": {
+      "status_code": 200,
+      "response": {
+        "field": "kodtingkatantahun",
+        "values": [
+          "SEMUA",
+          "JOHOR",
+          "KEDAH"
+        ]
+      }
+    }
+  },
+  {
+    "id": "api_forecast",
+    "status": "passed",
+    "duration_seconds": 0.03326272964477539,
+    "error": null,
+    "details": {
+      "status_code": 200,
+      "response": {
+        "scenario": {
+          "question": "",
+          "target_year": 2027,
+          "subject": "SAINS",
+          "negeri": "JOHOR",
+          "ppd": "SEMUA",
+          "kod_sekolah": "SEMUA",
+          "kodtingkatantahun": [
+            "SEMUA"
+          ],
+          "policy_mode": "single",
+          "policy_type": "baseline",
+          "active_policies": [],
+          "option_ratio": 0.7,
+          "teaching_hours_change_pct": 0.0,
+          "teacher_capacity_change_pct": 0.0,
+          "coteaching_share_pct": 0.0
+        },
+        "scenario_source": "Direct user controls",
+        "summary": {
+          "school_subject_rows": 1,
+          "schools": 1,
+          "baseline_required_2027": 10,
+          "scenario_required_2027": 10,
+          "change_required": 0,
+          "baseline_teacher_gap": 2,
+          "scenario_teacher_gap": 2,
+          "change_teacher_gap": 0,
+          "baseline_option_gap": 0,
+          "scenario_option_gap": 5,
+          "change_option_gap": 5,
+          "combined_fte_multiplier": 1.0,
+          "coteaching_eligible_fte_2027": 0.0,
+          "coteaching_extra_fte_2027": 0.0,
+          "coteaching_eligible_workload_hours_2026": 0.0
+        },
+        "subject_summary": [
+          {
+            "subjek": "SAINS",
+            "schools": 1,
+            "baseline_required_2027": 10,
+            "scenario_required_2027": 10,
+            "change_required": 0,
+            "scenario_teacher_gap": 2,
+            "baseline_option_gap": 0,
+            "scenario_option_gap": 5,
+            "change_option_gap": 5
+          }
+        ],
+        "policy_impacts": [],
+        "top_recommendations": [
+          {
+            "kod_sekolah": "S1",
+            "negeri": "JOHOR",
+            "ppd": "SEMUA",
+            "subjek": "SAINS",
+            "scenario_required_2027": 10,
+            "available_2027_assumption": 8,
+            "scenario_teacher_gap": 2,
+            "scenario_option_gap": 5,
+            "change_required": 0,
+            "change_option_gap": 5,
+            "priority_score": 25,
+            "priority_label": "HIGH",
+            "recommended_action": "Recruit a new teacher or redeploy a teacher to this school"
+          }
+        ],
+        "rules": [
+          "Schools with teacher shortages should be prioritised for new appointments or teacher redeployment.",
+          "Where subject-option teachers are insufficient, place a qualified teacher or train an available teacher.",
+          "After changing the subject-option teacher target, monitor teaching quality to protect student learning."
+        ],
+        "explanation": "The forecast without policy change analysis for 2027 covers 1 schools across all years and forms. The Random Forest Regressor estimates a demand of 10 teachers if policy remains unchanged. After the policy change, the estimate becomes 10 teachers. Total teacher demand does not change. This change is not the number of teachers that should be recruited directly. After accounting for available teachers, the shortage remains at 2 teachers. The estimate assumes 2026 teacher numbers remain available in 2027. This is decision support and must still be reviewed by the responsible officers.",
+        "explanation_source": "Deterministic fallback after AI provider error",
+        "ai_usage": {
+          "provider": null,
+          "model": null,
+          "scenario_interpreted_by_ai": false,
+          "explanation_generated_by_ai": false
+        },
+        "artifacts": {
+          "run_id": "RUN_TEST",
+          "detail_csv": "C:\\nisa_punya\\PRESTIJ\\data\\education_workforce_agent_mvp_en\\outputs\\RUN_TEST_detail.csv",
+          "summary_json": "C:\\nisa_punya\\PRESTIJ\\data\\education_workforce_agent_mvp_en\\outputs\\RUN_TEST_summary.json",
+          "output_directory": "C:\\nisa_punya\\PRESTIJ\\data\\education_workforce_agent_mvp_en\\outputs"
+        },
+        "agent_trace": [
+          "Orchestrator",
+          "Scenario Agent",
+          "Simulation Agent",
+          "Workforce Recommendation Agent",
+          "Explanation Agent"
+        ],
+        "forecast_only": true
+      }
+    }
+  },
+  {
+    "id": "sim_single_policy",
+    "status": "passed",
+    "duration_seconds": 0.016523122787475586,
+    "error": null,
+    "details": {
+      "status_code": 200,
+      "response": {
+        "scenario": {
+          "question": "",
+          "target_year": 2027,
+          "subject": "SAINS",
+          "negeri": "JOHOR",
+          "ppd": "SEMUA",
+          "kod_sekolah": "SEMUA",
+          "kodtingkatantahun": [
+            "SEMUA"
+          ],
+          "policy_mode": "single",
+          "policy_type": "option_ratio",
+          "active_policies": [
+            "option_ratio"
+          ],
+          "option_ratio": 0.7,
+          "teaching_hours_change_pct": 0.0,
+          "teacher_capacity_change_pct": 0.0,
+          "coteaching_share_pct": 0.0
+        },
+        "scenario_source": "Direct user controls",
+        "summary": {
+          "school_subject_rows": 1,
+          "schools": 1,
+          "baseline_required_2027": 10,
+          "scenario_required_2027": 10,
+          "change_required": 0,
+          "baseline_teacher_gap": 2,
+          "scenario_teacher_gap": 2,
+          "change_teacher_gap": 0,
+          "baseline_option_gap": 0,
+          "scenario_option_gap": 5,
+          "change_option_gap": 5,
+          "combined_fte_multiplier": 1.0,
+          "coteaching_eligible_fte_2027": 0.0,
+          "coteaching_extra_fte_2027": 0.0,
+          "coteaching_eligible_workload_hours_2026": 0.0
+        },
+        "subject_summary": [
+          {
+            "subjek": "SAINS",
+            "schools": 1,
+            "baseline_required_2027": 10,
+            "scenario_required_2027": 10,
+            "change_required": 0,
+            "scenario_teacher_gap": 2,
+            "baseline_option_gap": 0,
+            "scenario_option_gap": 5,
+            "change_option_gap": 5
+          }
+        ],
+        "policy_impacts": [],
+        "top_recommendations": [
+          {
+            "kod_sekolah": "S1",
+            "negeri": "JOHOR",
+            "ppd": "SEMUA",
+            "subjek": "SAINS",
+            "scenario_required_2027": 10,
+            "available_2027_assumption": 8,
+            "scenario_teacher_gap": 2,
+            "scenario_option_gap": 5,
+            "change_required": 0,
+            "change_option_gap": 5,
+            "priority_score": 25,
+            "priority_label": "HIGH",
+            "recommended_action": "Recruit a new teacher or redeploy a teacher to this school"
+          }
+        ],
+        "rules": [
+          "Schools with teacher shortages should be prioritised for new appointments or teacher redeployment.",
+          "Where subject-option teachers are insufficient, place a qualified teacher or train an available teacher.",
+          "After changing the subject-option teacher target, monitor teaching quality to protect student learning."
+        ],
+        "explanation": "The subject-option teacher target analysis for 2027 covers 1 schools across all years and forms. The Random Forest Regressor estimates a demand of 10 teachers if policy remains unchanged. After the policy change, the estimate becomes 10 teachers. Total teacher demand does not change. This change is not the number of teachers that should be recruited directly. After accounting for available teachers, the shortage remains at 2 teachers. The subject-option teacher shortage after policy is 5 teachers. The estimate assumes 2026 teacher numbers remain available in 2027. This is decision support and must still be reviewed by the responsible officers.",
+        "explanation_source": "Deterministic fallback after AI provider error",
+        "ai_usage": {
+          "provider": null,
+          "model": null,
+          "scenario_interpreted_by_ai": false,
+          "explanation_generated_by_ai": false
+        },
+        "artifacts": {
+          "run_id": "RUN_TEST",
+          "detail_csv": "C:\\nisa_punya\\PRESTIJ\\data\\education_workforce_agent_mvp_en\\outputs\\RUN_TEST_detail.csv",
+          "summary_json": "C:\\nisa_punya\\PRESTIJ\\data\\education_workforce_agent_mvp_en\\outputs\\RUN_TEST_summary.json",
+          "output_directory": "C:\\nisa_punya\\PRESTIJ\\data\\education_workforce_agent_mvp_en\\outputs"
+        },
+        "agent_trace": [
+          "Orchestrator",
+          "Scenario Agent",
+          "Simulation Agent",
+          "Workforce Recommendation Agent",
+          "Explanation Agent"
+        ]
+      }
+    }
+  },
+  {
+    "id": "sim_combined_policy",
+    "status": "passed",
+    "duration_seconds": 0.036966800689697266,
+    "error": null,
+    "details": {
+      "status_code": 200,
+      "response": {
+        "scenario": {
+          "question": "",
+          "target_year": 2027,
+          "subject": "SAINS",
+          "negeri": "JOHOR",
+          "ppd": "SEMUA",
+          "kod_sekolah": "SEMUA",
+          "kodtingkatantahun": [
+            "SEMUA"
+          ],
+          "policy_mode": "combined",
+          "policy_type": "teaching_hours",
+          "active_policies": [
+            "teaching_hours",
+            "teacher_capacity"
+          ],
+          "option_ratio": 0.7,
+          "teaching_hours_change_pct": 10.0,
+          "teacher_capacity_change_pct": 5.0,
+          "coteaching_share_pct": 0.0
+        },
+        "scenario_source": "Direct user controls",
+        "summary": {
+          "school_subject_rows": 1,
+          "schools": 1,
+          "baseline_required_2027": 10,
+          "scenario_required_2027": 10,
+          "change_required": 0,
+          "baseline_teacher_gap": 2,
+          "scenario_teacher_gap": 2,
+          "change_teacher_gap": 0,
+          "baseline_option_gap": 0,
+          "scenario_option_gap": 5,
+          "change_option_gap": 5,
+          "combined_fte_multiplier": 1.0,
+          "coteaching_eligible_fte_2027": 0.0,
+          "coteaching_extra_fte_2027": 0.0,
+          "coteaching_eligible_workload_hours_2026": 0.0
+        },
+        "subject_summary": [
+          {
+            "subjek": "SAINS",
+            "schools": 1,
+            "baseline_required_2027": 10,
+            "scenario_required_2027": 10,
+            "change_required": 0,
+            "scenario_teacher_gap": 2,
+            "baseline_option_gap": 0,
+            "scenario_option_gap": 5,
+            "change_option_gap": 5
+          }
+        ],
+        "policy_impacts": [
+          {
+            "policy": "teaching_hours",
+            "scenario_required_2027": 10,
+            "change_required": 0,
+            "scenario_teacher_gap": 2,
+            "scenario_option_gap": 5
+          },
+          {
+            "policy": "teacher_capacity",
+            "scenario_required_2027": 10,
+            "change_required": 0,
+            "scenario_teacher_gap": 2,
+            "scenario_option_gap": 5
+          }
+        ],
+        "top_recommendations": [
+          {
+            "kod_sekolah": "S1",
+            "negeri": "JOHOR",
+            "ppd": "SEMUA",
+            "subjek": "SAINS",
+            "scenario_required_2027": 10,
+            "available_2027_assumption": 8,
+            "scenario_teacher_gap": 2,
+            "scenario_option_gap": 5,
+            "change_required": 0,
+            "change_option_gap": 5,
+            "priority_score": 25,
+            "priority_label": "HIGH",
+            "recommended_action": "Recruit a new teacher or redeploy a teacher to this school"
+          }
+        ],
+        "rules": [
+          "Schools with teacher shortages should be prioritised for new appointments or teacher redeployment.",
+          "Where subject-option teachers are insufficient, place a qualified teacher or train an available teacher.",
+          "After changing the subject-option teacher target, monitor teaching quality to protect student learning."
+        ],
+        "explanation": "The combined policies: annual subject teaching hours, annual teacher teaching-hour capacity analysis for 2027 covers 1 schools across all years and forms. The Random Forest Regressor estimates a demand of 10 teachers if policy remains unchanged. After the policy change, the estimate becomes 10 teachers. Total teacher demand does not change. This change is not the number of teachers that should be recruited directly. After accounting for available teachers, the shortage remains at 2 teachers. The estimate assumes 2026 teacher numbers remain available in 2027. This is decision support and must still be reviewed by the responsible officers.",
+        "explanation_source": "Deterministic fallback after AI provider error",
+        "ai_usage": {
+          "provider": null,
+          "model": null,
+          "scenario_interpreted_by_ai": false,
+          "explanation_generated_by_ai": false
+        },
+        "artifacts": {
+          "run_id": "RUN_TEST",
+          "detail_csv": "C:\\nisa_punya\\PRESTIJ\\data\\education_workforce_agent_mvp_en\\outputs\\RUN_TEST_detail.csv",
+          "summary_json": "C:\\nisa_punya\\PRESTIJ\\data\\education_workforce_agent_mvp_en\\outputs\\RUN_TEST_summary.json",
+          "output_directory": "C:\\nisa_punya\\PRESTIJ\\data\\education_workforce_agent_mvp_en\\outputs"
+        },
+        "agent_trace": [
+          "Orchestrator",
+          "Scenario Agent",
+          "Simulation Agent",
+          "Workforce Recommendation Agent",
+          "Explanation Agent"
+        ]
+      }
+    }
+  },
+  {
+    "id": "agent_explanation",
+    "status": "passed",
+    "duration_seconds": 0.02985668182373047,
+    "error": null,
+    "details": {
+      "status_code": 200,
+      "response": {
+        "scenario": {
+          "question": "",
+          "target_year": 2027,
+          "subject": "SAINS",
+          "negeri": "JOHOR",
+          "ppd": "SEMUA",
+          "kod_sekolah": "SEMUA",
+          "kodtingkatantahun": [
+            "SEMUA"
+          ],
+          "policy_mode": "single",
+          "policy_type": "option_ratio",
+          "active_policies": [
+            "option_ratio"
+          ],
+          "option_ratio": 0.7,
+          "teaching_hours_change_pct": 0.0,
+          "teacher_capacity_change_pct": 0.0,
+          "coteaching_share_pct": 0.0
+        },
+        "scenario_source": "Direct user controls",
+        "summary": {
+          "school_subject_rows": 1,
+          "schools": 1,
+          "baseline_required_2027": 10,
+          "scenario_required_2027": 10,
+          "change_required": 0,
+          "baseline_teacher_gap": 2,
+          "scenario_teacher_gap": 2,
+          "change_teacher_gap": 0,
+          "baseline_option_gap": 0,
+          "scenario_option_gap": 5,
+          "change_option_gap": 5,
+          "combined_fte_multiplier": 1.0,
+          "coteaching_eligible_fte_2027": 0.0,
+          "coteaching_extra_fte_2027": 0.0,
+          "coteaching_eligible_workload_hours_2026": 0.0
+        },
+        "subject_summary": [
+          {
+            "subjek": "SAINS",
+            "schools": 1,
+            "baseline_required_2027": 10,
+            "scenario_required_2027": 10,
+            "change_required": 0,
+            "scenario_teacher_gap": 2,
+            "baseline_option_gap": 0,
+            "scenario_option_gap": 5,
+            "change_option_gap": 5
+          }
+        ],
+        "policy_impacts": [],
+        "top_recommendations": [
+          {
+            "kod_sekolah": "S1",
+            "negeri": "JOHOR",
+            "ppd": "SEMUA",
+            "subjek": "SAINS",
+            "scenario_required_2027": 10,
+            "available_2027_assumption": 8,
+            "scenario_teacher_gap": 2,
+            "scenario_option_gap": 5,
+            "change_required": 0,
+            "change_option_gap": 5,
+            "priority_score": 25,
+            "priority_label": "HIGH",
+            "recommended_action": "Recruit a new teacher or redeploy a teacher to this school"
+          }
+        ],
+        "rules": [
+          "Schools with teacher shortages should be prioritised for new appointments or teacher redeployment.",
+          "Where subject-option teachers are insufficient, place a qualified teacher or train an available teacher.",
+          "After changing the subject-option teacher target, monitor teaching quality to protect student learning."
+        ],
+        "explanation": "The subject-option teacher target analysis for 2027 covers 1 schools across all years and forms. The Random Forest Regressor estimates a demand of 10 teachers if policy remains unchanged. After the policy change, the estimate becomes 10 teachers. Total teacher demand does not change. This change is not the number of teachers that should be recruited directly. After accounting for available teachers, the shortage remains at 2 teachers. The subject-option teacher shortage after policy is 5 teachers. The estimate assumes 2026 teacher numbers remain available in 2027. This is decision support and must still be reviewed by the responsible officers.",
+        "explanation_source": "Deterministic fallback after AI provider error",
+        "ai_usage": {
+          "provider": null,
+          "model": null,
+          "scenario_interpreted_by_ai": false,
+          "explanation_generated_by_ai": false
+        },
+        "artifacts": {
+          "run_id": "RUN_TEST",
+          "detail_csv": "C:\\nisa_punya\\PRESTIJ\\data\\education_workforce_agent_mvp_en\\outputs\\RUN_TEST_detail.csv",
+          "summary_json": "C:\\nisa_punya\\PRESTIJ\\data\\education_workforce_agent_mvp_en\\outputs\\RUN_TEST_summary.json",
+          "output_directory": "C:\\nisa_punya\\PRESTIJ\\data\\education_workforce_agent_mvp_en\\outputs"
+        },
+        "agent_trace": [
+          "Orchestrator",
+          "Scenario Agent",
+          "Simulation Agent",
+          "Workforce Recommendation Agent",
+          "Explanation Agent"
+        ]
+      }
+    }
+  },
+  {
+    "id": "error_invalid_input",
+    "status": "passed",
+    "duration_seconds": 0.0,
+    "error": null,
+    "details": {
+      "status_code": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "enum",
+            "loc": [
+              "body",
+              "policy_type"
+            ],
+            "msg": "Input should be 'baseline', 'option_ratio', 'teaching_hours', 'teacher_capacity' or 'coteaching'",
+            "input": "unknown_policy",
+            "ctx": {
+              "expected": "'baseline', 'option_ratio', 'teaching_hours', 'teacher_capacity' or 'coteaching'"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "error_missing_fields",
+    "status": "passed",
+    "duration_seconds": 0.016463279724121094,
+    "error": null,
+    "details": {
+      "status_code": 200,
+      "response": {
+        "scenario": {
+          "question": "",
+          "target_year": 2027,
+          "subject": "SAINS",
+          "negeri": "SEMUA",
+          "ppd": "SEMUA",
+          "kod_sekolah": "SEMUA",
+          "kodtingkatantahun": [
+            "SEMUA"
+          ],
+          "policy_mode": "single",
+          "policy_type": "option_ratio",
+          "active_policies": [
+            "option_ratio"
+          ],
+          "option_ratio": 0.7,
+          "teaching_hours_change_pct": 0.0,
+          "teacher_capacity_change_pct": 0.0,
+          "coteaching_share_pct": 0.0
+        },
+        "scenario_source": "Direct user controls",
+        "summary": {
+          "school_subject_rows": 1,
+          "schools": 1,
+          "baseline_required_2027": 10,
+          "scenario_required_2027": 10,
+          "change_required": 0,
+          "baseline_teacher_gap": 2,
+          "scenario_teacher_gap": 2,
+          "change_teacher_gap": 0,
+          "baseline_option_gap": 0,
+          "scenario_option_gap": 5,
+          "change_option_gap": 5,
+          "combined_fte_multiplier": 1.0,
+          "coteaching_eligible_fte_2027": 0.0,
+          "coteaching_extra_fte_2027": 0.0,
+          "coteaching_eligible_workload_hours_2026": 0.0
+        },
+        "subject_summary": [
+          {
+            "subjek": "SAINS",
+            "schools": 1,
+            "baseline_required_2027": 10,
+            "scenario_required_2027": 10,
+            "change_required": 0,
+            "scenario_teacher_gap": 2,
+            "baseline_option_gap": 0,
+            "scenario_option_gap": 5,
+            "change_option_gap": 5
+          }
+        ],
+        "policy_impacts": [],
+        "top_recommendations": [
+          {
+            "kod_sekolah": "S1",
+            "negeri": "SEMUA",
+            "ppd": "SEMUA",
+            "subjek": "SAINS",
+            "scenario_required_2027": 10,
+            "available_2027_assumption": 8,
+            "scenario_teacher_gap": 2,
+            "scenario_option_gap": 5,
+            "change_required": 0,
+            "change_option_gap": 5,
+            "priority_score": 25,
+            "priority_label": "HIGH",
+            "recommended_action": "Recruit a new teacher or redeploy a teacher to this school"
+          }
+        ],
+        "rules": [
+          "Schools with teacher shortages should be prioritised for new appointments or teacher redeployment.",
+          "Where subject-option teachers are insufficient, place a qualified teacher or train an available teacher.",
+          "After changing the subject-option teacher target, monitor teaching quality to protect student learning."
+        ],
+        "explanation": "The subject-option teacher target analysis for 2027 covers 1 schools across all years and forms. The Random Forest Regressor estimates a demand of 10 teachers if policy remains unchanged. After the policy change, the estimate becomes 10 teachers. Total teacher demand does not change. This change is not the number of teachers that should be recruited directly. After accounting for available teachers, the shortage remains at 2 teachers. The subject-option teacher shortage after policy is 5 teachers. The estimate assumes 2026 teacher numbers remain available in 2027. This is decision support and must still be reviewed by the responsible officers.",
+        "explanation_source": "Deterministic fallback after AI provider error",
+        "ai_usage": {
+          "provider": null,
+          "model": null,
+          "scenario_interpreted_by_ai": false,
+          "explanation_generated_by_ai": false
+        },
+        "artifacts": {
+          "run_id": "RUN_TEST",
+          "detail_csv": "C:\\nisa_punya\\PRESTIJ\\data\\education_workforce_agent_mvp_en\\outputs\\RUN_TEST_detail.csv",
+          "summary_json": "C:\\nisa_punya\\PRESTIJ\\data\\education_workforce_agent_mvp_en\\outputs\\RUN_TEST_summary.json",
+          "output_directory": "C:\\nisa_punya\\PRESTIJ\\data\\education_workforce_agent_mvp_en\\outputs"
+        },
+        "agent_trace": [
+          "Orchestrator",
+          "Scenario Agent",
+          "Simulation Agent",
+          "Workforce Recommendation Agent",
+          "Explanation Agent"
+        ]
+      }
+    }
+  }
+]

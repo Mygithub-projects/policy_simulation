@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="ms">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sistem Simulasi Dasar Tenaga Kerja Pendidikan 2027</title>
+  <link rel="stylesheet" href="styles.css?v=15" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+
+<body>
+
+  <div class="app-shell">
+
+    <!-- ===== HEADER ===== -->
+    <header class="app-header">
+      <div class="header-logo">
+        <div class="header-logo-icon">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M12 3L2 8v2h2v9H2v2h20v-2h-2V10h2V8L12 3zm-4 18V10h2v11H8zm4 0V10h2v11h-2zm4 0V10h2v11h-2zm-4-15.18L17.6 8H6.4L12 5.82z" />
+          </svg>
+        </div>
+        <div class="header-title">
+          <h1 data-i18n="header.title">Sistem Simulasi Dasar Tenaga Kerja Pendidikan</h1>
+          <span data-i18n="header.sub">Kementerian Pendidikan Malaysia · Ramalan 2027</span>
+        </div>
+      </div>
+      <div class="header-spacer"></div>
+      <div class="lang-toggle">
+        <button class="lang-btn" data-lang="bm" onclick="setLang('bm')">BM</button>
+        <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+      </div>
+      <button class="status-badge" id="statusBadge" onclick="checkHealth()" title="Click to re-check API status">
+        <span class="status-dot checking" id="statusDot"></span>
+        <span id="statusText" data-i18n="status.checking">Menyemak…</span>
+      </button>
+      <button id="adminBtn" class="btn btn-secondary" style="display:none; margin-right: 12px;"
+        onclick="goToAdminPage()" data-i18n="nav.admin">Pengurusan Pengguna</button>
+      <button id="auditLogBtn" class="btn btn-secondary" style="display:none; margin-right: 12px;"
+        onclick="goToAuditLogPage()" data-i18n="nav.audit">Log Audit</button>
+      <button id="myRunsBtn" class="btn btn-secondary" style="display:none; margin-right: 12px;"
+        onclick="goToMyRunsPage()" data-i18n="nav.myruns">Simulasi Saya</button>
+      <div class="user-info" id="userInfo" style="display:none;">
+        <button class="user-avatar-btn" id="userAvatarBtn" onclick="toggleUserMenu()" title="Account">
+          <span id="userAvatarInitial">U</span>
+        </button>
+
+        <div class="user-menu" id="userMenu">
+          <div class="user-menu-list" id="userMenuList">
+            <button class="user-menu-item" onclick="showProfileView()">
+              <span class="user-menu-icon">👤</span>
+              <span data-i18n="user.menu.viewprofile">Lihat Profil</span>
+            </button>
+            <button class="user-menu-item" onclick="openChangePasswordFromMenu()">
+              <span class="user-menu-icon">🔑</span>
+              <span data-i18n="user.menu.changepassword">Tukar Kata Laluan</span>
+            </button>
+            <button class="user-menu-item" onclick="runLogout()">
+              <span class="user-menu-icon">⏻</span>
+              <span data-i18n="user.menu.signout">Log Keluar</span>
+            </button>
+          </div>
+
+          <div class="user-menu-profile" id="userMenuProfile" style="display:none;">
+            <button class="user-menu-back" onclick="showMenuView()">
+              <span>←</span> <span data-i18n="user.menu.back">Kembali</span>
+            </button>
+            <div class="user-menu-profile-avatar" id="userMenuProfileAvatar">U</div>
+            <div class="user-menu-profile-name" id="userMenuProfileName"></div>
+            <div class="user-menu-profile-email" id="userMenuProfileEmail"></div>
+            <div class="user-menu-profile-role" id="userMenuProfileRole"></div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="login-screen visible" id="loginScreen">
+      <div class="login-box">
+        <div class="login-brand">
+          <div class="login-brand-icon">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M12 3L2 8v2h2v9H2v2h20v-2h-2V10h2V8L12 3zm-4 18V10h2v11H8zm4 0V10h2v11h-2zm4 0V10h2v11h-2zm-4-15.18L17.6 8H6.4L12 5.82z" />
+            </svg>
+          </div>
+          <div>
+            <h2 data-i18n="login.title">Log Masuk</h2>
+            <p data-i18n="login.subtitle">Masuk untuk meneruskan ke papan pemuka dasar.</p>
+          </div>
+        </div>
+        <div class="login-lang-toggle">
+          <button class="lang-btn" data-lang="bm" onclick="setLang('bm')">BM</button>
+          <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+        </div>
+        <div class="login-form">
+          <label for="loginUsername" data-i18n="login.username">Nama Pengguna</label>
+          <input id="loginUsername" class="form-control" type="text" autocomplete="username"
+            data-i18n-placeholder="login.placeholder.username" placeholder="admin" />
+
+          <label for="loginPassword" data-i18n="login.password">Katalaluan</label>
+          <input id="loginPassword" class="form-control" type="password" autocomplete="current-password"
+            data-i18n-placeholder="login.placeholder.password" placeholder="••••••••" />
+
+          <div id="loginError" class="form-error"></div>
+
+          <button class="btn btn-primary btn-block" id="btnLogin" onclick="runLogin()">
+            <span class="btn-text" data-i18n="login.submit">Log Masuk</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="login-screen" id="changePasswordScreen">
+      <div class="login-box">
+        <div class="login-brand">
+          <div class="login-brand-icon">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M12 3L2 8v2h2v9H2v2h20v-2h-2V10h2V8L12 3zm-4 18V10h2v11H8zm4 0V10h2v11h-2zm4 0V10h2v11h-2zm-4-15.18L17.6 8H6.4L12 5.82z" />
+            </svg>
+          </div>
+          <div>
+            <h2 data-i18n="cp.title">Tetapkan Kata Laluan Baharu</h2>
+            <p data-i18n="cp.subtitle">Anda mesti menukar kata laluan sementara sebelum meneruskan.</p>
+          </div>
+        </div>
+        <div class="login-form">
+          <label for="cpCurrentPassword" data-i18n="cp.current">Kata Laluan Semasa</label>
+          <input id="cpCurrentPassword" class="form-control" type="password" autocomplete="current-password" />
+
+          <label for="cpNewPassword" data-i18n="cp.new">Kata Laluan Baharu</label>
+          <input id="cpNewPassword" class="form-control" type="password" autocomplete="new-password" />
+
+          <label for="cpConfirmPassword" data-i18n="cp.confirm">Sahkan Kata Laluan Baharu</label>
+          <input id="cpConfirmPassword" class="form-control" type="password" autocomplete="new-password" />
+
+          <div id="changePasswordError" class="form-error"></div>
+
+          <button class="btn btn-primary btn-block" id="btnChangePassword" onclick="runChangePassword()">
+            <span class="btn-text" data-i18n="cp.submit">Tetapkan Kata Laluan</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="app-body">
+
+      <!-- ===================== SIDEBAR ===================== -->
+      <aside class="sidebar">
+
+        <!-- STEP 1: SCOPE -->
+        <div class="sidebar-section">
+          <div class="section-title">
+            <span class="step-badge">1</span>
+            <span data-i18n="step1.title">Skop Analisis</span>
+          </div>
+
+          <div class="form-group">
+            <label for="selSubject" data-i18n="label.subject">Mata Pelajaran</label>
+            <select id="selSubject" class="form-control">
+              <option value="SEMUA" data-i18n="opt.all.subjects">Semua Mata Pelajaran</option>
+              <option value="MATEMATIK" data-i18n="opt.matematik">Matematik</option>
+              <option value="SAINS" data-i18n="opt.sains">Sains</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="selNegeri" data-i18n="label.state">Negeri</label>
+            <select id="selNegeri" class="form-control" onchange="onNegeriChange()">
+              <option value="SEMUA" data-i18n="opt.all.states">Semua Negeri</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="selPPD" data-i18n="label.ppd">Pejabat Pendidikan Daerah (PPD)</label>
+            <select id="selPPD" class="form-control" disabled onchange="onPPDChange()">
+              <option value="SEMUA" data-i18n="opt.all.ppd">Semua PPD</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="selSekolah" data-i18n="label.school">Sekolah</label>
+            <select id="selSekolah" class="form-control" disabled>
+              <option value="SEMUA" data-i18n="opt.all.schools">Semua Sekolah</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label data-i18n="label.grade">Tahun / Tingkatan</label>
+            <div class="grade-grid" id="gradeGrid"></div>
+          </div>
+
+          <!-- ===== AI AGENT ===== -->
+          <div class="agent-section agent-section--sidebar">
+            <div class="agent-header">
+              <div class="agent-header-icon">
+                <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="3" y="6" width="14" height="10" rx="2" stroke-width="1.5" />
+                  <circle cx="7.5" cy="11" r="1.2" />
+                  <circle cx="12.5" cy="11" r="1.2" />
+                  <path d="M7 6V4.5a3 3 0 016 0V6" stroke-width="1.5" stroke-linecap="round" />
+                </svg>
+              </div>
+              <div>
+                <div class="agent-header-title" data-i18n="agent.title">Ejen AI</div>
+                <div class="agent-header-sub" data-i18n="agent.sub">Tanya soalan dalam Bahasa Inggeris atau Bahasa
+                  Melayu</div>
+              </div>
+            </div>
+            <div class="agent-body">
+              <div class="agent-input-row">
+                <input type="text" id="agentQuestion" class="form-control no-arrow"
+                  data-i18n-placeholder="agent.placeholder"
+                  placeholder="cth. Ramal permintaan guru Sains di Johor untuk 2027 dengan nisbah opsyen mata pelajaran 70%"
+                  onkeydown="if(event.key==='Enter') runAgent()" />
+                <button class="btn btn-teal" id="btnAgent" onclick="runAgent()">
+                  <span class="btn-spinner"></span>
+                  <span class="btn-text" data-i18n="btn.ask">Tanya</span>
+                </button>
+              </div>
+
+              <div class="agent-examples">
+                <span class="example-chip" data-i18n="chip1" onclick="setAgentQuestion(this)">Ramal guru Sains di
+                  Selangor untuk 2027</span>
+                <span class="example-chip" data-i18n="chip2" onclick="setAgentQuestion(this)">Simulasi nisbah opsyen
+                  mata pelajaran 80% untuk Matematik di Johor</span>
+                <span class="example-chip" data-i18n="chip3" onclick="setAgentQuestion(this)">Apa yang berlaku jika
+                  waktu pengajaran Sains tahunan meningkat 10%?</span>
+                <span class="example-chip" data-i18n="chip4" onclick="setAgentQuestion(this)">Terapkan pengajaran
+                  bersama kepada 40% kelas di Kedah</span>
+              </div>
+
+              <div class="agent-result" id="agentResult">
+                <div id="agentTrace" class="agent-trace"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 2: POLICY -->
+        <div class="sidebar-section">
+          <div class="section-title">
+            <span class="step-badge">2</span>
+            <span data-i18n="step2.title">Simulasi Dasar</span>
+          </div>
+
+          <div class="policy-mode-toggle">
+            <label class="mode-option active">
+              <input type="radio" name="policyMode" value="single" checked onchange="onPolicyModeChange()" />
+              <span data-i18n="mode.single">Dasar Tunggal</span>
+            </label>
+            <label class="mode-option">
+              <input type="radio" name="policyMode" value="combined" onchange="onPolicyModeChange()" />
+              <span data-i18n="mode.combined">Gabungan</span>
+            </label>
+          </div>
+          <div class="hint mode-hint" id="policyModeHint" data-i18n="hint.single">Pilih satu tuas dasar untuk
+            disimulasi.</div>
+
+          <div class="policy-cards" id="policyCards">
+
+            <label class="policy-card selected" data-policy="option_ratio">
+              <input type="checkbox" name="policyType" value="option_ratio" checked />
+              <div class="pc-top">
+                <div class="pc-icon-wrap">
+                  <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="2" y="5" width="6" height="10" rx="1.5" />
+                    <rect x="12" y="2" width="6" height="16" rx="1.5" />
+                  </svg>
+                </div>
+                <div class="pc-check">
+                  <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <polyline points="2,6 5,9 10,3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </div>
+              </div>
+              <span class="pc-label" data-i18n="pc.option_ratio.label">Nisbah Opsyen Mata Pelajaran</span>
+              <span class="pc-desc" data-i18n="pc.option_ratio.desc">Sasaran bahagian guru dalam opsyen mata pelajaran
+                mereka</span>
+            </label>
+
+            <label class="policy-card" data-policy="teaching_hours">
+              <input type="checkbox" name="policyType" value="teaching_hours" />
+              <div class="pc-top">
+                <div class="pc-icon-wrap">
+                  <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="10" cy="10" r="7.5" stroke-width="1.6" />
+                    <polyline points="10,5 10,10 13.5,12" stroke-width="1.6" stroke-linecap="round"
+                      stroke-linejoin="round" />
+                  </svg>
+                </div>
+                <div class="pc-check">
+                  <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <polyline points="2,6 5,9 10,3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </div>
+              </div>
+              <span class="pc-label" data-i18n="pc.teaching_hours.label">Waktu Pengajaran</span>
+              <span class="pc-desc" data-i18n="pc.teaching_hours.desc">Waktu pengajaran mata pelajaran tahunan setiap
+                kelas</span>
+            </label>
+
+            <label class="policy-card" data-policy="teacher_capacity">
+              <input type="checkbox" name="policyType" value="teacher_capacity" />
+              <div class="pc-top">
+                <div class="pc-icon-wrap">
+                  <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="10" cy="6" r="3" stroke-width="1.6" />
+                    <path d="M3 17c0-3.866 3.134-7 7-7s7 3.134 7 7" stroke-width="1.6" stroke-linecap="round" />
+                  </svg>
+                </div>
+                <div class="pc-check">
+                  <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <polyline points="2,6 5,9 10,3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </div>
+              </div>
+              <span class="pc-label" data-i18n="pc.teacher_capacity.label">Kapasiti Guru</span>
+              <span class="pc-desc" data-i18n="pc.teacher_capacity.desc">Kapasiti waktu pengajaran tahunan setiap
+                guru</span>
+            </label>
+
+            <label class="policy-card" data-policy="coteaching">
+              <input type="checkbox" name="policyType" value="coteaching" />
+              <div class="pc-top">
+                <div class="pc-icon-wrap">
+                  <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="7.5" cy="10" r="4.5" stroke-width="1.6" />
+                    <circle cx="12.5" cy="10" r="4.5" stroke-width="1.6" />
+                  </svg>
+                </div>
+                <div class="pc-check">
+                  <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <polyline points="2,6 5,9 10,3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </div>
+              </div>
+              <span class="pc-label" data-i18n="pc.coteaching.label">Pengajaran Bersama</span>
+              <span class="pc-desc" data-i18n="pc.coteaching.desc">Bahagian kelas yang diajar oleh dua guru</span>
+            </label>
+
+          </div>
+
+          <div id="policyValueArea"></div>
+        </div>
+
+        <!-- STEP 3: RUN -->
+        <div class="sidebar-section sidebar-section--run">
+          <div class="section-title">
+            <span class="step-badge">3</span>
+            <span data-i18n="step3.title">Jalankan Simulasi</span>
+          </div>
+          <button class="btn btn-primary btn-block" id="btnSimulate" onclick="runSimulation()">
+            <span class="btn-spinner"></span>
+            <span class="btn-text" data-i18n="btn.run">Jalankan Simulasi 2027</span>
+          </button>
+          <div style="margin-top: 8px;">
+            <button class="btn btn-outline btn-block btn-sm" onclick="resetAll()">
+              <span data-i18n="btn.reset">↺ Set Semula</span>
+            </button>
+          </div>
+          <div id="formValidation"></div>
+        </div>
+
+      </aside>
+      <!-- ================== END SIDEBAR ================== -->
+
+
+      <!-- ===================== MAIN PANEL ===================== -->
+      <main class="main-panel" id="mainPanel">
+
+        <!-- Empty state -->
+        <div class="empty-state" id="emptyState">
+          <p class="es-eyebrow" data-i18n="empty.eyebrow">Cara ia berfungsi</p>
+          <h2 data-i18n="empty.title">Konfigurasikan senario, kemudian jalankan simulasi</h2>
+
+          <div class="onboarding-steps">
+            <div class="ob-step">
+              <div class="ob-num">1</div>
+              <div class="ob-label" data-i18n="ob1.label">Tetapkan skop</div>
+              <div class="ob-desc" data-i18n="ob1.desc">Pilih mata pelajaran, negeri, daerah, sekolah dan kumpulan tahun
+                di panel kiri</div>
+            </div>
+            <div class="ob-arrow">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </div>
+            <div class="ob-step">
+              <div class="ob-num">2</div>
+              <div class="ob-label" data-i18n="ob2.label">Pilih dasar</div>
+              <div class="ob-desc" data-i18n="ob2.desc">Pilih instrumen dasar yang hendak diuji — nisbah, waktu,
+                kapasiti atau pengajaran bersama</div>
+            </div>
+            <div class="ob-arrow">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </div>
+            <div class="ob-step">
+              <div class="ob-num">3</div>
+              <div class="ob-label" data-i18n="ob3.label">Baca keputusan</div>
+              <div class="ob-desc" data-i18n="ob3.desc">Semak ramalan permintaan 2027, kekurangan, dan tindakan yang
+                disyorkan</div>
+            </div>
+          </div>
+
+          <p class="es-hint" data-i18n-html="empty.hint">Atau tanya <strong>Ejen AI</strong> di bawah — taip soalan dan
+            ia menjalankan simulasi untuk anda.</p>
+        </div>
+
+        <!-- Loading -->
+        <div class="loading-overlay" id="loadingOverlay">
+          <div class="loader-ring"></div>
+          <p id="loadingMsg">Menjalankan simulasi…<br />Sila tunggu.</p>
+        </div>
+
+        <!-- ---- RESULTS ---- -->
+        <div class="results-wrapper" id="resultsWrapper">
+
+          <div class="scenario-banner" id="scenarioBanner"></div>
+          <div class="kpi-grid" id="kpiGrid"></div>
+          <div class="decision-insight" id="decisionInsight"></div>
+
+          <div class="chart-grid">
+            <div class="result-card">
+              <div class="result-card-header" id="comparisonChartTitle" data-i18n="card.comparison">
+                Perbandingan Permintaan Guru
+              </div>
+              <div class="result-card-body">
+                <div class="chart-wrap"><canvas id="chartComparison"></canvas></div>
+              </div>
+            </div>
+            <div class="result-card">
+              <div class="result-card-header teal" data-i18n="card.subject">Permintaan Mengikut Mata Pelajaran</div>
+              <div class="result-card-body">
+                <div class="chart-wrap"><canvas id="chartSubject"></canvas></div>
+                <div class="subject-chips" id="subjectChips" style="margin-top:14px;"></div>
+              </div>
+            </div>
+            <div class="result-card">
+              <div class="result-card-header amber" id="riskChartTitle" data-i18n="card.risk">
+                Ranking Risiko Negeri
+              </div>
+              <div class="result-card-body">
+                <div class="chart-wrap"><canvas id="chartRisk"></canvas></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="result-card" id="policyImpactCard" style="display:none;">
+            <div class="result-card-header teal" data-i18n="card.policy">Kesan Dasar Individu dan Gabungan</div>
+            <div class="result-card-body">
+              <div class="table-container">
+                <table class="rec-table">
+                  <thead>
+                    <tr>
+                      <th data-i18n="th.condition">Keadaan</th>
+                      <th data-i18n="th.required">Guru Diperlukan</th>
+                      <th data-i18n="th.change">Perubahan</th>
+                      <th data-i18n="th.shortage">Kekurangan Guru</th>
+                      <th data-i18n="th.opt.shortage">Kekurangan Guru Opsyen Mata Pelajaran</th>
+                    </tr>
+                  </thead>
+                  <tbody id="policyImpactBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="result-card">
+            <div class="result-card-header amber" data-i18n="card.summary">Ringkasan Bahasa Mudah</div>
+            <div class="result-card-body">
+              <div class="explanation-box" id="explanationBox"></div>
+            </div>
+          </div>
+
+          <div class="result-card">
+            <div class="result-card-header" data-i18n="card.recs">Cadangan Strategik</div>
+            <div class="result-card-body">
+              <ul class="rules-list" id="rulesList"></ul>
+            </div>
+          </div>
+
+          <div class="result-card">
+            <div class="result-card-header" data-i18n="card.schools">Sekolah Keutamaan — 30 Teratas</div>
+            <div class="result-card-body">
+              <div class="table-container">
+                <table class="rec-table" id="recTable">
+                  <thead>
+                    <tr>
+                      <th data-i18n="th.num">#</th>
+                      <th data-i18n="th.school.code">Kod Sekolah</th>
+                      <th data-i18n="th.state">Negeri</th>
+                      <th data-i18n="th.ppd">PPD</th>
+                      <th data-i18n="th.subject">Mata Pelajaran</th>
+                      <th data-i18n="th.est.without">Anggaran tanpa perubahan dasar</th>
+                      <th data-i18n="th.est.after">Anggaran selepas perubahan dasar</th>
+                      <th data-i18n="th.teacher.shortage">Kekurangan Guru</th>
+                      <th data-i18n="th.priority">Keutamaan</th>
+                      <th data-i18n="th.action">Tindakan Dicadangkan</th>
+                    </tr>
+                  </thead>
+                  <tbody id="recTableBody"></tbody>
+                </table>
+              </div>
+              <div class="table-footer">
+                <span id="tableInfo">—</span>
+                <button class="btn btn-teal btn-sm" id="btnDownload" onclick="downloadCSV()" style="display:none;"
+                  data-i18n="btn.download">
+                  ⬇ Muat Turun CSV
+                </button>
+                <button class="btn btn-outline btn-sm" id="btnDownloadSummary" onclick="downloadSummaryPDF()"
+                  style="display:none;" data-i18n="btn.download.summary">
+                  ⬇ Muat Turun Laporan PDF
+                </button>
+                <button class="btn btn-outline btn-sm" id="btnDownloadSummaryCsv" onclick="downloadSummaryCSV()"
+                  style="display:none;" data-i18n="btn.download.summary.csv">
+                  ⬇ Muat Turun Ringkasan (CSV)
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <!-- ---- END RESULTS ---- -->
+
+      </main>
+
+      <!-- ===================== ADMIN PAGE ===================== -->
+      <main class="main-panel" id="adminPage" style="display:none;">
+        <div style="padding: 32px; max-width: 900px; margin: 0 auto;">
+          <button class="btn btn-outline btn-sm" onclick="goToDashboard()" style="margin-bottom: 24px;">
+            <span data-i18n="nav.back">← Kembali ke Papan Pemuka</span>
+          </button>
+
+          <div class="admin-panel">
+            <details class="admin-section" open>
+              <summary data-i18n="admin.section.create">Buat Pengguna</summary>
+              <div class="result-card">
+                <div class="result-card-body">
+                  <form id="createUserForm" onsubmit="handleCreateUser(event)" class="create-user-form">
+                    <div class="form-group">
+                      <label for="newUsername" data-i18n="admin.username">Nama Pengguna</label>
+                      <input id="newUsername" class="form-control" type="text" required />
+                    </div>
+                    <div class="form-group">
+                      <label for="newEmail" data-i18n="admin.email">Email</label>
+                      <input id="newEmail" class="form-control" type="email" required />
+                    </div>
+                    <div class="form-group">
+                      <label for="newRole" data-i18n="admin.role">Peranan</label>
+                      <select id="newRole" class="form-control" onchange="onNewRoleChange()">
+                        <option value="user" data-i18n="admin.role.user">Pengguna Biasa (Policy Maker)</option>
+                        <option value="admin" data-i18n="admin.role.admin">Admin (Pegawai Perancangan)</option>
+                        <option value="superadmin" data-i18n="admin.role.superadmin">Superadmin (Akses Penuh)</option>
+                      </select>
+                    </div>
+                    <div class="form-group" id="canViewAuditGroup" style="display:none;">
+                      <label>
+                        <input type="checkbox" id="newCanViewAudit" />
+                        <span data-i18n="admin.canviewaudit">Can View Audit Log</span>
+                      </label>
+                    </div>
+                    <p class="hint" data-i18n="admin.password.note">Kata laluan sementara akan dijana secara automatik
+                      dan dihantar ke e-mel pengguna.</p>
+                    <div id="createUserError" class="form-error"></div>
+                    <button type="submit" class="btn btn-primary" data-i18n="admin.create.btn">Buat Pengguna</button>
+                  </form>
+                </div>
+              </div>
+            </details>
+
+            <details class="admin-section" style="margin-top: 20px;">
+              <summary data-i18n="admin.section.manage">Urus Pengguna</summary>
+              <div class="result-card">
+                <div class="result-card-body">
+                  <div class="table-container">
+                    <table class="rec-table">
+                      <thead>
+                        <tr>
+                          <th data-i18n="admin.table.username">Nama Pengguna</th>
+                          <th data-i18n="admin.table.email">Email</th>
+                          <th data-i18n="admin.table.role">Peranan</th>
+                          <th data-i18n="admin.table.status">Status</th>
+                          <th data-i18n="admin.table.created">Dicipta</th>
+                          <th data-i18n="admin.table.lastlogin">Log Masuk Terakhir</th>
+                          <th data-i18n="admin.table.actions">Tindakan</th>
+                        </tr>
+                      </thead>
+                      <tbody id="userListBody"></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </details>
+          </div>
+        </div>
+      </main>
+
+      <!-- ===================== AUDIT LOG PAGE ===================== -->
+      <main class="main-panel" id="auditLogPage" style="display:none;">
+        <div style="padding: 32px; max-width: 1100px; margin: 0 auto;">
+          <button class="btn btn-outline btn-sm" onclick="goToDashboard()" style="margin-bottom: 24px;">
+            <span data-i18n="nav.back">← Kembali ke Papan Pemuka</span>
+          </button>
+          <div class="admin-panel">
+            <div class="result-card">
+              <div class="result-card-header" data-i18n="audit.title">Log Audit</div>
+              <div class="result-card-body">
+                <div class="table-container">
+                  <table class="rec-table">
+                    <thead>
+                      <tr>
+                        <th data-i18n="audit.col.time">Masa</th>
+                        <th data-i18n="audit.col.actor">Pengguna</th>
+                        <th data-i18n="audit.col.role">Peranan</th>
+                        <th data-i18n="audit.col.action">Tindakan</th>
+                        <th data-i18n="audit.col.details">Butiran</th>
+                      </tr>
+                    </thead>
+                    <tbody id="auditLogBody"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- ===================== MY RUNS PAGE (Policy Maker) ===================== -->
+      <main class="main-panel" id="myRunsPage" style="display:none;">
+        <div style="padding: 32px; max-width: 1100px; margin: 0 auto;">
+          <button class="btn btn-outline btn-sm" onclick="goToDashboard()" style="margin-bottom: 24px;">
+            <span data-i18n="nav.back">← Kembali ke Papan Pemuka</span>
+          </button>
+          <div class="admin-panel">
+            <div class="result-card">
+              <div class="result-card-header" data-i18n="myruns.title">Simulasi Saya</div>
+              <div class="result-card-body">
+                <div class="table-container">
+                  <table class="rec-table">
+                    <thead>
+                      <tr>
+                        <th data-i18n="myruns.col.time">Tarikh &amp; Masa</th>
+                        <th data-i18n="myruns.col.scope">Skop</th>
+                        <th data-i18n="myruns.col.policy">Dasar Disimulasikan</th>
+                        <th data-i18n="myruns.col.action">Tindakan</th>
+                      </tr>
+                    </thead>
+                    <tbody id="myRunsBody"></tbody>
+                  </table>
+                  <p id="myRunsEmpty" class="hint" style="display:none; margin-top:14px;" data-i18n="myruns.empty">Belum
+                    ada simulasi dijalankan.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- ===================== HIDDEN PDF TEMPLATE ===================== -->
+  <div id="pdfTemplate" style="display:none;">
+    <div class="pdf-container" id="pdfContent">
+      <div class="pdf-header">
+        <h1 data-i18n="pdf.title">Laporan Simulasi Tenaga Kerja Pendidikan 2027</h1>
+        <p id="pdfDate" class="pdf-date"></p>
+      </div>
+
+      <div class="pdf-section">
+        <h2 data-i18n="pdf.params.title">Parameter Simulasi</h2>
+        <div id="pdfParams"></div>
+      </div>
+
+      <div class="pdf-section pdf-page-break">
+        <h2 data-i18n="pdf.summary.title">Ringkasan Penjelasan</h2>
+        <div id="pdfExplanation" class="pdf-explanation"></div>
+      </div>
+
+      <div class="pdf-section pdf-page-break">
+        <h2 data-i18n="pdf.kpi.title">Penunjuk Prestasi Utama (KPI)</h2>
+        <div id="pdfKpiGrid" class="pdf-kpi-grid"></div>
+      </div>
+
+      <div class="pdf-section pdf-page-break">
+        <h2 data-i18n="pdf.charts.title">Visualisasi Data</h2>
+        <div class="pdf-charts">
+          <div class="pdf-chart-item">
+            <h3 data-i18n="pdf.chart.comparison">Perbandingan Permintaan Guru</h3>
+            <img id="pdfChartComparison" src="" alt="Comparison Chart" />
+          </div>
+          <div class="pdf-chart-item" style="margin-top: 20px;">
+            <h3 data-i18n="pdf.chart.subject">Permintaan Mengikut Mata Pelajaran</h3>
+            <img id="pdfChartSubject" src="" alt="Subject Chart" />
+          </div>
+        </div>
+        <div class="pdf-footer">
+          <span data-i18n="pdf.footer">Dijana oleh Sistem Simulasi Dasar Kementerian Pendidikan Malaysia</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button class="agent-fab" id="agentFab" onclick="focusAgentSection()" title="Ejen AI" data-i18n-title="agent.title"
+    style="display:none;">
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="3" y="6" width="14" height="10" rx="2" stroke-width="1.5" />
+      <circle cx="7.5" cy="11" r="1.2" />
+      <circle cx="12.5" cy="11" r="1.2" />
+      <path d="M7 6V4.5a3 3 0 016 0V6" stroke-width="1.5" stroke-linecap="round" />
+    </svg>
+  </button>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <canvas id="appBgCanvas"></canvas>
+  <script>
+    (function () {
+      const c = document.getElementById('appBgCanvas'), ctx = c.getContext('2d');
+      let W, H, nodes = [];
+      function resize() { W = c.width = window.innerWidth; H = c.height = window.innerHeight; }
+      function init() { nodes = []; const n = Math.floor(W * H / 28000); for (let i = 0; i < n; i++)nodes.push({ x: Math.random() * W, y: Math.random() * H, vx: (Math.random() - .5) * .25, vy: (Math.random() - .5) * .25, r: 1 + Math.random() * 1.5, col: Math.random() > .65 ? '#C4781C' : '#0CC8A8' }); }
+      function draw() { ctx.clearRect(0, 0, W, H); for (let i = 0; i < nodes.length; i++) { for (let j = i + 1; j < nodes.length; j++) { const dx = nodes[i].x - nodes[j].x, dy = nodes[i].y - nodes[j].y, d = Math.sqrt(dx * dx + dy * dy); if (d < 120) { ctx.strokeStyle = `rgba(12,200,168,${(1 - d / 120) * .15})`; ctx.lineWidth = .7; ctx.beginPath(); ctx.moveTo(nodes[i].x, nodes[i].y); ctx.lineTo(nodes[j].x, nodes[j].y); ctx.stroke(); } } } nodes.forEach(n => { ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2); ctx.fillStyle = n.col; ctx.globalAlpha = .55; ctx.fill(); ctx.globalAlpha = 1; }); }
+      function tick() { nodes.forEach(n => { n.x += n.vx; n.y += n.vy; if (n.x < 0 || n.x > W) n.vx *= -1; if (n.y < 0 || n.y > H) n.vy *= -1; }); draw(); requestAnimationFrame(tick); }
+      window.addEventListener('resize', () => { resize(); init(); });
+      resize(); init();
+      if (window.matchMedia('(prefers-reduced-motion:reduce)').matches) { draw(); } else { tick(); }
+    })();
+  </script>
+  <script src="lang.js?v=11"></script>
+  <script src="app.js?v=28"></script>
+  <script src="tour.js?v=2"></script>
+
+</body>
+
+</html>

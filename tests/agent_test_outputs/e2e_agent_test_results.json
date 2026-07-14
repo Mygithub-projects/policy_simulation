@@ -1,0 +1,111 @@
+[
+  {
+    "id": "api_health",
+    "status": "failed",
+    "duration_seconds": 0.09214663505554199,
+    "error": "Unexpected status 500",
+    "details": {
+      "status_code": 500,
+      "response": {
+        "detail": "DLL load failed while importing _cdnmf_fast: An Application Control policy has blocked this file."
+      }
+    }
+  },
+  {
+    "id": "api_filters",
+    "status": "failed",
+    "duration_seconds": 0.07136249542236328,
+    "error": "Unexpected status 400",
+    "details": {
+      "status_code": 400,
+      "response": {
+        "detail": "DLL load failed while importing _cdnmf_fast: An Application Control policy has blocked this file."
+      }
+    }
+  },
+  {
+    "id": "api_forecast",
+    "status": "failed",
+    "duration_seconds": 0.07027196884155273,
+    "error": "Unexpected status 400",
+    "details": {
+      "status_code": 400,
+      "response": {
+        "detail": "DLL load failed while importing _cdnmf_fast: An Application Control policy has blocked this file."
+      }
+    }
+  },
+  {
+    "id": "sim_single_policy",
+    "status": "failed",
+    "duration_seconds": 0.07070064544677734,
+    "error": "Unexpected status 400",
+    "details": {
+      "status_code": 400,
+      "response": {
+        "detail": "DLL load failed while importing _cdnmf_fast: An Application Control policy has blocked this file."
+      }
+    }
+  },
+  {
+    "id": "sim_combined_policy",
+    "status": "failed",
+    "duration_seconds": 0.06791090965270996,
+    "error": "Unexpected status 400",
+    "details": {
+      "status_code": 400,
+      "response": {
+        "detail": "DLL load failed while importing _cdnmf_fast: An Application Control policy has blocked this file."
+      }
+    }
+  },
+  {
+    "id": "agent_explanation",
+    "status": "failed",
+    "duration_seconds": 0.06679248809814453,
+    "error": "Unexpected status 400",
+    "details": {
+      "status_code": 400,
+      "response": {
+        "detail": "DLL load failed while importing _cdnmf_fast: An Application Control policy has blocked this file."
+      }
+    }
+  },
+  {
+    "id": "error_invalid_input",
+    "status": "passed",
+    "duration_seconds": 0.004949808120727539,
+    "error": null,
+    "details": {
+      "status_code": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "enum",
+            "loc": [
+              "body",
+              "policy_type"
+            ],
+            "msg": "Input should be 'baseline', 'option_ratio', 'teaching_hours', 'teacher_capacity' or 'coteaching'",
+            "input": "unknown_policy",
+            "ctx": {
+              "expected": "'baseline', 'option_ratio', 'teaching_hours', 'teacher_capacity' or 'coteaching'"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "error_missing_fields",
+    "status": "failed",
+    "duration_seconds": 0.06884288787841797,
+    "error": "Unexpected status 400",
+    "details": {
+      "status_code": 400,
+      "response": {
+        "detail": "DLL load failed while importing _cdnmf_fast: An Application Control policy has blocked this file."
+      }
+    }
+  }
+]

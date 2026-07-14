@@ -1,0 +1,82 @@
+### Health
+GET http://127.0.0.1:8002/api/health
+
+### States
+GET http://127.0.0.1:8002/api/filters/negeri
+
+### Forecast 2027
+POST http://127.0.0.1:8002/api/forecast/2027
+Content-Type: application/json
+
+{
+  "subject": "SAINS",
+  "negeri": "JOHOR",
+  "ppd": "SEMUA",
+  "kod_sekolah": "SEMUA"
+}
+
+### Option-ratio simulation
+POST http://127.0.0.1:8002/api/simulate
+Content-Type: application/json
+
+{
+  "target_year": 2027,
+  "subject": "SAINS",
+  "negeri": "JOHOR",
+  "ppd": "SEMUA",
+  "kod_sekolah": "SEMUA",
+  "kodtingkatantahun": ["SEMUA"],
+  "policy_mode": "single",
+  "policy_type": "option_ratio",
+  "active_policies": ["option_ratio"],
+  "option_ratio": 0.70,
+  "teaching_hours_change_pct": 0,
+  "teacher_capacity_change_pct": 0,
+  "coteaching_share_pct": 0
+}
+
+### Combined simulation: all four policies
+POST http://127.0.0.1:8002/api/simulate
+Content-Type: application/json
+
+{
+  "target_year": 2027,
+  "subject": "SAINS",
+  "negeri": "JOHOR",
+  "ppd": "SEMUA",
+  "kod_sekolah": "SEMUA",
+  "kodtingkatantahun": ["D1", "D2", "D3"],
+  "policy_mode": "combined",
+  "policy_type": "option_ratio",
+  "active_policies": ["option_ratio", "teaching_hours", "teacher_capacity", "coteaching"],
+  "option_ratio": 0.80,
+  "teaching_hours_change_pct": 10,
+  "teacher_capacity_change_pct": 5,
+  "coteaching_share_pct": 20
+}
+
+### Co-teaching for primary Year 1-3
+POST http://127.0.0.1:8002/api/simulate
+Content-Type: application/json
+
+{
+  "target_year": 2027,
+  "subject": "SAINS",
+  "negeri": "JOHOR",
+  "ppd": "SEMUA",
+  "kod_sekolah": "SEMUA",
+  "kodtingkatantahun": ["D1", "D2", "D3"],
+  "policy_type": "coteaching",
+  "option_ratio": 0.60,
+  "teaching_hours_change_pct": 0,
+  "teacher_capacity_change_pct": 0,
+  "coteaching_share_pct": 50
+}
+
+### Agent workflow
+POST http://127.0.0.1:8002/api/agent/run
+Content-Type: application/json
+
+{
+  "question": "Forecast Science teacher demand in Johor for 2027 with a 70% subject-option ratio"
+}
