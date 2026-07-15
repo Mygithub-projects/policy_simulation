@@ -48,7 +48,7 @@ app = FastAPI(
     title="Education Workforce Policy Agent API",
     description=(
         "Projection 2027, policy simulation, workforce recommendations and "
-        "agent explanations. Source DuckDB is always read-only."
+        "agent explanations. Analytical PostgreSQL tables are accessed read-only."
     ),
     version="0.1.0",
 )
