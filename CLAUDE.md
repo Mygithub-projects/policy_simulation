@@ -7,7 +7,7 @@ This project is the English-interface version of the **Education Workforce Polic
 It supports decision-makers in estimating 2027 teacher demand and understanding the impact of selected policy changes. The application combines:
 
 - FastAPI backend
-- DuckDB analytical database
+- PostgreSQL database (migrated from an original DuckDB-file MVP)
 - Random Forest Regressor model stored as `.pk1`
 - Rule-based policy simulation
 - Logical agent orchestration
@@ -25,11 +25,11 @@ Main files and folders:
 |---|---|
 | `main.py` | FastAPI entry point and API routes. |
 | `agents.py` | Orchestrator, Scenario Agent, Simulation Agent, Recommendation Agent, and Explanation Agent. |
-| `tools.py` | DuckDB access, Random Forest forecast, policy simulation formulas, and CSV output generation. |
+| `tools.py` | PostgreSQL access, Random Forest forecast, policy simulation formulas, and CSV output generation. |
 | `schemas.py` | Internal scenario and policy request schema. |
 | `api_models.py` | Pydantic request models exposed by FastAPI. |
 | `frontend/` | HTML, CSS, and JavaScript user interface. |
-| `data/` | DuckDB database files. Treat as sensitive. |
+| `data/` | Original DuckDB backup file (historical reference only; PostgreSQL now serves as the operational database). Treat as sensitive. |
 | `models/` | Trained Random Forest model file. |
 | `outputs/` | Generated scenario CSV outputs only. |
 | `requirements.txt` | Python dependencies. |
@@ -138,6 +138,16 @@ SMTP_PASSWORD=your-app-password
 SMTP_FROM_ADDRESS=your-address@gmail.com
 ```
 
+PostgreSQL (the operational database for users, audit logs, and analytical data):
+
+```text
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+POSTGRES_DB=workforce_policy_agent
+POSTGRES_USER=your-username
+POSTGRES_PASSWORD=your-password
+```
+
 Important rules:
 
 - Never commit `.env`.
@@ -239,12 +249,10 @@ outputs/
 
 Do not modify these unless the user clearly asks:
 
-- Source DuckDB database structure. (Exception, pre-approved: the two additive changes listed under [RBAC](#role-based-access-control-rbac--approved-design-in-progress) — new `audit_log` table and new `users.can_view_audit_log` column. No existing table's structure changes.)
-- Existing database tables.
-- `data/*.duckdb` files, except approved anonymization or backup work.
+- PostgreSQL schema for `users`, `audit_log`, `simulation_run_log`, and the analytical tables (`master_model_2022_2026`, `base_murid_detail_2022_2026`). (Exception, pre-approved: the two additive changes listed under [RBAC](#role-based-access-control-rbac--approved-design-in-progress) — new `audit_log` table and new `users.can_view_audit_log` column. No existing table's structure changes.)
+- The original `data/*.duckdb` file (retained as a migration-source backup — do not delete).
 - `models/random_forest_teacher_demand.pk1`.
 - `.env` secrets.
-- Backup `.duckdb` files.
 - Core policy formulas.
 - Projection year assumption.
 - 2026 supply baseline assumption.
