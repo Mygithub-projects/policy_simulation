@@ -15,16 +15,13 @@ password_hash = f'pbkdf2_sha256${iterations}${salt}${hash_bytes.hex()}'
 
 cursor = con.cursor()
 
-# Get max id
-cursor.execute('SELECT COALESCE(MAX(id), 0) FROM users')
-max_id = cursor.fetchone()[0]
-new_id = max_id + 1
-
 # Insert user
 cursor.execute(
-    'INSERT INTO users (id, username, email, password_hash, role_name, is_active, is_first_login) VALUES (%s, %s, %s, %s, %s, %s, %s)',
-    [new_id, username, 'testuser@test.com', password_hash, 'user', True, False]
+    'INSERT INTO users (username, email, password_hash, role_name, is_active, is_first_login) '
+    'VALUES (%s, %s, %s, %s, %s, %s) RETURNING id',
+    [username, 'testuser@test.com', password_hash, 'user', True, False]
 )
+new_id = cursor.fetchone()[0]
 con.commit()
 
 print(f'✓ User created: {username}')
