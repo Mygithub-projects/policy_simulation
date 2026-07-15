@@ -66,12 +66,13 @@ client = TestClient(app)
 # Idempotency: this script creates 'um_test_user1'/'um_test_user2' unconditionally
 # below. Remove any leftover rows from a prior run so re-running this script
 # never fails on a stale "username already exists" from its own earlier output.
-import duckdb as _duckdb_cleanup
-from config import get_database_path as _get_db_path_cleanup
+import db as _db_cleanup
 
-_cleanup_connection = _duckdb_cleanup.connect(str(_get_db_path_cleanup()), read_only=False)
-_cleanup_connection.execute("DELETE FROM users WHERE username IN ('um_test_user1', 'um_test_user2')")
+_cleanup_connection = _db_cleanup.get_connection(read_only=False)
+_cleanup_cursor = _cleanup_connection.cursor()
+_cleanup_cursor.execute("DELETE FROM users WHERE username IN ('um_test_user1', 'um_test_user2')")
 _cleanup_connection.commit()
+_cleanup_cursor.close()
 _cleanup_connection.close()
 
 before = client.post(
@@ -79,13 +80,11 @@ before = client.post(
 )
 assert before.status_code == 200, before.text
 
-import duckdb
-from config import get_database_path
-
-con = duckdb.connect(str(get_database_path()), read_only=True)
-last_login = con.execute(
-    "SELECT last_login_at FROM users WHERE username = 'superadmin'"
-).fetchone()[0]
+con = _db_cleanup.get_connection(read_only=True)
+cursor = con.cursor()
+cursor.execute("SELECT last_login_at FROM users WHERE username = 'superadmin'")
+last_login = cursor.fetchone()[0]
+cursor.close()
 con.close()
 assert last_login is not None, "last_login_at should be set after a successful login"
 
@@ -210,9 +209,11 @@ assert new_pw_login.status_code == 200, new_pw_login.text
 assert new_pw_login.json()["is_first_login"] is False
 
 # --- is_first_login is enforced server-side (Finding 3) ---
-_cleanup_connection = _duckdb_cleanup.connect(str(_get_db_path_cleanup()), read_only=False)
-_cleanup_connection.execute("DELETE FROM users WHERE username = 'um_test_user3'")
+_cleanup_connection = _db_cleanup.get_connection(read_only=False)
+_cleanup_cursor = _cleanup_connection.cursor()
+_cleanup_cursor.execute("DELETE FROM users WHERE username = 'um_test_user3'")
 _cleanup_connection.commit()
+_cleanup_cursor.close()
 _cleanup_connection.close()
 
 _captured_emails.clear()
@@ -252,9 +253,11 @@ allowed = client.post("/api/simulate", json=SIMULATE_PAYLOAD, headers={"X-Auth-T
 assert allowed.status_code == 200, allowed.text
 
 # Cleanup test user created for this block.
-_cleanup_connection = _duckdb_cleanup.connect(str(_get_db_path_cleanup()), read_only=False)
-_cleanup_connection.execute("DELETE FROM users WHERE username = 'um_test_user3'")
+_cleanup_connection = _db_cleanup.get_connection(read_only=False)
+_cleanup_cursor = _cleanup_connection.cursor()
+_cleanup_cursor.execute("DELETE FROM users WHERE username = 'um_test_user3'")
 _cleanup_connection.commit()
+_cleanup_cursor.close()
 _cleanup_connection.close()
 
 print("user_management smoke test passed")

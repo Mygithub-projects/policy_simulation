@@ -1,10 +1,9 @@
-import os
-import duckdb
 import hashlib
 
+import db
+
 # Open database
-path = os.path.abspath(os.path.join('data', 'workforce_policy_agent_preclean_20260619_144113.duckdb'))
-con = duckdb.connect(path)
+con = db.get_connection(read_only=False)
 
 # Update superadmin password
 username = 'superadmin'
@@ -17,10 +16,12 @@ password_hash = f'pbkdf2_sha256${iterations}${salt}${hash_bytes.hex()}'
 print(f'Updating {username} password...')
 print(f'Generated hash: {password_hash[:80]}...')
 
+cursor = con.cursor()
+
 # Delete old record and insert new one
-con.execute('DELETE FROM users WHERE username = ?', [username])
-con.execute(
-    'INSERT INTO users (id, username, email, password_hash, role_name, is_active, is_first_login) VALUES (?, ?, ?, ?, ?, ?, ?)',
+cursor.execute('DELETE FROM users WHERE username = %s', [username])
+cursor.execute(
+    'INSERT INTO users (id, username, email, password_hash, role_name, is_active, is_first_login) VALUES (%s, %s, %s, %s, %s, %s, %s)',
     [1, username, 'superadmin@example.com', password_hash, 'superadmin', True, False]
 )
 con.commit()
@@ -29,7 +30,8 @@ print(f'✓ Password updated for {username}')
 print()
 
 # Verify
-result = con.execute('SELECT id, username, role_name, is_active, is_first_login FROM users WHERE username = ?', [username]).fetchall()
+cursor.execute('SELECT id, username, role_name, is_active, is_first_login FROM users WHERE username = %s', [username])
+result = cursor.fetchall()
 if result:
     row = result[0]
     print(f'User verified:')
@@ -41,6 +43,7 @@ if result:
 else:
     print('ERROR: User not found!')
 
+cursor.close()
 con.close()
 print()
 print('Try logging in with:')

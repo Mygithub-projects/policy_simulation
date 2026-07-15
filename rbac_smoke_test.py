@@ -1,9 +1,8 @@
 """rbac_smoke_test.py — exercises session/role enforcement without starting a web server."""
 
-import duckdb
 from fastapi.testclient import TestClient
 
-from config import get_database_path
+import db
 from main import app
 
 client = TestClient(app)
@@ -11,9 +10,11 @@ client = TestClient(app)
 # Idempotency: this script creates 'rbac_test_admin' unconditionally below.
 # Remove any leftover row from a prior run so re-running this script never
 # fails on a stale "username already exists" from its own earlier output.
-_cleanup_connection = duckdb.connect(str(get_database_path()), read_only=False)
-_cleanup_connection.execute("DELETE FROM users WHERE username = 'rbac_test_admin'")
+_cleanup_connection = db.get_connection(read_only=False)
+_cleanup_cursor = _cleanup_connection.cursor()
+_cleanup_cursor.execute("DELETE FROM users WHERE username = 'rbac_test_admin'")
 _cleanup_connection.commit()
+_cleanup_cursor.close()
 _cleanup_connection.close()
 
 # --- No token at all ---

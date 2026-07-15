@@ -11,9 +11,7 @@ from __future__ import annotations
 
 import shutil
 from datetime import datetime
-from pathlib import Path
 
-import duckdb
 import joblib
 import numpy as np
 import pandas as pd
@@ -23,7 +21,8 @@ from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OrdinalEncoder
 
-from config import get_database_path, get_model_path
+import db
+from config import get_model_path
 
 FEATURES = [
     "source_year",
@@ -49,23 +48,23 @@ CATEGORICAL_FEATURES = ["negeri", "subjek"]
 TARGET = "fte_required_next_year"
 
 
-def load_training_data(database_path: Path) -> pd.DataFrame:
+def load_training_data() -> pd.DataFrame:
     query = """
         WITH base AS (
             SELECT
-                tahun                                   AS source_year,
+                CAST(tahun AS INTEGER)                              AS source_year,
                 kod_sekolah,
                 negeri,
                 subjek,
-                CAST(enrolmen_murid AS DOUBLE)          AS prev_enrolment,
-                CAST(bil_kelas AS DOUBLE)               AS prev_classes,
-                FTE_guru_diperlukan_akhir               AS prev_fte_required,
-                guru_diperlukan_akhir                   AS prev_teachers_required,
-                CAST(guru_sedia_ada AS DOUBLE)          AS prev_teachers_available,
-                CAST(guru_opsyen_semasa AS DOUBLE)      AS prev_option_teachers,
-                CAST(guru_bukan_opsyen_semasa AS DOUBLE) AS prev_nonoption_teachers,
-                nisbah_opsyen_semasa                    AS prev_option_ratio,
-                FTE_guru_diperlukan_akhir               AS fte_required_current_year
+                CAST(enrolmen_murid AS DOUBLE PRECISION)            AS prev_enrolment,
+                CAST(bil_kelas AS DOUBLE PRECISION)                 AS prev_classes,
+                CAST("FTE_guru_diperlukan_akhir" AS DOUBLE PRECISION) AS prev_fte_required,
+                CAST(guru_diperlukan_akhir AS DOUBLE PRECISION)     AS prev_teachers_required,
+                CAST(guru_sedia_ada AS DOUBLE PRECISION)            AS prev_teachers_available,
+                CAST(guru_opsyen_semasa AS DOUBLE PRECISION)        AS prev_option_teachers,
+                CAST(guru_bukan_opsyen_semasa AS DOUBLE PRECISION)  AS prev_nonoption_teachers,
+                CAST(nisbah_opsyen_semasa AS DOUBLE PRECISION)      AS prev_option_ratio,
+                CAST("FTE_guru_diperlukan_akhir" AS DOUBLE PRECISION) AS fte_required_current_year
             FROM master_model_2022_2026
             WHERE subjek IN ('MATEMATIK', 'SAINS')
         ),
@@ -82,9 +81,9 @@ def load_training_data(database_path: Path) -> pd.DataFrame:
         WHERE fte_required_next_year IS NOT NULL
         ORDER BY source_year, kod_sekolah, subjek
     """
-    connection = duckdb.connect(str(database_path), read_only=True)
+    connection = db.get_connection(read_only=True)
     try:
-        data = connection.execute(query).df()
+        data = pd.read_sql(query, connection)
     finally:
         connection.close()
     return data
@@ -115,11 +114,10 @@ def build_pipeline() -> Pipeline:
 
 
 def main() -> None:
-    database_path = get_database_path()
     model_path = get_model_path()
 
-    print(f"Loading training data from: {database_path}")
-    data = load_training_data(database_path)
+    print("Loading training data from: PostgreSQL")
+    data = load_training_data()
     print(f"  Rows loaded: {len(data)}")
     print(f"  Years:       {sorted(data['source_year'].unique().tolist())}")
 

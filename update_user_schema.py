@@ -1,10 +1,14 @@
-import os
-import duckdb
+import db
 
-path = os.path.abspath(os.path.join("data", "workforce_policy_agent_preclean_20260619_144113.duckdb"))
-con = duckdb.connect(path)
-con.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS is_first_login BOOLEAN DEFAULT TRUE")
-con.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS password_changed_at TIMESTAMP")
+con = db.get_connection(read_only=False)
+cursor = con.cursor()
+cursor.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS is_first_login BOOLEAN DEFAULT TRUE")
+cursor.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS password_changed_at TIMESTAMP")
 con.commit()
-print(con.execute("DESCRIBE users").fetchall())
+cursor.execute(
+    "SELECT column_name, data_type FROM information_schema.columns "
+    "WHERE table_schema = 'public' AND table_name = 'users' ORDER BY ordinal_position"
+)
+print(cursor.fetchall())
+cursor.close()
 con.close()
