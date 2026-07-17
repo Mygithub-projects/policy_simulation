@@ -10,3 +10,4 @@ Baseline: smoke_test.py PASS, api_smoke_test.py PASS (before any task)
 - Report: .superpowers/sdd/task-1-report.md
 
 Task 1: complete (commits 689dcde..af5fe93, review approved; controller committed the .duckdb backup file the implementer left uncommitted)
+Task 2: complete (commits 035efc4..8b24a26, review approved; controller resolved a plan sequencing gap by removing a premature my-runs assertion from Task 2's test, deferred to Task 3)
