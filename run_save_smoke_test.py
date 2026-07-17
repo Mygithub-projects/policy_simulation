@@ -123,3 +123,14 @@ bad_id = client.post(
 assert bad_id.status_code == 400, bad_id.text
 
 print("run_save_smoke_test: save endpoint checks passed")
+
+# --- My Runs now shows only the saved run, with its custom name ---
+my_runs_after = client.get("/api/my-runs", headers={"X-Auth-Token": user_token})
+assert my_runs_after.status_code == 200, my_runs_after.text
+saved_run_ids = [r["run_id"] for r in my_runs_after.json()["runs"]]
+assert run_id in saved_run_ids
+assert run_id_2 in saved_run_ids
+saved_entry = next(r for r in my_runs_after.json()["runs"] if r["run_id"] == run_id)
+assert saved_entry["run_name"] == "My Johor Science Scenario"
+
+print("run_save_smoke_test: my-runs filtering checks passed")

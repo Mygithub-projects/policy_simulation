@@ -754,8 +754,8 @@ def get_my_runs(
     try:
         with connection.cursor() as cursor:
             cursor.execute(
-                "SELECT run_id, run_timestamp FROM simulation_run_log "
-                "WHERE run_by = %s AND run_type IN ('simulate', 'agent') "
+                "SELECT run_id, run_timestamp, run_name FROM simulation_run_log "
+                "WHERE run_by = %s AND run_type IN ('simulate', 'agent') AND is_saved = TRUE "
                 "ORDER BY run_timestamp DESC LIMIT 20",
                 [session["username"]],
             )
@@ -764,13 +764,14 @@ def get_my_runs(
         connection.close()
 
     runs: list[dict[str, Any]] = []
-    for run_id, run_timestamp in rows:
+    for run_id, run_timestamp, run_name in rows:
         scenario = _read_run_scenario(run_id)
         if scenario is None:
             continue
         runs.append({
             "run_id": run_id,
             "run_timestamp": str(run_timestamp),
+            "run_name": run_name,
             "scenario": scenario,
         })
     return {"runs": runs}
