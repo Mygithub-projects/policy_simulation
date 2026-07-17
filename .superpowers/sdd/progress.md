@@ -1,9 +1,12 @@
-# Progress Ledger — Policy Maker "My Runs" feature
+# Progress Ledger — Run First, Save Later
 
-Plan: docs/superpowers/plans/2026-07-12-policy-maker-my-runs-implementation.md
-No git repo in this project — verification is done by direct Read/Grep of
-modified files after each task, not git diff.
+Plan: docs/superpowers/plans/2026-07-17-run-first-save-later-implementation.md
+Baseline: smoke_test.py PASS, api_smoke_test.py PASS (before any task)
 
-Task 1: complete (main.py: import json + _read_run_scenario + GET /api/my-runs; smoke_test.py + api_smoke_test.py pass; report at .superpowers/sdd/task-1-report.md)
-Task 2: complete (index.html header button + myRunsPage markup + v-bumps; lang.js 7 keys x2; app.js showAdminPanel/goToAdminPage/goToDashboard/goToAuditLogPage updated + goToMyRunsPage/loadMyRuns added; controller-verified via Grep/Read)
-Task 3: complete (app.js: downloadPdfForRun added after runSimulation; index.html app.js?v=28; live Playwright end-to-end verified on port 8010 with disposable test account, run-count +1 confirmed, superadmin untouched; smoke tests pass)
+## Task 1: Database schema — `run_name` and `is_saved` columns
+- Status: DONE
+- Commit: 8183887 (feat: add run_name and is_saved columns to simulation_run_log)
+- Tests: smoke_test.py PASS, api_smoke_test.py PASS
+- Report: .superpowers/sdd/task-1-report.md
+
+Task 1: complete (commits 689dcde..af5fe93, review approved; controller committed the .duckdb backup file the implementer left uncommitted)
