@@ -43,7 +43,9 @@ SCHEMA_STATEMENTS = [
         run_by VARCHAR,
         run_type VARCHAR,
         target_scope VARCHAR,
-        notes VARCHAR
+        notes VARCHAR,
+        run_name VARCHAR,
+        is_saved BOOLEAN NOT NULL DEFAULT FALSE
     )
     """,
 ]
