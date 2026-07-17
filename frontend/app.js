@@ -2094,7 +2094,7 @@ async function submitSaveSimulation() {
     btnSave.disabled = true;
     btnSave.textContent = t('btn.save.saved');
   } catch (err) {
-    showToast(`Save failed: ${err.message}`, 'error');
+    showToast(`${t('toast.save.fail')} ${err.message}`, 'error');
   } finally {
     confirmBtn.disabled = false;
   }

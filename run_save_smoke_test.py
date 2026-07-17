@@ -134,3 +134,18 @@ saved_entry = next(r for r in my_runs_after.json()["runs"] if r["run_id"] == run
 assert saved_entry["run_name"] == "My Johor Science Scenario"
 
 print("run_save_smoke_test: my-runs filtering checks passed")
+
+# --- An unsaved run is excluded from My Runs (the whole point of is_saved) ---
+sim3 = client.post(
+    "/api/simulate",
+    json={"target_year": 2027, "subject": "SAINS", "negeri": "JOHOR", "policy_type": "option_ratio", "option_ratio": 0.70},
+    headers={"X-Auth-Token": user_token},
+)
+assert sim3.status_code == 200, sim3.text
+unsaved_run_id = sim3.json()["artifacts"]["run_id"]
+
+my_runs_final = client.get("/api/my-runs", headers={"X-Auth-Token": user_token})
+assert my_runs_final.status_code == 200, my_runs_final.text
+assert unsaved_run_id not in [r["run_id"] for r in my_runs_final.json()["runs"]]
+
+print("run_save_smoke_test: unsaved-run-excluded check passed")

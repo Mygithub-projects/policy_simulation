@@ -175,6 +175,7 @@ const LANG_STRINGS = {
     'modal.save.cancel': 'Batal',
     'modal.save.confirm': 'Simpan',
     'toast.save.ok': 'Simulasi berjaya disimpan.',
+    'toast.save.fail': 'Simpan simulasi gagal:',
     'myruns.col.name': 'Nama Simulasi',
 
     // --- PDF Template ---
@@ -522,6 +523,7 @@ const LANG_STRINGS = {
     'modal.save.cancel': 'Cancel',
     'modal.save.confirm': 'Save',
     'toast.save.ok': 'Simulation saved successfully.',
+    'toast.save.fail': 'Save failed:',
     'myruns.col.name': 'Simulation Name',
 
     // --- PDF Template ---
