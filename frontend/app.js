@@ -300,6 +300,10 @@ async function loadMyRuns() {
       const scenario = run.scenario || {};
       const tr = document.createElement('tr');
 
+      const tdName = document.createElement('td');
+      tdName.textContent = run.run_name || '';
+      tr.appendChild(tdName);
+
       const tdTime = document.createElement('td');
       tdTime.textContent = run.run_timestamp || '';
       tr.appendChild(tdTime);
