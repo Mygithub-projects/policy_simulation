@@ -11,3 +11,4 @@ Baseline: smoke_test.py PASS, api_smoke_test.py PASS (before any task)
 
 Task 1: complete (commits 689dcde..af5fe93, review approved; controller committed the .duckdb backup file the implementer left uncommitted)
 Task 2: complete (commits 035efc4..8b24a26, review approved; controller resolved a plan sequencing gap by removing a premature my-runs assertion from Task 2's test, deferred to Task 3)
+Task 3: complete (commits 999f897..443b955, review approved; Minor note: test doesn't include an explicit unsaved-run-excluded case, tracked for final review)
