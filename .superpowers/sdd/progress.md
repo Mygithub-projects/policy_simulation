@@ -14,3 +14,4 @@ Task 2: complete (commits 035efc4..8b24a26, review approved; controller resolved
 Task 3: complete (commits 999f897..443b955, review approved; Minor note: test doesn't include an explicit unsaved-run-excluded case, tracked for final review)
 Task 4: complete (commits 774533a..ff2102f, review approved, no findings)
 Task 5: complete (commits 08ca0ad..c0abb76, review approved; Minor note: error toast text is not i18n'd via t(), tracked for final review)
+Task 6: complete (commits 0154825..35f8845, review approved, no findings; reviewer's one ⚠️ about myruns.col.name existing in lang.js was already confirmed by Task 4's review)
