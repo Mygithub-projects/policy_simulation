@@ -166,6 +166,16 @@ const LANG_STRINGS = {
     'btn.download': '⬇ Muat Turun CSV',
     'btn.download.summary': '⬇ Muat Turun Laporan PDF',
     'btn.download.summary.csv': '⬇ Muat Turun Ringkasan (CSV)',
+    'btn.save.simulation': '💾 Simpan Simulasi',
+    'btn.save.saved': '✅ Disimpan',
+    'modal.save.title': 'Simpan Simulasi',
+    'modal.save.hint': 'Namakan simulasi ini supaya anda boleh menjumpainya kembali di Simulasi Saya.',
+    'modal.save.label': 'Nama Simulasi',
+    'modal.save.placeholder': 'cth. Johor Sains nisbah opsyen 70%',
+    'modal.save.cancel': 'Batal',
+    'modal.save.confirm': 'Simpan',
+    'toast.save.ok': 'Simulasi berjaya disimpan.',
+    'myruns.col.name': 'Nama Simulasi',
 
     // --- PDF Template ---
     'pdf.title': 'Laporan Simulasi Tenaga Kerja Pendidikan 2027',
@@ -503,6 +513,16 @@ const LANG_STRINGS = {
     'btn.download': '⬇ Download CSV',
     'btn.download.summary': '⬇ Download PDF Report',
     'btn.download.summary.csv': '⬇ Download Summary (CSV)',
+    'btn.save.simulation': '💾 Save Simulation',
+    'btn.save.saved': '✅ Saved',
+    'modal.save.title': 'Save Simulation',
+    'modal.save.hint': 'Give this simulation a name so you can find it later in My Runs.',
+    'modal.save.label': 'Simulation Name',
+    'modal.save.placeholder': 'e.g. Johor Science 70% option ratio',
+    'modal.save.cancel': 'Cancel',
+    'modal.save.confirm': 'Save',
+    'toast.save.ok': 'Simulation saved successfully.',
+    'myruns.col.name': 'Simulation Name',
 
     // --- PDF Template ---
     'pdf.title': 'Education Workforce Simulation Report 2027',

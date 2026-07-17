@@ -521,6 +521,10 @@
                   style="display:none;" data-i18n="btn.download.summary.csv">
                   ⬇ Muat Turun Ringkasan (CSV)
                 </button>
+                <button class="btn btn-outline btn-sm" id="btnSaveSimulation" onclick="openSaveSimulationModal()"
+                  style="display:none;" data-i18n="btn.save.simulation">
+                  💾 Save Simulation
+                </button>
               </div>
             </div>
           </div>
@@ -735,6 +739,23 @@
   <script src="lang.js?v=11"></script>
   <script src="app.js?v=28"></script>
   <script src="tour.js?v=2"></script>
+
+    <!-- ===================== SAVE SIMULATION MODAL ===================== -->
+    <div class="modal-overlay" id="saveSimModal" style="display:none;">
+      <div class="modal-box">
+        <h3 data-i18n="modal.save.title">Save Simulation</h3>
+        <p class="hint" data-i18n="modal.save.hint">Give this simulation a name so you can find it later in My Runs.</p>
+        <label for="saveSimNameInput" data-i18n="modal.save.label">Simulation Name</label>
+        <input id="saveSimNameInput" class="form-control" type="text" maxlength="200"
+          data-i18n-placeholder="modal.save.placeholder" placeholder="e.g. Johor Science 70% option ratio" />
+        <div class="modal-actions">
+          <button class="btn btn-outline btn-sm" id="saveSimCancelBtn" onclick="closeSaveSimulationModal()"
+            data-i18n="modal.save.cancel">Cancel</button>
+          <button class="btn btn-primary btn-sm" id="saveSimConfirmBtn" onclick="submitSaveSimulation()"
+            data-i18n="modal.save.confirm">Save</button>
+        </div>
+      </div>
+    </div>
 
 </body>
 
