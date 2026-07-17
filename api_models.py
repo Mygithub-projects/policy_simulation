@@ -59,3 +59,8 @@ class ForecastInput(BaseModel):
     negeri: str = "SEMUA"
     ppd: str = "SEMUA"
     kod_sekolah: str = "SEMUA"
+
+
+class SaveRunInput(BaseModel):
+    run_id: str = Field(min_length=1, max_length=80)
+    run_name: str = Field(default="", max_length=200)

@@ -25,6 +25,7 @@ from api_models import (
     CreateUserInput,
     ForecastInput,
     LoginInput,
+    SaveRunInput,
     ScenarioInput,
 )
 from config import (
@@ -707,6 +708,42 @@ def _read_run_scenario(run_id: str) -> dict[str, Any] | None:
             except (OSError, ValueError):
                 return None
     return None
+
+
+@app.post("/api/runs/save")
+def save_run(
+    payload: SaveRunInput,
+    session: dict[str, Any] = Depends(require_role("user")),
+) -> dict[str, Any]:
+    if not payload.run_id.startswith("RUN_") or not payload.run_id.replace("_", "").isalnum():
+        raise HTTPException(status_code=400, detail="Invalid run_id")
+
+    connection = db.get_connection(read_only=False)
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT run_timestamp FROM simulation_run_log WHERE run_id = %s AND run_by = %s",
+                [payload.run_id, session["username"]],
+            )
+            row = cursor.fetchone()
+            if row is None:
+                raise HTTPException(status_code=404, detail="Run not found")
+            run_timestamp = row[0]
+
+            run_name = payload.run_name.strip()
+            if not run_name:
+                run_name = f"Simulation - {run_timestamp:%Y-%m-%d %H:%M}"
+
+            cursor.execute(
+                "UPDATE simulation_run_log SET run_name = %s, is_saved = TRUE "
+                "WHERE run_id = %s AND run_by = %s",
+                [run_name, payload.run_id, session["username"]],
+            )
+        connection.commit()
+    finally:
+        connection.close()
+
+    return {"run_id": payload.run_id, "run_name": run_name}
 
 
 @app.get("/api/my-runs")
