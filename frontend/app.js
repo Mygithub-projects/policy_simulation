@@ -1273,15 +1273,20 @@ function renderResults(data, payload) {
   const btnDl = document.getElementById('btnDownload');
   const btnDlSummary = document.getElementById('btnDownloadSummary');
   const btnDlSummaryCsv = document.getElementById('btnDownloadSummaryCsv');
+  const btnSave = document.getElementById('btnSaveSimulation');
   if (artifacts?.run_id) {
     state.currentRunId = artifacts.run_id;
     btnDl.style.display = state.auth.role_name === 'user' ? 'none' : 'inline-flex';
     btnDlSummary.style.display = 'inline-flex';
     btnDlSummaryCsv.style.display = 'inline-flex';
+    btnSave.style.display = state.auth.role_name === 'user' ? 'inline-flex' : 'none';
+    btnSave.disabled = false;
+    btnSave.textContent = t('btn.save.simulation');
   } else {
     btnDl.style.display = 'none';
     btnDlSummary.style.display = 'none';
     btnDlSummaryCsv.style.display = 'none';
+    btnSave.style.display = 'none';
   }
 
   // Scroll to results
@@ -2049,6 +2054,45 @@ async function downloadSummaryPDF() {
     showToast('Failed to generate PDF', 'error');
   } finally {
     pdfTemplate.style.display = 'none';
+  }
+}
+
+// ============================================================
+// SAVE SIMULATION — POST /api/runs/save
+// ============================================================
+
+/** Opens the naming modal for the currently displayed simulation run. */
+function openSaveSimulationModal() {
+  if (!state.currentRunId) return;
+  document.getElementById('saveSimNameInput').value = '';
+  document.getElementById('saveSimModal').style.display = 'flex';
+  document.getElementById('saveSimNameInput').focus();
+}
+
+/** Closes the naming modal without saving. */
+function closeSaveSimulationModal() {
+  document.getElementById('saveSimModal').style.display = 'none';
+}
+
+/** Submits the run_id + user-entered name to POST /api/runs/save. */
+async function submitSaveSimulation() {
+  const runId = state.currentRunId;
+  const runName = document.getElementById('saveSimNameInput').value.trim();
+  const confirmBtn = document.getElementById('saveSimConfirmBtn');
+
+  confirmBtn.disabled = true;
+  try {
+    await apiFetch('/api/runs/save', { method: 'POST', body: { run_id: runId, run_name: runName } });
+    closeSaveSimulationModal();
+    showToast(t('toast.save.ok'), 'success');
+
+    const btnSave = document.getElementById('btnSaveSimulation');
+    btnSave.disabled = true;
+    btnSave.textContent = t('btn.save.saved');
+  } catch (err) {
+    showToast(`Save failed: ${err.message}`, 'error');
+  } finally {
+    confirmBtn.disabled = false;
   }
 }
 
