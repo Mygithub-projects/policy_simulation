@@ -41,6 +41,8 @@ Main files and folders:
 | `smoke_test.py` | Backend workflow smoke test. |
 | `api_smoke_test.py` | API-level smoke test. |
 
+Note: `landing.html` and `landing-en.html` are served directly at `/` and `/en` via `FileResponse` (not under the `/app` static mount), so any local asset they reference (e.g. `true-focus.js`/`true-focus.css`) must use an `/app/...` absolute path to resolve against the `StaticFiles` mount — a bare relative path 404s.
+
 ## Development Workflow
 
 Use this normal workflow when developing or testing:
