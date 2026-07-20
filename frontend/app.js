@@ -642,6 +642,16 @@ document.addEventListener('DOMContentLoaded', () => {
   loadNegeri();            // Load states from the API
   checkHealth();           // Check if the backend is running
   initAuth();              // Show login screen until user authenticates
+
+  if (window.initAuroraBackground) {
+    window.initAuroraBackground(document.getElementById('auroraLogin'), {
+      color1: '#E8A04A',
+      color2: '#0CC8A8',
+      speed: 0.35,
+      brightness: 0.55,
+      enableMouseInteraction: false,
+    });
+  }
 });
 
 // ============================================================

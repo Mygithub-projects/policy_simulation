@@ -6,8 +6,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sistem Simulasi Dasar Tenaga Kerja Pendidikan 2027</title>
   <link rel="stylesheet" href="styles.css?v=15" />
+  <link rel="stylesheet" href="aurora-bg.css?v=1" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="aurora-bg.js?v=1"></script>
 </head>
 
 <body>
@@ -78,6 +80,7 @@
     </header>
 
     <div class="login-screen visible" id="loginScreen">
+      <div class="aurora-bg" id="auroraLogin"></div>
       <div class="login-box">
         <div class="login-brand">
           <div class="login-brand-icon">
@@ -486,7 +489,28 @@
           </div>
 
           <div class="result-card">
-            <div class="result-card-header" data-i18n="card.schools">Sekolah Keutamaan — 30 Teratas</div>
+            <div class="result-card-header">
+              <span data-i18n="card.schools">Sekolah Keutamaan — 30 Teratas</span>
+              <div class="header-actions">
+                <span id="tableInfo">—</span>
+                <button class="btn btn-teal btn-sm" id="btnDownload" onclick="downloadCSV()" style="display:none;"
+                  data-i18n="btn.download">
+                  ⬇ Muat Turun CSV
+                </button>
+                <button class="btn btn-outline btn-sm" id="btnDownloadSummary" onclick="downloadSummaryPDF()"
+                  style="display:none;" data-i18n="btn.download.summary">
+                  ⬇ Muat Turun Laporan PDF
+                </button>
+                <button class="btn btn-outline btn-sm" id="btnDownloadSummaryCsv" onclick="downloadSummaryCSV()"
+                  style="display:none;" data-i18n="btn.download.summary.csv">
+                  ⬇ Muat Turun Ringkasan (CSV)
+                </button>
+                <button class="btn btn-outline btn-sm" id="btnSaveSimulation" onclick="openSaveSimulationModal()"
+                  style="display:none;" data-i18n="btn.save.simulation">
+                  💾 Save Simulation
+                </button>
+              </div>
+            </div>
             <div class="result-card-body">
               <div class="table-container">
                 <table class="rec-table" id="recTable">
@@ -506,25 +530,6 @@
                   </thead>
                   <tbody id="recTableBody"></tbody>
                 </table>
-              </div>
-              <div class="table-footer">
-                <span id="tableInfo">—</span>
-                <button class="btn btn-teal btn-sm" id="btnDownload" onclick="downloadCSV()" style="display:none;"
-                  data-i18n="btn.download">
-                  ⬇ Muat Turun CSV
-                </button>
-                <button class="btn btn-outline btn-sm" id="btnDownloadSummary" onclick="downloadSummaryPDF()"
-                  style="display:none;" data-i18n="btn.download.summary">
-                  ⬇ Muat Turun Laporan PDF
-                </button>
-                <button class="btn btn-outline btn-sm" id="btnDownloadSummaryCsv" onclick="downloadSummaryCSV()"
-                  style="display:none;" data-i18n="btn.download.summary.csv">
-                  ⬇ Muat Turun Ringkasan (CSV)
-                </button>
-                <button class="btn btn-outline btn-sm" id="btnSaveSimulation" onclick="openSaveSimulationModal()"
-                  style="display:none;" data-i18n="btn.save.simulation">
-                  💾 Save Simulation
-                </button>
               </div>
             </div>
           </div>

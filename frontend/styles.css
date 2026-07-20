@@ -179,6 +179,8 @@ html, body {
   display: flex;
 }
 .login-box {
+  position: relative;
+  z-index: 1;
   width: min(420px, calc(100% - 32px));
   padding: 28px 28px 24px;
   border-radius: var(--radius-xl);
@@ -1251,7 +1253,23 @@ html, body {
   letter-spacing: 0.04em;
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 10px;
+}
+.result-card-header .header-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.result-card-header #tableInfo {
+  font-family: var(--font-ui);
+  font-variant: normal;
+  font-weight: 400;
+  font-size: 11.5px;
+  letter-spacing: normal;
+  color: var(--text-muted);
 }
 .result-card-header::before {
   content: '';
@@ -1345,15 +1363,6 @@ table.rec-table {
 .priority-badge.TINGGI,    .priority-badge.HIGH   { background: rgba(255,107,107,0.15); color: var(--danger); }
 .priority-badge.SEDERHANA, .priority-badge.MEDIUM { background: rgba(232,160,74,0.15);  color: var(--warning); }
 .priority-badge.RENDAH,    .priority-badge.LOW    { background: rgba(45,212,160,0.15);  color: var(--success); }
-
-.table-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 0 0;
-  font-size: 11.5px;
-  color: var(--text-muted);
-}
 
 /* ===== RULES LIST ===== */
 .rules-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }

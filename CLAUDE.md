@@ -29,6 +29,8 @@ Main files and folders:
 | `schemas.py` | Internal scenario and policy request schema. |
 | `api_models.py` | Pydantic request models exposed by FastAPI. |
 | `frontend/` | HTML, CSS, and JavaScript user interface. |
+| `frontend/aurora-bg.js` | Vanilla-JS WebGL aurora-glow background (ported from the React Bits `SoftAurora` component, no React/`ogl` dependency). Purely decorative — mounted behind the login screen and the landing pages only, not the dashboard. |
+| `frontend/aurora-bg.css` | Positioning styles for the aurora background container (`.aurora-bg`). |
 | `data/` | Original DuckDB backup file (historical reference only; PostgreSQL now serves as the operational database). Treat as sensitive. |
 | `models/` | Trained Random Forest model file. |
 | `outputs/` | Generated scenario CSV outputs only. |
