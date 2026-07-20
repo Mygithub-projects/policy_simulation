@@ -720,6 +720,7 @@
     .lang-btn.active { background:#0CC8A8; color:#07091A; }
     .lang-btn:hover:not(.active) { color:rgba(255,255,255,0.80); }
   </style>
+  <link rel="stylesheet" href="true-focus.css?v=1" />
 </head>
 <body>
 
@@ -750,11 +751,10 @@
 <!-- HERO -->
 <section class="hero">
   <div class="hero-eyebrow">Ministry of Education Malaysia &nbsp;·&nbsp; 2027 Workforce Forecast</div>
-  <h1 class="hero-headline">
-    <span>Analyse.</span><br>
-    <span class="word-highlight">Simulate.</span><br>
-    <span class="word-teal">Decide.</span>
-  </h1>
+  <h1 class="hero-headline" id="heroFocus"
+      data-words="Analyse.|Simulate.|Decide."
+      data-word-classes="|word-highlight|word-teal"
+      data-word-glows="rgba(240,244,255,0.5)|#C4781C|#0CC8A8"></h1>
   <p class="hero-sub">
     A <strong>decision-support system</strong> for Malaysia's teacher workforce planners —
     forecast 2027 demand, test policy scenarios and surface where schools need action most.
@@ -1080,6 +1080,13 @@
       brightness: 0.55,
       enableMouseInteraction: false,
     });
+  }
+</script>
+
+<script src="true-focus.js?v=1"></script>
+<script>
+  if (window.initTrueFocus) {
+    window.initTrueFocus(document.getElementById('heroFocus'));
   }
 </script>
 
