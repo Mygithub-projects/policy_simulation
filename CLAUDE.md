@@ -29,7 +29,7 @@ Main files and folders:
 | `schemas.py` | Internal scenario and policy request schema. |
 | `api_models.py` | Pydantic request models exposed by FastAPI. |
 | `frontend/` | HTML, CSS, and JavaScript user interface. |
-| `frontend/aurora-bg.js` | Vanilla-JS WebGL aurora-glow background (ported from the React Bits `SoftAurora` component, no React/`ogl` dependency). Purely decorative — mounted behind the login screen and the landing pages only, not the dashboard. |
+| `frontend/aurora-bg.js` | Vanilla-JS WebGL aurora-glow background (ported from the React Bits `SoftAurora` component, no React/`ogl` dependency). Purely decorative — mounted behind the login screen only, not the landing pages or the dashboard. |
 | `frontend/aurora-bg.css` | Positioning styles for the aurora background container (`.aurora-bg`). |
 | `frontend/true-focus.js` | Vanilla-JS port of the React Bits `TrueFocus` component (no React/`motion` dependency). Auto-cycles a glowing focus frame across the landing pages' hero headline words. |
 | `frontend/true-focus.css` | Styles for the focus word blur and glowing corner-bracket frame (`.focus-word`, `.focus-frame`). |

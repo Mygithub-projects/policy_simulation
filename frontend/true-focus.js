@@ -3,35 +3,28 @@
  * Auto-cycles a glowing corner-bracket frame across a sequence of words,
  * blurring inactive ones. No React/motion dependency — plain CSS
  * transitions + getBoundingClientRect for frame positioning.
+ *
+ * Progressive enhancement: this script ENHANCES existing <span> word
+ * elements already in the markup (each word's original styling/text stays
+ * as plain static HTML). If this script fails to load or run, the
+ * headline still renders correctly as static text — it just won't animate.
  */
 (function () {
   function initTrueFocus(containerEl, options) {
     options = options || {};
     if (!containerEl) return function () {};
 
-    const words = options.words || (containerEl.dataset.words || '').split('|').filter(Boolean);
-    const wordClasses = options.wordClasses ||
-      (containerEl.dataset.wordClasses !== undefined ? containerEl.dataset.wordClasses.split('|') : []);
-    const wordGlows = options.wordGlows ||
-      (containerEl.dataset.wordGlows !== undefined ? containerEl.dataset.wordGlows.split('|') : []);
-
-    if (!words.length) return function () {};
+    const wordEls = Array.prototype.slice.call(containerEl.querySelectorAll(':scope > span'));
+    if (!wordEls.length) return function () {};
 
     const blurAmount = options.blurAmount !== undefined ? options.blurAmount : 2.5;
     const animationDuration = options.animationDuration !== undefined ? options.animationDuration : 0.6;
     const pauseBetweenAnimations = options.pauseBetweenAnimations !== undefined ? options.pauseBetweenAnimations : 1.4;
 
-    containerEl.innerHTML = '';
     containerEl.classList.add('true-focus-container');
-
-    const wordEls = words.map((word, i) => {
-      const span = document.createElement('span');
-      span.className = 'focus-word' + (wordClasses[i] ? ' ' + wordClasses[i] : '');
-      span.textContent = word;
-      span.style.transition = `filter ${animationDuration}s ease`;
-      containerEl.appendChild(span);
-      if (i < words.length - 1) containerEl.appendChild(document.createElement('br'));
-      return span;
+    wordEls.forEach(function (el) {
+      el.classList.add('focus-word');
+      el.style.transition = `filter ${animationDuration}s ease`;
     });
 
     const frame = document.createElement('div');
@@ -51,7 +44,7 @@
         el.style.filter = i === index ? 'blur(0px)' : `blur(${blurAmount}px)`;
       });
 
-      const glow = wordGlows[index] || 'rgba(240,244,255,0.5)';
+      const glow = wordEls[index].dataset.glow || 'rgba(240,244,255,0.5)';
       frame.style.setProperty('--glow-color', glow);
       frame.style.setProperty('--border-color', glow);
 
@@ -63,10 +56,19 @@
       frame.style.opacity = '1';
     }
 
-    applyFocus(currentIndex);
+    // Wait for fonts/layout to settle before the first measurement, otherwise
+    // the frame can end up measured against pre-webfont-swap positions.
+    function start() {
+      applyFocus(currentIndex);
+    }
+    if (document.fonts && document.fonts.status !== 'loaded') {
+      document.fonts.ready.then(start);
+    } else {
+      start();
+    }
 
     const intervalId = setInterval(() => {
-      currentIndex = (currentIndex + 1) % words.length;
+      currentIndex = (currentIndex + 1) % wordEls.length;
       applyFocus(currentIndex);
     }, (animationDuration + pauseBetweenAnimations) * 1000);
 
@@ -78,6 +80,7 @@
     return function teardown() {
       clearInterval(intervalId);
       window.removeEventListener('resize', handleResize);
+      if (frame.parentElement) containerEl.removeChild(frame);
     };
   }
 
