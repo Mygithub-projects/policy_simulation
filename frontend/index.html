@@ -542,112 +542,114 @@
         <!-- ---- RESULTS ---- -->
         <div class="results-wrapper" id="resultsWrapper">
 
-          <div class="scenario-banner" id="scenarioBanner"></div>
-          <div class="kpi-grid" id="kpiGrid"></div>
-          <div class="decision-insight" id="decisionInsight"></div>
+          <div class="result-tabs" id="resultTabs">
+            <button class="result-tab active" data-tab="overview" onclick="setActiveResultTab('overview')" data-i18n="tab.overview">Ikhtisar</button>
+            <button class="result-tab" data-tab="charts" onclick="setActiveResultTab('charts')" data-i18n="tab.charts">Carta</button>
+            <button class="result-tab" data-tab="explanation" onclick="setActiveResultTab('explanation')" data-i18n="tab.explanation">Penjelasan</button>
+            <button class="result-tab" data-tab="recs" onclick="setActiveResultTab('recs')" data-i18n="tab.recs">Cadangan Strategik</button>
+            <button class="result-tab" data-tab="schools" onclick="setActiveResultTab('schools')" data-i18n="tab.schools">Sekolah Keutamaan</button>
+          </div>
 
-          <div class="chart-grid">
+          <div class="tab-panel active" data-tab="overview">
+            <div class="scenario-banner" id="scenarioBanner"></div>
+            <div class="kpi-grid" id="kpiGrid"></div>
+            <div class="decision-insight" id="decisionInsight"></div>
+
+            <div class="result-card" id="policyImpactCard" style="display:none;">
+              <div class="result-card-header teal" data-i18n="card.policy">Kesan Dasar Individu dan Gabungan</div>
+              <div class="result-card-body">
+                <div class="table-container">
+                  <table class="rec-table">
+                    <thead>
+                      <tr>
+                        <th data-i18n="th.condition">Keadaan</th>
+                        <th data-i18n="th.required">Guru Diperlukan</th>
+                        <th data-i18n="th.change">Perubahan</th>
+                        <th data-i18n="th.shortage">Kekurangan Guru</th>
+                        <th data-i18n="th.opt.shortage">Kekurangan Guru Opsyen Mata Pelajaran</th>
+                      </tr>
+                    </thead>
+                    <tbody id="policyImpactBody"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-panel" data-tab="charts">
+            <div class="chart-grid">
+              <div class="result-card">
+                <div class="result-card-header" id="comparisonChartTitle" data-i18n="card.comparison">
+                  Perbandingan Permintaan Guru
+                </div>
+                <div class="result-card-body">
+                  <div class="chart-wrap"><canvas id="chartComparison"></canvas></div>
+                </div>
+              </div>
+              <div class="result-card">
+                <div class="result-card-header teal" data-i18n="card.subject">Permintaan Mengikut Mata Pelajaran</div>
+                <div class="result-card-body">
+                  <div class="chart-wrap"><canvas id="chartSubject"></canvas></div>
+                  <div class="subject-chips" id="subjectChips" style="margin-top:14px;"></div>
+                </div>
+              </div>
+              <div class="result-card">
+                <div class="result-card-header amber" id="riskChartTitle" data-i18n="card.risk">
+                  Ranking Risiko Negeri
+                </div>
+                <div class="result-card-body">
+                  <div class="chart-wrap"><canvas id="chartRisk"></canvas></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-panel" data-tab="explanation">
             <div class="result-card">
-              <div class="result-card-header" id="comparisonChartTitle" data-i18n="card.comparison">
-                Perbandingan Permintaan Guru
+              <div class="result-card-header amber" data-i18n="card.summary">Ringkasan Bahasa Mudah</div>
+              <div class="result-card-body">
+                <div class="explanation-box" id="explanationBox"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-panel" data-tab="recs">
+            <div class="result-card">
+              <div class="result-card-header" data-i18n="card.recs">Cadangan Strategik</div>
+              <div class="result-card-body">
+                <ul class="rules-list" id="rulesList"></ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-panel" data-tab="schools">
+            <div class="result-card">
+              <div class="result-card-header">
+                <span data-i18n="card.schools">Sekolah Keutamaan — 30 Teratas</span>
+                <div class="header-actions">
+                  <span id="tableInfo">—</span>
+                </div>
               </div>
               <div class="result-card-body">
-                <div class="chart-wrap"><canvas id="chartComparison"></canvas></div>
-              </div>
-            </div>
-            <div class="result-card">
-              <div class="result-card-header teal" data-i18n="card.subject">Permintaan Mengikut Mata Pelajaran</div>
-              <div class="result-card-body">
-                <div class="chart-wrap"><canvas id="chartSubject"></canvas></div>
-                <div class="subject-chips" id="subjectChips" style="margin-top:14px;"></div>
-              </div>
-            </div>
-            <div class="result-card">
-              <div class="result-card-header amber" id="riskChartTitle" data-i18n="card.risk">
-                Ranking Risiko Negeri
-              </div>
-              <div class="result-card-body">
-                <div class="chart-wrap"><canvas id="chartRisk"></canvas></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="result-card" id="policyImpactCard" style="display:none;">
-            <div class="result-card-header teal" data-i18n="card.policy">Kesan Dasar Individu dan Gabungan</div>
-            <div class="result-card-body">
-              <div class="table-container">
-                <table class="rec-table">
-                  <thead>
-                    <tr>
-                      <th data-i18n="th.condition">Keadaan</th>
-                      <th data-i18n="th.required">Guru Diperlukan</th>
-                      <th data-i18n="th.change">Perubahan</th>
-                      <th data-i18n="th.shortage">Kekurangan Guru</th>
-                      <th data-i18n="th.opt.shortage">Kekurangan Guru Opsyen Mata Pelajaran</th>
-                    </tr>
-                  </thead>
-                  <tbody id="policyImpactBody"></tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-
-          <div class="result-card">
-            <div class="result-card-header amber" data-i18n="card.summary">Ringkasan Bahasa Mudah</div>
-            <div class="result-card-body">
-              <div class="explanation-box" id="explanationBox"></div>
-            </div>
-          </div>
-
-          <div class="result-card">
-            <div class="result-card-header" data-i18n="card.recs">Cadangan Strategik</div>
-            <div class="result-card-body">
-              <ul class="rules-list" id="rulesList"></ul>
-            </div>
-          </div>
-
-          <div class="result-card">
-            <div class="result-card-header">
-              <span data-i18n="card.schools">Sekolah Keutamaan — 30 Teratas</span>
-              <div class="header-actions">
-                <span id="tableInfo">—</span>
-                <button class="btn btn-teal btn-sm" id="btnDownload" onclick="downloadCSV()" style="display:none;"
-                  data-i18n="btn.download">
-                  ⬇ Muat Turun CSV
-                </button>
-                <button class="btn btn-outline btn-sm" id="btnDownloadSummary" onclick="downloadSummaryPDF()"
-                  style="display:none;" data-i18n="btn.download.summary">
-                  ⬇ Muat Turun Laporan PDF
-                </button>
-                <button class="btn btn-outline btn-sm" id="btnDownloadSummaryCsv" onclick="downloadSummaryCSV()"
-                  style="display:none;" data-i18n="btn.download.summary.csv">
-                  ⬇ Muat Turun Ringkasan (CSV)
-                </button>
-                <button class="btn btn-outline btn-sm" id="btnSaveSimulation" onclick="openSaveSimulationModal()"
-                  style="display:none;" data-i18n="btn.save.simulation">
-                  💾 Save Simulation
-                </button>
-              </div>
-            </div>
-            <div class="result-card-body">
-              <div class="table-container">
-                <table class="rec-table" id="recTable">
-                  <thead>
-                    <tr>
-                      <th data-i18n="th.num">#</th>
-                      <th data-i18n="th.school.code">Kod Sekolah</th>
-                      <th data-i18n="th.state">Negeri</th>
-                      <th data-i18n="th.ppd">PPD</th>
-                      <th data-i18n="th.subject">Mata Pelajaran</th>
-                      <th data-i18n="th.est.without">Anggaran tanpa perubahan dasar</th>
-                      <th data-i18n="th.est.after">Anggaran selepas perubahan dasar</th>
-                      <th data-i18n="th.teacher.shortage">Kekurangan Guru</th>
-                      <th data-i18n="th.priority">Keutamaan</th>
-                      <th data-i18n="th.action">Tindakan Dicadangkan</th>
-                    </tr>
-                  </thead>
-                  <tbody id="recTableBody"></tbody>
-                </table>
+                <div class="table-container">
+                  <table class="rec-table" id="recTable">
+                    <thead>
+                      <tr>
+                        <th data-i18n="th.num">#</th>
+                        <th data-i18n="th.school.code">Kod Sekolah</th>
+                        <th data-i18n="th.state">Negeri</th>
+                        <th data-i18n="th.ppd">PPD</th>
+                        <th data-i18n="th.subject">Mata Pelajaran</th>
+                        <th data-i18n="th.est.without">Anggaran tanpa perubahan dasar</th>
+                        <th data-i18n="th.est.after">Anggaran selepas perubahan dasar</th>
+                        <th data-i18n="th.teacher.shortage">Kekurangan Guru</th>
+                        <th data-i18n="th.priority">Keutamaan</th>
+                        <th data-i18n="th.action">Tindakan Dicadangkan</th>
+                      </tr>
+                    </thead>
+                    <tbody id="recTableBody"></tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
