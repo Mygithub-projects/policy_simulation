@@ -232,6 +232,11 @@ const LANG_STRINGS = {
     'user.menu.back': 'Kembali',
 
     /* ── RESULT CARD HEADERS ─────────────────── */
+    'tab.overview': 'Ikhtisar',
+    'tab.charts': 'Carta',
+    'tab.explanation': 'Penjelasan',
+    'tab.recs': 'Cadangan Strategik',
+    'tab.schools': 'Sekolah Keutamaan',
     'card.comparison': 'Perbandingan Permintaan Guru',
     'card.subject': 'Permintaan Mengikut Mata Pelajaran',
     'card.risk': 'Ranking Risiko Negeri',
@@ -588,6 +593,11 @@ const LANG_STRINGS = {
     'user.menu.back': 'Back',
 
     /* ── RESULT CARD HEADERS ─────────────────── */
+    'tab.overview': 'Overview',
+    'tab.charts': 'Charts',
+    'tab.explanation': 'Explanation',
+    'tab.recs': 'Recommendations',
+    'tab.schools': 'Priority Schools',
     'card.comparison': 'Teacher Demand Comparison',
     'card.subject': 'Demand by Subject',
     'card.risk': 'State Risk Ranking',
