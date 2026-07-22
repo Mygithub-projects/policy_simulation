@@ -1157,24 +1157,6 @@ function collapseSidebarAfterResult(group) {
   applySidebarGroupState();
   document.getElementById('sidebar').classList.add('collapsed');
 }
-
-/** Switches the visible results tab. Charts are drawn once when results
- *  first render (while the Charts panel may still be display:none), so
- *  Chart.js needs an explicit resize() the first time that panel becomes
- *  visible — otherwise it keeps the 0x0 size it read at draw time. */
-function setActiveResultTab(tab) {
-  document.querySelectorAll('.result-tab').forEach(btn =>
-    btn.classList.toggle('active', btn.dataset.tab === tab));
-  document.querySelectorAll('.tab-panel').forEach(panel =>
-    panel.classList.toggle('active', panel.dataset.tab === tab));
-
-  if (tab === 'charts') {
-    [state.chartComparison, state.chartSubject, state.chartRisk].forEach(chart => {
-      if (chart) chart.resize();
-    });
-  }
-}
-
 // ============================================================
 // MAIN SIMULATION — POST /api/simulate
 // ============================================================
@@ -1341,7 +1323,6 @@ function renderResults(data, payload) {
   showLoading(null);
   document.getElementById('emptyState').style.display    = 'none';
   document.getElementById('resultsWrapper').classList.add('visible');
-  setActiveResultTab('overview');
 
   // --- Scenario Banner ---
   renderScenarioBanner(payload, data);
