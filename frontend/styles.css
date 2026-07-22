@@ -1133,39 +1133,6 @@ html, body {
 .results-wrapper { display: none; flex-direction: column; gap: 16px; }
 .results-wrapper.visible { display: flex; }
 
-.result-tabs {
-  display: flex;
-  gap: 4px;
-  position: sticky;
-  top: 0;
-  z-index: 5;
-  background: var(--bg-card);
-  border-bottom: 1px solid var(--border);
-  padding: 0 4px;
-}
-
-.result-tab {
-  background: transparent;
-  border: none;
-  border-bottom: 2px solid transparent;
-  color: rgba(255,255,255,0.55);
-  font-size: 13px;
-  font-weight: 600;
-  padding: 12px 14px;
-  cursor: pointer;
-  transition: color 0.15s ease, border-color 0.15s ease;
-}
-
-.result-tab:hover { color: rgba(255,255,255,0.80); }
-
-.result-tab.active {
-  color: var(--gold-lt);
-  border-bottom-color: var(--gold);
-}
-
-.tab-panel { display: none; flex-direction: column; gap: 16px; }
-.tab-panel.active { display: flex; }
-
 /* ===== SCENARIO BANNER ===== */
 .scenario-banner {
   background: var(--bg-card);
