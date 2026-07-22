@@ -110,6 +110,14 @@ const LANG_STRINGS = {
     'btn.run': 'Jalankan Simulasi 2027',
     'btn.reset': '↺ Set Semula',
 
+    /* ── SIDEBAR GROUPS (collapsible nav) ────── */
+    'sidebar.group.forecast': 'Analisis Ramalan',
+    'sidebar.group.agent': 'Ejen AI',
+    'sidebar.group.report': 'Laporan',
+    'sidebar.rail.expand': 'Kembangkan bar sisi',
+    'sidebar.rail.collapse': 'Kuncupkan bar sisi',
+    'sidebar.report.hint': 'Jalankan simulasi atau tanya Ejen AI untuk membuka muat turun.',
+
     /* ── EMPTY STATE ─────────────────────────── */
     'empty.eyebrow': 'Cara ia berfungsi',
     'empty.title': 'Konfigurasikan senario, kemudian jalankan simulasi',
@@ -224,6 +232,12 @@ const LANG_STRINGS = {
     'user.menu.back': 'Kembali',
 
     /* ── RESULT CARD HEADERS ─────────────────── */
+    'tab.overview': 'Ikhtisar',
+    'tab.charts': 'Carta',
+    'tab.explanation': 'Penjelasan',
+    'tab.recs': 'Cadangan Strategik',
+    'tab.schools': 'Sekolah Keutamaan',
+
     'card.comparison': 'Perbandingan Permintaan Guru',
     'card.subject': 'Permintaan Mengikut Mata Pelajaran',
     'card.risk': 'Ranking Risiko Negeri',
@@ -458,6 +472,14 @@ const LANG_STRINGS = {
     'btn.run': 'Run 2027 Simulation',
     'btn.reset': '↺ Reset',
 
+    /* ── SIDEBAR GROUPS (collapsible nav) ────── */
+    'sidebar.group.forecast': 'Forecast Analysis',
+    'sidebar.group.agent': 'AI Agent',
+    'sidebar.group.report': 'Report',
+    'sidebar.rail.expand': 'Expand sidebar',
+    'sidebar.rail.collapse': 'Collapse sidebar',
+    'sidebar.report.hint': 'Run a simulation or ask the AI agent to unlock downloads.',
+
     /* ── EMPTY STATE ─────────────────────────── */
     'empty.eyebrow': 'How it works',
     'empty.title': 'Configure a scenario, then run the simulation',
@@ -572,6 +594,12 @@ const LANG_STRINGS = {
     'user.menu.back': 'Back',
 
     /* ── RESULT CARD HEADERS ─────────────────── */
+    'tab.overview': 'Overview',
+    'tab.charts': 'Charts',
+    'tab.explanation': 'Explanation',
+    'tab.recs': 'Recommendations',
+    'tab.schools': 'Priority Schools',
+
     'card.comparison': 'Teacher Demand Comparison',
     'card.subject': 'Demand by Subject',
     'card.risk': 'State Risk Ranking',
