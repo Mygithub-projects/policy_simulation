@@ -144,6 +144,10 @@ function updateUserChip() {
 function focusAgentSection() {
   const section = document.querySelector('.agent-section--sidebar');
   if (!section) return;
+  // The AI Agent section now lives inside a collapsible sidebar group — open
+  // it (and expand the sidebar if it's currently collapsed) before scrolling
+  // to it, otherwise it's scrolling to a zero-height, hidden element.
+  setActiveGroup('agent');
   section.scrollIntoView({ behavior: 'smooth', block: 'start' });
   document.getElementById('agentQuestion').focus();
   const fab = document.getElementById('agentFab');
@@ -639,6 +643,7 @@ document.addEventListener('DOMContentLoaded', () => {
   buildGradeGrid();        // Draw the grade/form checkboxes
   initPolicyCards();       // Set up policy type radio card clicks
   renderPolicyValueArea(); // Show the input field for the default policy
+  applySidebarGroupState();// Sidebar starts expanded with Forecast Analysis open
   loadNegeri();            // Load states from the API
   checkHealth();           // Check if the backend is running
   initAuth();              // Show login screen until user authenticates
@@ -1084,6 +1089,93 @@ function validateForm() {
 }
 
 // ============================================================
+// SIDEBAR NAVIGATION — icon rail + accordion groups
+// ============================================================
+
+/** Which sidebar group is open in the accordion. Only one is open at a time. */
+let activeSidebarGroup = 'forecast';
+
+/** Opens the given group (closing the others) and expands the sidebar if it's
+ *  currently collapsed to the icon rail. Bound to both the rail icons and the
+ *  in-panel group headers. */
+function setActiveGroup(group) {
+  document.getElementById('sidebar').classList.remove('collapsed');
+  activeSidebarGroup = group;
+  applySidebarGroupState();
+}
+
+/** Toggles the whole sidebar between expanded and icon-rail-only collapsed. */
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('collapsed');
+}
+
+/** Animates one sidebar-group's body open or closed by transitioning
+ *  max-height. Height is set to 'none' once fully open so dynamically
+ *  rendered content inside it (e.g. #policyValueArea) isn't clipped later. */
+function setGroupOpen(section, isOpen) {
+  const body = section.querySelector('.sidebar-group-body');
+  if (!body) return;
+
+  if (isOpen) {
+    section.classList.add('open');
+    body.style.maxHeight = body.scrollHeight + 'px';
+    body.addEventListener('transitionend', function onEnd(e) {
+      if (e.propertyName === 'max-height' && section.classList.contains('open')) {
+        body.style.maxHeight = 'none';
+      }
+      body.removeEventListener('transitionend', onEnd);
+    });
+  } else {
+    if (!body.style.maxHeight || body.style.maxHeight === 'none') {
+      // Snap back to an explicit pixel height first so the collapse has
+      // something to animate from (you can't transition away from 'none').
+      body.style.maxHeight = body.scrollHeight + 'px';
+      void body.offsetHeight; // force reflow so the browser registers the starting height
+    }
+    section.classList.remove('open');
+    body.style.maxHeight = '0px';
+  }
+}
+
+/** Applies which group is open and which rail icon is highlighted, based on
+ *  `activeSidebarGroup`. Called on load and whenever the active group changes. */
+function applySidebarGroupState() {
+  document.querySelectorAll('.sidebar-group').forEach(section => {
+    setGroupOpen(section, section.dataset.group === activeSidebarGroup);
+  });
+  document.querySelectorAll('.sidebar-rail-icon').forEach(icon => {
+    icon.classList.toggle('active', icon.dataset.group === activeSidebarGroup);
+  });
+}
+
+/** Called once a simulation or AI agent result has finished loading, so the
+ *  sidebar gets out of the way and results get the full main-panel width.
+ *  The triggering group's rail icon stays highlighted so it's still clear
+ *  what produced the result. */
+function collapseSidebarAfterResult(group) {
+  activeSidebarGroup = group;
+  applySidebarGroupState();
+  document.getElementById('sidebar').classList.add('collapsed');
+}
+
+/** Switches the visible results tab. Charts are drawn once when results
+ *  first render (while the Charts panel may still be display:none), so
+ *  Chart.js needs an explicit resize() the first time that panel becomes
+ *  visible — otherwise it keeps the 0x0 size it read at draw time. */
+function setActiveResultTab(tab) {
+  document.querySelectorAll('.result-tab').forEach(btn =>
+    btn.classList.toggle('active', btn.dataset.tab === tab));
+  document.querySelectorAll('.tab-panel').forEach(panel =>
+    panel.classList.toggle('active', panel.dataset.tab === tab));
+
+  if (tab === 'charts') {
+    [state.chartComparison, state.chartSubject, state.chartRisk].forEach(chart => {
+      if (chart) chart.resize();
+    });
+  }
+}
+
+// ============================================================
 // MAIN SIMULATION — POST /api/simulate
 // ============================================================
 
@@ -1114,6 +1206,7 @@ async function runSimulation() {
     const data = await apiFetch('/api/simulate', { method:'POST', body: payload });
     state.currentRunId = data.artifacts?.run_id ?? null;
     renderResults(data, payload);
+    collapseSidebarAfterResult('forecast');
     showToast(t('toast.sim.ok'), 'success');
   } catch (err) {
     showLoading(null); // Hide loader
@@ -1140,6 +1233,7 @@ async function downloadPdfForRun(scenario) {
     const data = await apiFetch('/api/simulate', { method: 'POST', body: payload });
     state.currentRunId = data.artifacts?.run_id ?? null;
     renderResults(data, payload);
+    collapseSidebarAfterResult('forecast');
 
     // Chart.js animates new charts in (~1s by default) — wait for that to
     // finish before html2canvas captures them, otherwise the PDF can contain
@@ -1184,6 +1278,7 @@ async function runAgent() {
 
     // Render the full results just like a direct simulation
     renderResults(data, data.scenario ?? {});
+    collapseSidebarAfterResult('agent');
 
     // Also show explanation and trace in the agent section
     showAgentResult(data);
@@ -1246,6 +1341,7 @@ function renderResults(data, payload) {
   showLoading(null);
   document.getElementById('emptyState').style.display    = 'none';
   document.getElementById('resultsWrapper').classList.add('visible');
+  setActiveResultTab('overview');
 
   // --- Scenario Banner ---
   renderScenarioBanner(payload, data);
@@ -1288,6 +1384,7 @@ function renderResults(data, payload) {
   const btnDlSummary = document.getElementById('btnDownloadSummary');
   const btnDlSummaryCsv = document.getElementById('btnDownloadSummaryCsv');
   const btnSave = document.getElementById('btnSaveSimulation');
+  const reportHint = document.getElementById('reportEmptyHint');
   if (artifacts?.run_id) {
     state.currentRunId = artifacts.run_id;
     btnDl.style.display = state.auth.role_name === 'user' ? 'none' : 'inline-flex';
@@ -1296,11 +1393,13 @@ function renderResults(data, payload) {
     btnSave.style.display = state.auth.role_name === 'user' ? 'inline-flex' : 'none';
     btnSave.disabled = false;
     btnSave.textContent = t('btn.save.simulation');
+    if (reportHint) reportHint.style.display = 'none';
   } else {
     btnDl.style.display = 'none';
     btnDlSummary.style.display = 'none';
     btnDlSummaryCsv.style.display = 'none';
     btnSave.style.display = 'none';
+    if (reportHint) reportHint.style.display = 'block';
   }
 
   // Scroll to results
@@ -2233,6 +2332,11 @@ function resetAll() {
   document.getElementById('policyImpactCard').style.display = 'none';
   document.getElementById('agentQuestion').value = '';
   state.currentRunId = null;
+
+  // 9. Re-expand the sidebar back to Forecast Analysis, ready for a fresh scenario
+  activeSidebarGroup = 'forecast';
+  document.getElementById('sidebar').classList.remove('collapsed');
+  applySidebarGroupState();
   if (state.chartComparison) { state.chartComparison.destroy(); state.chartComparison = null; }
   if (state.chartSubject)    { state.chartSubject.destroy();    state.chartSubject    = null; }
 }
