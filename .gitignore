@@ -3,3 +3,6 @@ __pycache__/
 *.py[cod]
 outputs/RUN_*.csv
 outputs/RUN_*.json
+public.dump
+.playwright-mcp/
+tests/anaconda_projects/db/

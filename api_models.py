@@ -37,14 +37,14 @@ class AgentQuestionInput(BaseModel):
 
 
 class LoginInput(BaseModel):
-    username: str = Field(min_length=2, max_length=80)
+    email: str = Field(min_length=5, max_length=120)
     password: str = Field(min_length=6, max_length=128)
 
 
 class CreateUserInput(BaseModel):
     username: str = Field(min_length=2, max_length=80)
     email: str = Field(min_length=5, max_length=120)
-    role_name: Literal["superadmin", "admin", "user"] = "user"
+    role_name: Literal["superadmin", "user"] = "user"
     can_view_audit_log: bool = False
     lang: Literal["bm", "en"] = "bm"
 

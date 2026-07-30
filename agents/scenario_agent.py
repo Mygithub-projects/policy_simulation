@@ -24,9 +24,10 @@ class ScenarioAgent:
         ai_error: Exception | None = None
         if has_ai_key():
             try:
+                scenario, provider = self._parse_with_ai(question, defaults)
                 return (
-                    self._parse_with_ai(question, defaults),
-                    f"{get_ai_provider_label()} Scenario Agent ({get_ai_model()})",
+                    scenario,
+                    f"{get_ai_provider_label(provider)} Scenario Agent ({get_ai_model(provider)})",
                 )
             except Exception as error:
                 ai_error = error
@@ -47,7 +48,7 @@ class ScenarioAgent:
         self,
         question: str,
         defaults: ScenarioRequest,
-    ) -> ScenarioRequest:
+    ) -> tuple[ScenarioRequest, str]:
         instructions = """
 You are the Scenario Agent for Malaysian education workforce planning.
 Return JSON only. Never calculate results. Extract:
@@ -85,7 +86,8 @@ for a decrease (an increase of 10% becomes 10, a decrease of 10% becomes
             ensure_ascii=False,
         )
         values = defaults.to_dict()
-        values.update(_extract_json(_generate_ai_text(instructions, prompt)))
+        ai_text, provider = _generate_ai_text(instructions, prompt)
+        values.update(_extract_json(ai_text))
         values["question"] = question
 
         # The model reliably extracts each policy's raw VALUE (e.g. a 70%
@@ -121,7 +123,7 @@ for a decrease (an increase of 10% becomes 10, a decrease of 10% becomes
             active_policies = values.get("active_policies") or []
             values["policy_type"] = active_policies[0] if active_policies else PolicyType.BASELINE.value
 
-        return ScenarioRequest.from_dict(values)
+        return ScenarioRequest.from_dict(values), provider
 
     @staticmethod
     def _detect_policy_keywords(question: str) -> set[str]:

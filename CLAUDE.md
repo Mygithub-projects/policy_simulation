@@ -323,6 +323,8 @@ However, these recommendations must be reviewed by a human decision-maker. The s
 
 ## Role-Based Access Control (RBAC) — Approved Design (in progress)
 
+> **Superseded by "RBAC Role Merge & Email Login" below** (2026-07-27) — the three-role table and the `admin`/`user` distinctions in this section no longer reflect the current system. Kept for history; read the section below for the current state.
+
 Three roles, reusing the existing `users.role_name` values directly (no renaming):
 
 | DB role | Business name | Access |
@@ -341,6 +343,19 @@ Key decisions from the design discussion (2026-07-08), since the matrix doesn't 
 - **New "Download Summary Report"** endpoint/button returns aggregated KPI + per-subject rows (no per-school detail) and is available to all three roles; the existing detailed CSV stays superadmin/admin only.
 
 This section supersedes the "Role-based access" and "Audit log for every simulation" bullets that used to live under Future Enhancement Ideas below — they are no longer just ideas, they're the active spec.
+
+## RBAC Role Merge & Email Login (implemented)
+
+Collapses the three-role RBAC model above (superadmin/admin/user) down to two — `superadmin` and `user` — and switches login from username to email. Design discussion: 2026-07-27.
+
+Key decisions:
+
+- **Two roles only.** `superadmin` stays unrestricted, unchanged. `user` now carries the union of the old `admin` + `user` permissions — full CSV/PDF/summary downloads, Audit Log if `users.can_view_audit_log` is set, plus "Simulasi Saya" (My Runs). Nobody lost a capability they had before the merge.
+- **`admin` is gone, not renamed.** Every `require_role(...)` check in `main.py` that used to list `"admin"` and `"user"` separately now just checks `"user"` (e.g. `/api/forecast/2027`, `/api/runs/{run_id}/detail.csv`, `/api/audit-log`, `/api/simulate`, `/api/agent/run`). `/api/my-runs` and `/api/runs/save` stay `require_role("user")`-only, unchanged — that restriction was never about admin vs. user, so the merge doesn't touch it.
+- **Existing accounts were migrated, not just new ones.** Every `role_name='admin'` row was relabeled to `'user'` via a one-time `migrate_role_merge.py` data migration — no schema change, since `role_name` is a plain `VARCHAR` with no DB-level `CHECK` constraint (see `migrate_duckdb_to_postgres.py`).
+- **Email replaces username as the login credential**, but `username` stays in the schema and UI purely as a display name — audit log actor, avatar initial, `simulation_run_log.run_by` — it is no longer looked up during login. `LoginInput.email` replaces `LoginInput.username`; the login endpoint looks up `WHERE email = %s` instead of `WHERE username = %s`.
+- **Create-user now also checks email uniqueness**, not just username — since email drives login, two accounts sharing an email would make login match an arbitrary one of them.
+- **No legacy fallback.** The migration applies uniformly; there is no username-login path kept around for old accounts.
 
 ## User Management (Create / List / Deactivate / Reset Password) — Approved Design (in progress)
 
@@ -363,12 +378,29 @@ Lets the Policy Maker (`user`) role browse their own last 20 simulation runs and
 
 Key decisions:
 
-- **Policy Maker only, for now.** Superadmin/Admin do not get an equivalent list in this iteration — they already have full access plus the Audit Log. Enforced server-side (`GET /api/my-runs` is gated by `Depends(require_role("user"))` only, not the other two roles).
+- **Policy Maker only, for now.** Superadmin does not get an equivalent list in this iteration — it already has full access plus the Audit Log. Enforced server-side (`GET /api/my-runs` is gated by `Depends(require_role("user"))` only, not `superadmin`). Unaffected by the later RBAC role merge (see "RBAC Role Merge & Email Login" above) — this restriction was never about admin vs. user.
 - **List + re-download only.** No side-by-side scenario comparison in this iteration (a possible future enhancement). PDF only — no CSV button on this list.
 - **Separate page via a header button** ("Simulasi Saya" / "My Runs"), same pattern as the existing Admin/Audit Log pages — not a sidebar section, so it doesn't disturb the layout for other roles.
 - **No database schema changes.** The existing `simulation_run_log` table (run_id, run_by, run_timestamp, run_type) plus each run's already-written `{run_id}_summary.json` file (which stores the full scenario dict) provide everything the list needs — `GET /api/my-runs` just joins those two existing sources, filtered to the caller's own `run_by` and `run_type IN ('simulate', 'agent')`, last 20 rows.
 - **Download re-runs the scenario, it does not replay a stored file.** The summary PDF is generated client-side from live Chart.js canvases and in-memory state — there is no server-side PDF file to fetch. Clicking download switches to the dashboard, calls `POST /api/simulate` with the row's archived scenario (deterministic, so the regenerated report is identical to the original), renders the results, waits ~1200ms for the charts' entrance animation to finish, then auto-triggers the existing PDF pipeline. This was chosen over generating the PDF invisibly in the background, because Chart.js needs a real, visible-sized canvas to draw into correctly.
 - **Accepted side effect**: re-running the scenario writes a new `simulation_run_log` row (and summary files), same as any simulation run — so a just-downloaded run reappears at the top of "Simulasi Saya" on next load. This is expected, not a bug.
+
+## Sidebar Icon Rail + Accordion Groups (implemented)
+
+Restructures the always-expanded, ever-growing sidebar (Steps 1-3 + AI Agent, all visible and scrolling at once) into a collapsible icon rail with three accordion groups, so the dashboard reclaims sidebar width once a result is on screen. Prompted by panel feedback that the app's font sizes read too small — this landed first because narrower, better-organized sidebar content was judged a prerequisite for any later type-scale increase, not a replacement for it (see "Known follow-up" below). Loosely inspired by a React Bits `CardNav` reference (colored expanding cards, eased/staggered reveal), but re-scoped to fit this app: no React/GSAP dependency was introduced, matching the existing precedent set by `aurora-bg.js` and `true-focus.js` (both React Bits components ported to vanilla JS with the animation library dropped).
+
+Key decisions:
+
+- **Three groups, not four+.** `#sidebar` ([index.html](frontend/index.html)) now holds a 44px icon rail (`.sidebar-rail`) plus a scrollable accordion panel (`.sidebar-groups`) with exactly three sections: **Forecast Analysis** (the original Steps 1-3 — scope, policy, run — unchanged internally), **AI Agent** (the existing agent chat section, unchanged internally), and **Report** (new — see below). Only one group is open at a time.
+- **Report actions were relocated, not duplicated.** The save/download buttons (`btnDownload`, `btnDownloadSummary`, `btnDownloadSummaryCsv`, `btnSaveSimulation`) moved from the main panel's table header ([index.html](frontend/index.html), `#recTable`'s `.header-actions`) into the new Report sidebar group. The table header now only shows `#tableInfo` (the row count). All four buttons keep their original element IDs, so no `app.js` show/hide logic needed to change — only their DOM location moved. A new `#reportEmptyHint` line shows in their place before any run exists.
+- **Per-group accent colors reuse existing tokens, not new hex values.** Forecast Analysis uses `--gold` (already the step-badge/primary-action color), AI Agent uses `--teal` (already the agent's brand color), Report uses a neutral border/text tone since it carries no prior brand meaning of its own.
+- **Collapse is whole-sidebar, not per-group.** Clicking the rail's chevron (`#sidebarRailToggle` → `toggleSidebar()`) shrinks the entire sidebar to the 44px icon rail (`.sidebar.collapsed`), handing that width back to the main panel. Clicking any rail icon (`setActiveGroup(group)`) re-expands the sidebar (if collapsed) and opens that icon's group.
+- **Auto-collapses after any result loads, from either trigger.** Whichever action produces a result — the Forecast Analysis "Run Simulation 2027" button (`runSimulation()`) or the AI Agent's "Ask" button (`runAgent()`) — calls `collapseSidebarAfterResult(group)` in `app.js` right after `renderResults()`, which collapses the sidebar and keeps that trigger's rail icon highlighted so it stays clear what produced the result on screen. `downloadPdfForRun()` (the "Simulasi Saya" re-download path) does the same.
+- **Starts expanded, Forecast Analysis open, every page load.** No collapsed/expanded state is persisted (no localStorage) — `resetAll()` and initial page load both reset to expanded + Forecast Analysis, matching the "always start fresh" behavior the rest of the form reset already has.
+- **Height animation is vanilla JS, not CSS `height: auto`.** `setGroupOpen()` in `app.js` measures `scrollHeight` and transitions `max-height` (browsers can't transition to/from `auto`), then relaxes to `max-height: none` once open so dynamically-rendered content inside it (e.g. `#policyValueArea`, which changes size per policy card) isn't clipped later. The staggered fade-in of each group's top-level children (echoing `CardNav`'s per-card stagger) is pure CSS `:nth-child` transition-delays — no JS-driven stagger loop needed.
+- **`focusAgentSection()` (the floating agent-fab shortcut) now calls `setActiveGroup('agent')` before scrolling to it** — previously this just scrolled to `.agent-section--sidebar`, but that section can now be inside a closed (zero-height) accordion group.
+
+Known follow-up (not part of this change): the original panel feedback was about font sizes across the whole dashboard being too small — this sidebar restructure only widened room for the *sidebar's own* future type-scale increase; the broader font-size pass across KPI cards, charts, and tables discussed earlier is still separate, unimplemented work.
 
 ## Future Enhancement Ideas
 

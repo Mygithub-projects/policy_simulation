@@ -218,7 +218,7 @@ function showAdminPanel() {
   const myRunsBtn = document.getElementById('myRunsBtn');
   adminBtn.style.display = state.auth.role_name === 'superadmin' ? 'inline-block' : 'none';
   const canSeeAudit = state.auth.role_name === 'superadmin'
-    || (state.auth.role_name === 'admin' && state.auth.can_view_audit_log);
+    || (state.auth.role_name === 'user' && state.auth.can_view_audit_log);
   auditBtn.style.display = canSeeAudit ? 'inline-block' : 'none';
   myRunsBtn.style.display = state.auth.role_name === 'user' ? 'inline-block' : 'none';
 }
@@ -242,7 +242,7 @@ function goToDashboard() {
 
 function goToAuditLogPage() {
   const canSeeAudit = state.auth.role_name === 'superadmin'
-    || (state.auth.role_name === 'admin' && state.auth.can_view_audit_log);
+    || (state.auth.role_name === 'user' && state.auth.can_view_audit_log);
   if (!canSeeAudit) {
     showToast(t('toast.no.permission'), 'error');
     return;
@@ -342,7 +342,7 @@ async function loadMyRuns() {
 
 function onNewRoleChange() {
   const role = document.getElementById('newRole').value;
-  document.getElementById('canViewAuditGroup').style.display = role === 'admin' ? 'block' : 'none';
+  document.getElementById('canViewAuditGroup').style.display = role === 'user' ? 'block' : 'none';
 }
 
 async function handleCreateUser(event) {
@@ -483,12 +483,12 @@ function initAuth() {
 
 async function runLogin() {
   const btn = document.getElementById('btnLogin');
-  const username = document.getElementById('loginUsername').value.trim();
+  const email = document.getElementById('loginUsername').value.trim();
   const password = document.getElementById('loginPassword').value;
   const errorEl = document.getElementById('loginError');
   errorEl.textContent = '';
 
-  if (!username || !password) {
+  if (!email || !password) {
     errorEl.textContent = t('login.error.missing');
     return;
   }
@@ -499,7 +499,7 @@ async function runLogin() {
     const res = await fetch(`${API_BASE}/api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({ email, password }),
     });
     const data = await res.json();
     if (!res.ok) {
@@ -655,6 +655,26 @@ document.addEventListener('DOMContentLoaded', () => {
       speed: 0.35,
       brightness: 0.55,
       enableMouseInteraction: false,
+    });
+  }
+
+  if (window.initLogoLoop) {
+    window.initLogoLoop(document.getElementById('loginLogoLoop'), {
+      logos: [
+        { src: 'assets/logos/kpm-white.png', alt: 'Kementerian Pendidikan Malaysia' },
+        { src: 'assets/logos/jpa-white.png', alt: 'Jabatan Perkhidmatan Awam' },
+        { src: 'assets/logos/ieg.png', alt: 'IEG' },
+        { src: 'assets/logos/hcl.png', alt: 'HCL' },
+        { src: 'assets/logos/unirazak.png', alt: 'Universiti Tun Abdul Razak' },
+        { src: 'assets/logos/moller.png', alt: 'Moller' },
+        { src: 'assets/logos/career-shaper.png', alt: 'Career Shaper' },
+      ],
+      speed: 55,
+      gap: 44,
+      logoHeight: 36,
+      fadeOut: true,
+      pauseOnHover: true,
+      ariaLabel: 'Supported by',
     });
   }
 });
@@ -1387,7 +1407,9 @@ function renderResults(data, payload) {
   const reportHint = document.getElementById('reportEmptyHint');
   if (artifacts?.run_id) {
     state.currentRunId = artifacts.run_id;
-    btnDl.style.display = state.auth.role_name === 'user' ? 'none' : 'inline-flex';
+    // Detail CSV is available to both remaining roles now — the merged
+    // 'user' role inherits full download access from the old 'admin' role.
+    btnDl.style.display = 'inline-flex';
     btnDlSummary.style.display = 'inline-flex';
     btnDlSummaryCsv.style.display = 'inline-flex';
     btnSave.style.display = state.auth.role_name === 'user' ? 'inline-flex' : 'none';
@@ -1505,6 +1527,24 @@ function renderKPICards(summary, payload = {}, topRecommendations = []) {
   grid.innerHTML = cards;
 }
 
+/** Shared bar-chart animation: bars grow from zero with a per-bar stagger,
+ *  using an easing curve close to cubic-bezier(0.85, 0, 0.15, 1) — Chart.js
+ *  only accepts named easings (not a raw bezier string), so 'easeInOutQuint'
+ *  is the closest built-in match to that steep, organic S-curve. */
+function barGrowAnimation() {
+  return {
+    duration: 900,
+    easing: 'easeInOutQuint',
+    delay: ctx => {
+      if (ctx.type === 'data' && ctx.mode === 'default' && !ctx.dropped) {
+        ctx.dropped = true;
+        return ctx.dataIndex * 40 + ctx.datasetIndex * 120;
+      }
+      return 0;
+    },
+  };
+}
+
 function renderRiskRankingChart(topRecommendations) {
   const ctx = document.getElementById('chartRisk').getContext('2d');
   if (state.chartRisk) state.chartRisk.destroy();
@@ -1534,13 +1574,14 @@ function renderRiskRankingChart(topRecommendations) {
         backgroundColor: 'rgba(232,160,32,0.85)',
         borderColor: 'rgba(232,160,32,1)',
         borderWidth: 1,
-        borderRadius: 4,
+        borderRadius: 10,
       }]
     },
     options: {
       indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
+      animation: barGrowAnimation(),
       plugins: {
         legend: { display: false },
         tooltip: {
@@ -1649,7 +1690,7 @@ function renderComparisonChart(summary, subjectSummary, payload = {}) {
           backgroundColor: 'rgba(35,86,160,0.75)',
           borderColor: 'rgba(35,86,160,1)',
           borderWidth: 1,
-          borderRadius: 4,
+          borderRadius: 10,
         },
         {
           label: isOptionPolicy ? t('chart.scen.label', targetPct) : t('chart.policy.label'),
@@ -1657,13 +1698,14 @@ function renderComparisonChart(summary, subjectSummary, payload = {}) {
           backgroundColor: 'rgba(15,124,124,0.75)',
           borderColor: 'rgba(15,124,124,1)',
           borderWidth: 1,
-          borderRadius: 4,
+          borderRadius: 10,
         }
       ]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      animation: barGrowAnimation(),
       plugins: {
         legend: { position: 'bottom', labels: { font: { size: 11 } } },
         tooltip: {
@@ -1705,7 +1747,7 @@ function renderSubjectChart(subjectSummary) {
           backgroundColor: 'rgba(185,32,32,0.75)',
           borderColor: 'rgba(185,32,32,1)',
           borderWidth: 1,
-          borderRadius: 4,
+          borderRadius: 10,
         },
         {
           label: t('th.opt.shortage'),
@@ -1713,13 +1755,14 @@ function renderSubjectChart(subjectSummary) {
           backgroundColor: 'rgba(232,160,32,0.75)',
           borderColor: 'rgba(232,160,32,1)',
           borderWidth: 1,
-          borderRadius: 4,
+          borderRadius: 10,
         }
       ]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      animation: barGrowAnimation(),
       plugins: {
         legend: { position: 'bottom', labels: { font: { size: 11 } } },
         tooltip: {

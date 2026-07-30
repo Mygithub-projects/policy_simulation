@@ -54,9 +54,10 @@ class ExplanationAgent:
                 },
                 ensure_ascii=False,
             )
+            ai_text, provider = _generate_ai_text(instructions, prompt)
             return (
-                _generate_ai_text(instructions, prompt),
-                f"{get_ai_provider_label()} Explanation Agent ({get_ai_model()})",
+                ai_text,
+                f"{get_ai_provider_label(provider)} Explanation Agent ({get_ai_model(provider)})",
             )
         except Exception:
             return fallback, "Deterministic fallback after AI provider error"

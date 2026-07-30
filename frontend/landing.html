@@ -1,27 +1,37 @@
 <!DOCTYPE html>
 <html lang="ms">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sistem Agen Simulasi Dasar dan Rekomendasi Perancangan Tenaga Kerja Pendidikan 2027</title>
+  <title>Sistem Agen Simulasi Dasar dan Cadangan Perancangan Tenaga Kerja Pendidikan 2027</title>
   <style>
     /* ── RESET & BASE ─────────────────────────────── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
 
     :root {
-      --bg:        #07091A;
-      --bg-card:   #0D1228;
-      --bg-card2:  #111830;
-      --border:    rgba(255,255,255,0.07);
-      --gold:      #C4781C;
-      --gold-lt:   #E8A04A;
-      --teal:      #0CC8A8;
-      --teal-dim:  #09A088;
-      --white:     #F0F4FF;
-      --muted:     rgba(200,210,240,0.55);
+      --bg: #07091A;
+      --bg-card: #0D1228;
+      --bg-card2: #111830;
+      --border: rgba(255, 255, 255, 0.07);
+      --gold: #C4781C;
+      --gold-lt: #E8A04A;
+      --teal: #0CC8A8;
+      --teal-dim: #09A088;
+      --white: #F0F4FF;
+      --muted: rgba(200, 210, 240, 0.55);
       --font-sans: 'Segoe UI', system-ui, -apple-system, sans-serif;
-      --font-serif:'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+      --font-serif: 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
     }
 
     body {
@@ -35,17 +45,20 @@
     /* ── NAVBAR ───────────────────────────────────── */
     nav {
       position: fixed;
-      top: 0; left: 0; right: 0;
+      top: 0;
+      left: 0;
+      right: 0;
       z-index: 100;
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 0 40px;
       height: 60px;
-      background: rgba(7,9,26,0.85);
+      background: rgba(7, 9, 26, 0.85);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
     }
+
     .nav-logo {
       display: flex;
       align-items: center;
@@ -57,21 +70,40 @@
       color: var(--white);
       text-decoration: none;
     }
+
     .nav-logo-icon {
-      width: 28px; height: 28px;
+      width: 28px;
+      height: 28px;
       background: var(--gold);
       border-radius: 6px;
-      display: flex; align-items: center; justify-content: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    .nav-logo-icon svg { width: 16px; height: 16px; fill: #fff; }
-    .nav-right { display: flex; align-items: center; gap: 16px; }
+
+    .nav-logo-icon svg {
+      width: 16px;
+      height: 16px;
+      fill: #fff;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
     .nav-link {
       font-size: 13px;
       color: var(--muted);
       text-decoration: none;
       transition: color .2s;
     }
-    .nav-link:hover { color: var(--white); }
+
+    .nav-link:hover {
+      color: var(--white);
+    }
+
     .btn-nav {
       padding: 8px 20px;
       background: var(--teal);
@@ -84,13 +116,19 @@
       text-decoration: none;
       transition: background .2s, transform .15s;
     }
-    .btn-nav:hover { background: #0ee8c4; transform: translateY(-1px); }
+
+    .btn-nav:hover {
+      background: #0ee8c4;
+      transform: translateY(-1px);
+    }
 
     /* ── CANVAS BACKGROUND ───────────────────────── */
     #bgCanvas {
       position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       pointer-events: none;
       z-index: 0;
       opacity: 0.35;
@@ -118,22 +156,34 @@
       letter-spacing: 0.14em;
       text-transform: uppercase;
       color: var(--teal);
-      background: rgba(12,200,168,0.1);
-      border: 1px solid rgba(12,200,168,0.25);
+      background: rgba(12, 200, 168, 0.1);
+      border: 1px solid rgba(12, 200, 168, 0.25);
       border-radius: 100px;
       padding: 6px 14px;
       margin-bottom: 32px;
     }
+
     .hero-eyebrow::before {
       content: '';
-      width: 6px; height: 6px;
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
       background: var(--teal);
       animation: pulse-dot 2s ease-in-out infinite;
     }
+
     @keyframes pulse-dot {
-      0%,100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(0.7); }
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.4;
+        transform: scale(0.7);
+      }
     }
 
     .hero-headline {
@@ -145,6 +195,7 @@
       color: var(--white);
       margin-bottom: 28px;
     }
+
     .hero-headline .word-highlight {
       display: inline-block;
       position: relative;
@@ -157,6 +208,7 @@
       font-weight: 700;
       margin: 0 4px;
     }
+
     .hero-headline .word-teal {
       color: var(--teal);
     }
@@ -168,7 +220,11 @@
       color: var(--muted);
       margin-bottom: 44px;
     }
-    .hero-sub strong { color: var(--white); font-weight: 600; }
+
+    .hero-sub strong {
+      color: var(--white);
+      font-weight: 600;
+    }
 
     .hero-cta-row {
       display: flex;
@@ -177,6 +233,7 @@
       flex-wrap: wrap;
       justify-content: center;
     }
+
     .btn-primary-lg {
       display: inline-flex;
       align-items: center;
@@ -191,15 +248,31 @@
       cursor: pointer;
       text-decoration: none;
       transition: background .2s, transform .15s, box-shadow .2s;
-      box-shadow: 0 0 0 0 rgba(12,200,168,0.4);
+      box-shadow: 0 0 0 0 rgba(12, 200, 168, 0.4);
       animation: cta-pulse 3s ease-in-out infinite;
     }
+
     @keyframes cta-pulse {
-      0%,100% { box-shadow: 0 0 0 0 rgba(12,200,168,0.35); }
-      50%      { box-shadow: 0 0 0 14px rgba(12,200,168,0); }
+
+      0%,
+      100% {
+        box-shadow: 0 0 0 0 rgba(12, 200, 168, 0.35);
+      }
+
+      50% {
+        box-shadow: 0 0 0 14px rgba(12, 200, 168, 0);
+      }
     }
-    .btn-primary-lg:hover { background: #0ee8c4; transform: translateY(-2px); }
-    .btn-primary-lg svg { width: 18px; height: 18px; }
+
+    .btn-primary-lg:hover {
+      background: #0ee8c4;
+      transform: translateY(-2px);
+    }
+
+    .btn-primary-lg svg {
+      width: 18px;
+      height: 18px;
+    }
 
     .btn-ghost-lg {
       display: inline-flex;
@@ -216,7 +289,11 @@
       text-decoration: none;
       transition: border-color .2s, background .2s;
     }
-    .btn-ghost-lg:hover { border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.04); }
+
+    .btn-ghost-lg:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.04);
+    }
 
     /* ── PREVIEW WINDOW ───────────────────────────── */
     .hero-preview {
@@ -226,6 +303,7 @@
       width: 100%;
       max-width: 900px;
     }
+
     .preview-bar {
       background: #1A1F3A;
       border-radius: 12px 12px 0 0;
@@ -236,20 +314,36 @@
       border: 1px solid var(--border);
       border-bottom: none;
     }
-    .preview-dot { width: 10px; height: 10px; border-radius: 50%; }
-    .preview-dot.r { background: #FF5F57; }
-    .preview-dot.y { background: #FEBC2E; }
-    .preview-dot.g { background: #28C840; }
+
+    .preview-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .preview-dot.r {
+      background: #FF5F57;
+    }
+
+    .preview-dot.y {
+      background: #FEBC2E;
+    }
+
+    .preview-dot.g {
+      background: #28C840;
+    }
+
     .preview-url {
       flex: 1;
       margin: 0 12px;
-      background: rgba(255,255,255,0.06);
+      background: rgba(255, 255, 255, 0.06);
       border-radius: 6px;
       padding: 4px 12px;
       font-size: 11px;
       color: var(--muted);
       font-family: monospace;
     }
+
     .preview-frame {
       border: 1px solid var(--border);
       border-radius: 0 0 12px 12px;
@@ -261,11 +355,14 @@
       justify-content: center;
       position: relative;
     }
+
     .preview-mock {
-      width: 100%; height: 100%;
+      width: 100%;
+      height: 100%;
       display: flex;
       gap: 0;
     }
+
     .pm-sidebar {
       width: 26%;
       background: #0A1020;
@@ -275,56 +372,79 @@
       flex-direction: column;
       gap: 10px;
     }
+
     .pm-sb-label {
       font-size: 9px;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: rgba(196,120,28,0.7);
+      color: rgba(196, 120, 28, 0.7);
       font-family: var(--font-serif);
       font-variant: small-caps;
       margin-bottom: 2px;
     }
+
     .pm-sb-row {
       height: 22px;
       border-radius: 4px;
-      background: rgba(255,255,255,0.06);
+      background: rgba(255, 255, 255, 0.06);
     }
-    .pm-sb-row.tall { height: 32px; }
+
+    .pm-sb-row.tall {
+      height: 32px;
+    }
+
     .pm-sb-card {
       padding: 7px 8px;
       border-radius: 6px;
-      background: rgba(12,200,168,0.1);
-      border: 1px solid rgba(12,200,168,0.25);
+      background: rgba(12, 200, 168, 0.1);
+      border: 1px solid rgba(12, 200, 168, 0.25);
     }
+
     .pm-sb-card-label {
       font-size: 8px;
       color: var(--teal);
       font-weight: 700;
       margin-bottom: 4px;
     }
+
     .pm-sb-card-bar {
       height: 3px;
       border-radius: 2px;
-      background: rgba(12,200,168,0.3);
+      background: rgba(12, 200, 168, 0.3);
       position: relative;
       overflow: hidden;
     }
+
     .pm-sb-card-bar::after {
       content: '';
       position: absolute;
-      left: 0; top: 0; bottom: 0;
+      left: 0;
+      top: 0;
+      bottom: 0;
       width: 70%;
       background: var(--teal);
       border-radius: 2px;
       animation: bar-fill 3s ease-in-out infinite alternate;
     }
-    @keyframes bar-fill { 0% { width: 50%; } 100% { width: 85%; } }
+
+    @keyframes bar-fill {
+      0% {
+        width: 50%;
+      }
+
+      100% {
+        width: 85%;
+      }
+    }
+
     .pm-btn {
       margin-top: auto;
       height: 28px;
       border-radius: 6px;
       background: var(--teal);
-      display: flex; align-items: center; justify-content: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 8px;
       font-weight: 700;
       color: #07091A;
@@ -339,17 +459,20 @@
       gap: 10px;
       overflow: hidden;
     }
+
     .pm-kpi-row {
       display: flex;
       gap: 8px;
     }
+
     .pm-kpi {
       flex: 1;
-      background: rgba(255,255,255,0.04);
+      background: rgba(255, 255, 255, 0.04);
       border: 1px solid var(--border);
       border-radius: 6px;
       padding: 8px 10px;
     }
+
     .pm-kpi-val {
       font-size: 16px;
       font-weight: 800;
@@ -357,23 +480,38 @@
       font-family: var(--font-serif);
       line-height: 1;
     }
-    .pm-kpi-val.gold { color: var(--gold-lt); }
-    .pm-kpi-val.red  { color: #FF6B6B; }
+
+    .pm-kpi-val.gold {
+      color: var(--gold-lt);
+    }
+
+    .pm-kpi-val.red {
+      color: #FF6B6B;
+    }
+
     .pm-kpi-lbl {
       font-size: 8px;
       color: var(--muted);
       margin-top: 3px;
     }
-    .pm-chart-row { display: flex; gap: 8px; flex: 1; min-height: 0; }
+
+    .pm-chart-row {
+      display: flex;
+      gap: 8px;
+      flex: 1;
+      min-height: 0;
+    }
+
     .pm-chart {
       flex: 1;
-      background: rgba(255,255,255,0.03);
+      background: rgba(255, 255, 255, 0.03);
       border: 1px solid var(--border);
       border-radius: 6px;
       padding: 8px 10px;
       position: relative;
       overflow: hidden;
     }
+
     .pm-chart-title {
       font-size: 8px;
       color: var(--muted);
@@ -382,22 +520,42 @@
       font-family: var(--font-serif);
       letter-spacing: 0.05em;
     }
+
     .pm-bars {
       display: flex;
       align-items: flex-end;
       gap: 4px;
       height: calc(100% - 24px);
     }
-    .pm-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; height: 100%; }
+
+    .pm-bar-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      height: 100%;
+    }
+
     .pm-bar {
       width: 100%;
       border-radius: 3px 3px 0 0;
-      background: rgba(12,200,168,0.25);
+      background: rgba(12, 200, 168, 0.25);
       transition: height .5s ease;
     }
-    .pm-bar.accent { background: var(--teal); }
-    .pm-bar.gold   { background: var(--gold); }
-    .pm-bar-lbl { font-size: 6px; color: var(--muted); }
+
+    .pm-bar.accent {
+      background: var(--teal);
+    }
+
+    .pm-bar.gold {
+      background: var(--gold);
+    }
+
+    .pm-bar-lbl {
+      font-size: 6px;
+      color: var(--muted);
+    }
 
     /* ── STATS STRIP ──────────────────────────────── */
     .stats-strip {
@@ -405,12 +563,13 @@
       z-index: 1;
       border-top: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
-      background: rgba(255,255,255,0.02);
+      background: rgba(255, 255, 255, 0.02);
       padding: 40px 40px;
       display: flex;
       justify-content: center;
       gap: 0;
     }
+
     .stat-item {
       flex: 1;
       max-width: 200px;
@@ -418,7 +577,11 @@
       padding: 0 24px;
       border-right: 1px solid var(--border);
     }
-    .stat-item:last-child { border-right: none; }
+
+    .stat-item:last-child {
+      border-right: none;
+    }
+
     .stat-num {
       font-size: 48px;
       font-weight: 800;
@@ -427,8 +590,15 @@
       line-height: 1;
       letter-spacing: -0.03em;
     }
-    .stat-num .accent { color: var(--teal); }
-    .stat-num .gold   { color: var(--gold-lt); }
+
+    .stat-num .accent {
+      color: var(--teal);
+    }
+
+    .stat-num .gold {
+      color: var(--gold-lt);
+    }
+
     .stat-label {
       font-size: 12px;
       color: var(--muted);
@@ -444,6 +614,7 @@
       max-width: 1100px;
       margin: 0 auto;
     }
+
     .section-eyebrow {
       font-size: 11px;
       font-weight: 700;
@@ -452,6 +623,7 @@
       color: var(--teal);
       margin-bottom: 16px;
     }
+
     .section-title {
       font-size: clamp(32px, 4vw, 48px);
       font-weight: 800;
@@ -460,12 +632,14 @@
       color: var(--white);
       margin-bottom: 16px;
     }
+
     .section-title em {
       font-style: italic;
       font-family: var(--font-serif);
       color: var(--gold-lt);
       font-weight: 700;
     }
+
     .section-sub {
       font-size: 16px;
       color: var(--muted);
@@ -479,6 +653,7 @@
       grid-template-columns: repeat(3, 1fr);
       gap: 20px;
     }
+
     .feature-card {
       background: var(--bg-card);
       border: 1px solid var(--border);
@@ -488,31 +663,75 @@
       position: relative;
       overflow: hidden;
     }
+
     .feature-card::before {
       content: '';
       position: absolute;
-      top: 0; left: 0; right: 0;
+      top: 0;
+      left: 0;
+      right: 0;
       height: 2px;
       border-radius: 16px 16px 0 0;
     }
-    .feature-card.fc-teal::before  { background: var(--teal); }
-    .feature-card.fc-gold::before  { background: var(--gold); }
-    .feature-card.fc-amber::before { background: #E8A04A; }
-    .feature-card:hover { border-color: rgba(255,255,255,0.15); transform: translateY(-4px); }
+
+    .feature-card.fc-teal::before {
+      background: var(--teal);
+    }
+
+    .feature-card.fc-gold::before {
+      background: var(--gold);
+    }
+
+    .feature-card.fc-amber::before {
+      background: #E8A04A;
+    }
+
+    .feature-card:hover {
+      border-color: rgba(255, 255, 255, 0.15);
+      transform: translateY(-4px);
+    }
 
     .fc-icon {
-      width: 44px; height: 44px;
+      width: 44px;
+      height: 44px;
       border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       margin-bottom: 20px;
     }
-    .fc-icon.ti { background: rgba(12,200,168,0.12); }
-    .fc-icon.gi { background: rgba(196,120,28,0.12); }
-    .fc-icon.ai { background: rgba(232,160,74,0.12); }
-    .fc-icon svg { width: 22px; height: 22px; }
-    .fc-icon.ti svg { stroke: var(--teal); fill: none; }
-    .fc-icon.gi svg { stroke: var(--gold-lt); fill: none; }
-    .fc-icon.ai svg { stroke: #E8A04A; fill: none; }
+
+    .fc-icon.ti {
+      background: rgba(12, 200, 168, 0.12);
+    }
+
+    .fc-icon.gi {
+      background: rgba(196, 120, 28, 0.12);
+    }
+
+    .fc-icon.ai {
+      background: rgba(232, 160, 74, 0.12);
+    }
+
+    .fc-icon svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .fc-icon.ti svg {
+      stroke: var(--teal);
+      fill: none;
+    }
+
+    .fc-icon.gi svg {
+      stroke: var(--gold-lt);
+      fill: none;
+    }
+
+    .fc-icon.ai svg {
+      stroke: #E8A04A;
+      fill: none;
+    }
 
     .fc-title {
       font-size: 18px;
@@ -520,11 +739,13 @@
       color: var(--white);
       margin-bottom: 10px;
     }
+
     .fc-desc {
       font-size: 14px;
       line-height: 1.65;
       color: var(--muted);
     }
+
     .fc-tag {
       display: inline-block;
       margin-top: 16px;
@@ -535,9 +756,21 @@
       padding: 4px 10px;
       border-radius: 6px;
     }
-    .fc-tag.tt { color: var(--teal); background: rgba(12,200,168,0.1); }
-    .fc-tag.gt { color: var(--gold-lt); background: rgba(196,120,28,0.12); }
-    .fc-tag.at { color: #E8A04A; background: rgba(232,160,74,0.1); }
+
+    .fc-tag.tt {
+      color: var(--teal);
+      background: rgba(12, 200, 168, 0.1);
+    }
+
+    .fc-tag.gt {
+      color: var(--gold-lt);
+      background: rgba(196, 120, 28, 0.12);
+    }
+
+    .fc-tag.at {
+      color: #E8A04A;
+      background: rgba(232, 160, 74, 0.1);
+    }
 
     /* ── POLICY LEVERS ────────────────────────────── */
     .levers-section {
@@ -547,6 +780,7 @@
       background: var(--bg-card2);
       padding: 100px 40px;
     }
+
     .levers-inner {
       max-width: 1100px;
       margin: 0 auto;
@@ -555,7 +789,14 @@
       gap: 60px;
       align-items: center;
     }
-    .lever-list { display: flex; flex-direction: column; gap: 16px; margin-top: 40px; }
+
+    .lever-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 40px;
+    }
+
     .lever-item {
       display: flex;
       gap: 16px;
@@ -563,11 +804,16 @@
       padding: 20px;
       border-radius: 12px;
       border: 1px solid var(--border);
-      background: rgba(255,255,255,0.02);
+      background: rgba(255, 255, 255, 0.02);
       transition: border-color .2s, background .2s;
       cursor: default;
     }
-    .lever-item:hover { border-color: rgba(12,200,168,0.3); background: rgba(12,200,168,0.04); }
+
+    .lever-item:hover {
+      border-color: rgba(12, 200, 168, 0.3);
+      background: rgba(12, 200, 168, 0.04);
+    }
+
     .lever-num {
       font-size: 28px;
       font-weight: 800;
@@ -576,11 +822,31 @@
       line-height: 1;
       min-width: 32px;
     }
-    .lever-num.gold { color: var(--gold-lt); }
-    .lever-num.amber { color: #E8A04A; }
-    .lever-num.rose  { color: #FF8FAB; }
-    .lever-text h4 { font-size: 15px; font-weight: 700; color: var(--white); margin-bottom: 4px; }
-    .lever-text p  { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+    .lever-num.gold {
+      color: var(--gold-lt);
+    }
+
+    .lever-num.amber {
+      color: #E8A04A;
+    }
+
+    .lever-num.rose {
+      color: #FF8FAB;
+    }
+
+    .lever-text h4 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 4px;
+    }
+
+    .lever-text p {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
 
     .levers-visual {
       background: var(--bg-card);
@@ -588,6 +854,7 @@
       border-radius: 20px;
       padding: 32px;
     }
+
     .lv-title {
       font-size: 12px;
       letter-spacing: 0.08em;
@@ -597,41 +864,77 @@
       font-variant: small-caps;
       font-family: var(--font-serif);
     }
+
     .lv-row {
       display: flex;
       align-items: center;
       gap: 12px;
       margin-bottom: 18px;
     }
-    .lv-label { font-size: 12px; color: var(--muted); width: 120px; flex-shrink: 0; }
+
+    .lv-label {
+      font-size: 12px;
+      color: var(--muted);
+      width: 120px;
+      flex-shrink: 0;
+    }
+
     .lv-track {
       flex: 1;
       height: 6px;
-      background: rgba(255,255,255,0.07);
+      background: rgba(255, 255, 255, 0.07);
       border-radius: 3px;
       position: relative;
       overflow: hidden;
     }
+
     .lv-fill {
       position: absolute;
-      left: 0; top: 0; bottom: 0;
+      left: 0;
+      top: 0;
+      bottom: 0;
       border-radius: 3px;
       background: var(--teal);
       transition: width 1s ease;
     }
-    .lv-fill.gold  { background: var(--gold); }
-    .lv-fill.amber { background: #E8A04A; }
-    .lv-fill.rose  { background: #FF8FAB; }
-    .lv-val { font-size: 12px; font-weight: 700; color: var(--white); width: 36px; text-align: right; }
+
+    .lv-fill.gold {
+      background: var(--gold);
+    }
+
+    .lv-fill.amber {
+      background: #E8A04A;
+    }
+
+    .lv-fill.rose {
+      background: #FF8FAB;
+    }
+
+    .lv-val {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--white);
+      width: 36px;
+      text-align: right;
+    }
 
     .lv-result {
       margin-top: 24px;
       padding: 16px;
-      background: rgba(12,200,168,0.07);
-      border: 1px solid rgba(12,200,168,0.2);
+      background: rgba(12, 200, 168, 0.07);
+      border: 1px solid rgba(12, 200, 168, 0.2);
       border-radius: 10px;
     }
-    .lv-result-label { font-size: 11px; color: var(--teal); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+
+    .lv-result-label {
+      font-size: 11px;
+      color: var(--teal);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
     .lv-result-val {
       font-size: 32px;
       font-weight: 800;
@@ -639,7 +942,12 @@
       color: var(--white);
       letter-spacing: -0.02em;
     }
-    .lv-result-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    .lv-result-sub {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
 
     /* ── CTA BANNER ───────────────────────────────── */
     .cta-banner {
@@ -650,15 +958,19 @@
       text-align: center;
       overflow: hidden;
     }
+
     .cta-banner::before {
       content: '';
       position: absolute;
-      top: 50%; left: 50%;
+      top: 50%;
+      left: 50%;
       transform: translate(-50%, -50%);
-      width: 600px; height: 600px;
-      background: radial-gradient(ellipse, rgba(12,200,168,0.08) 0%, transparent 70%);
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(ellipse, rgba(12, 200, 168, 0.08) 0%, transparent 70%);
       pointer-events: none;
     }
+
     .cta-banner h2 {
       font-size: clamp(36px, 5vw, 60px);
       font-weight: 800;
@@ -667,11 +979,13 @@
       color: var(--white);
       margin-bottom: 16px;
     }
+
     .cta-banner h2 em {
       font-style: italic;
       font-family: var(--font-serif);
       color: var(--gold-lt);
     }
+
     .cta-banner p {
       font-size: 17px;
       color: var(--muted);
@@ -688,386 +1002,526 @@
       align-items: center;
       justify-content: space-between;
     }
-    .footer-left { font-size: 12px; color: var(--muted); font-family: var(--font-serif); font-variant: small-caps; }
-    .footer-right { font-size: 11px; color: rgba(200,210,240,0.3); }
+
+    .footer-left {
+      font-size: 12px;
+      color: var(--muted);
+      font-family: var(--font-serif);
+      font-variant: small-caps;
+    }
+
+    .footer-right {
+      font-size: 11px;
+      color: rgba(200, 210, 240, 0.3);
+    }
 
     /* ── RESPONSIVE ───────────────────────────────── */
     @media (max-width: 900px) {
-      .feature-grid { grid-template-columns: 1fr; }
-      .levers-inner { grid-template-columns: 1fr; }
-      .stats-strip  { flex-wrap: wrap; gap: 24px; }
-      .stat-item    { border-right: none; border-bottom: 1px solid var(--border); padding-bottom: 24px; }
-      .stat-item:last-child { border-bottom: none; }
-      nav { padding: 0 20px; }
-      .section { padding: 60px 20px; }
-    }
+      .feature-grid {
+        grid-template-columns: 1fr;
+      }
 
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { animation: none !important; transition: none !important; }
-    }
+      .levers-inner {
+        grid-template-columns: 1fr;
+      }
 
-    /* ── LANGUAGE TOGGLE ──────────────────────────── */
-    .lang-toggle { display:flex; align-items:center; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.10); border-radius:20px; padding:2px; gap:1px; }
-    .lang-btn { padding:4px 12px; border:none; border-radius:16px; background:transparent; color:rgba(255,255,255,0.45); font-size:11px; font-weight:700; cursor:pointer; letter-spacing:0.06em; transition:background 0.18s,color 0.18s; }
-    .lang-btn.active { background:#0CC8A8; color:#07091A; }
-    .lang-btn:hover:not(.active) { color:rgba(255,255,255,0.80); }
-  </style>
-  <link rel="stylesheet" href="/app/true-focus.css?v=1" />
-</head>
-<body>
+      .stats-strip {
+        flex-wrap: wrap;
+        gap: 24px;
+      }
 
-<canvas id="bgCanvas"></canvas>
+      .stat-item {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 24px;
+      }
 
-<!-- NAVBAR -->
-<nav>
-  <a href="/" class="nav-logo">
-    <div class="nav-logo-icon">
-      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 3L2 8v2h2v9H2v2h20v-2h-2V10h2V8L12 3zm-4 18V10h2v11H8zm4 0V10h2v11h-2zm4 0V10h2v11h-2zm-4-15.18L17.6 8H6.4L12 5.82z"/>
-      </svg>
-    </div>
-    <span>Agen Simulasi Dasar dan Rekomendasi Perancangan Tenaga Kerja Pendidikan</span>
-  </a>
-  <div class="nav-right">
-    <a href="#features" class="nav-link">Ciri-ciri</a>
-    <a href="#policy" class="nav-link">Instrumen Dasar</a>
-    <div class="lang-toggle">
-      <a class="lang-btn active" href="/">BM</a>
-      <a class="lang-btn" href="/en">EN</a>
-    </div>
-    <a href="/app/" class="btn-nav" onclick="localStorage.setItem('appLang','bm')">Buka Aplikasi →</a>
-  </div>
-</nav>
+      .stat-item:last-child {
+        border-bottom: none;
+      }
 
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-eyebrow">Kementerian Pendidikan &nbsp;·&nbsp; Ramalan Tenaga Kerja 2027</div>
-  <h1 class="hero-headline" id="heroFocus">
-    <span data-glow="rgba(240,244,255,0.5)">Analisis.</span><br>
-    <span class="word-highlight" data-glow="#C4781C">Simulasi.</span><br>
-    <span class="word-teal" data-glow="#0CC8A8">Keputusan.</span>
-  </h1>
-  <p class="hero-sub">
-    Sistem <strong>sokongan keputusan</strong> disediakan untuk perancang tenaga kerja guru Malaysia —
-    meramal permintaan bagi tahun 2027, menguji senario dasar dan mengenal pasti sekolah yang memerlukan tindakan segera.
-  </p>
-  <div class="hero-cta-row">
-    <a href="/app/" class="btn-primary-lg" onclick="localStorage.setItem('appLang','bm')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <polygon points="5,3 19,12 5,21"/>
-      </svg>
-      Mulakan Simulasi
-    </a>
-    <a href="#features" class="btn-ghost-lg">Lihat cara ia berfungsi ↓</a>
-  </div>
+      nav {
+        padding: 0 20px;
+      }
 
-  <!-- MOCK PREVIEW WINDOW -->
-  <div class="hero-preview">
-    <div class="preview-bar">
-      <div class="preview-dot r"></div>
-      <div class="preview-dot y"></div>
-      <div class="preview-dot g"></div>
-      <div class="preview-url">127.0.0.1:8002/app/ — Education Workforce Policy Simulation System 2027</div>
-    </div>
-    <div class="preview-frame">
-      <div class="preview-mock">
-        <div class="pm-sidebar">
-          <div class="pm-sb-label">1 &nbsp;Skop Analisis</div>
-          <div class="pm-sb-row"></div>
-          <div class="pm-sb-row"></div>
-          <div class="pm-sb-row tall"></div>
-          <div style="height:8px"></div>
-          <div class="pm-sb-label">2 &nbsp;Simulasi Dasar</div>
-          <div class="pm-sb-card">
-            <div class="pm-sb-card-label">Nisbah Opsyen Matapelajaran &nbsp; 70%</div>
-            <div class="pm-sb-card-bar"></div>
-          </div>
-          <div class="pm-sb-row"></div>
-          <div class="pm-sb-row"></div>
-          <div class="pm-btn">Jalankan Simulasi Tahun 2027</div>
-        </div>
-        <div class="pm-main">
-          <div class="pm-kpi-row">
-            <div class="pm-kpi"><div class="pm-kpi-val">12,480</div><div class="pm-kpi-lbl">Keperluan Guru</div></div>
-            <div class="pm-kpi"><div class="pm-kpi-val gold">11,204</div><div class="pm-kpi-lbl">Guru Tersedia</div></div>
-            <div class="pm-kpi"><div class="pm-kpi-val red">1,276</div><div class="pm-kpi-lbl">Kekurangan Guru</div></div>
-            <div class="pm-kpi"><div class="pm-kpi-val">−9.2%</div><div class="pm-kpi-lbl">Impak Polisi/Dasar</div></div>
-          </div>
-          <div class="pm-chart-row">
-            <div class="pm-chart" style="flex:1.4">
-              <div class="pm-chart-title">Perbandingan Permintaan Guru</div>
-              <div class="pm-bars">
-                <div class="pm-bar-wrap"><div class="pm-bar" style="height:55%"></div><div class="pm-bar-lbl">2022</div></div>
-                <div class="pm-bar-wrap"><div class="pm-bar" style="height:60%"></div><div class="pm-bar-lbl">2023</div></div>
-                <div class="pm-bar-wrap"><div class="pm-bar" style="height:65%"></div><div class="pm-bar-lbl">2024</div></div>
-                <div class="pm-bar-wrap"><div class="pm-bar" style="height:72%"></div><div class="pm-bar-lbl">2025</div></div>
-                <div class="pm-bar-wrap"><div class="pm-bar" style="height:78%"></div><div class="pm-bar-lbl">2026</div></div>
-                <div class="pm-bar-wrap"><div class="pm-bar accent" style="height:88%"></div><div class="pm-bar-lbl">2027</div></div>
-                <div class="pm-bar-wrap"><div class="pm-bar gold" style="height:80%"></div><div class="pm-bar-lbl">Polisi/Dasar</div></div>
-              </div>
-            </div>
-            <div class="pm-chart" style="flex:1">
-              <div class="pm-chart-title">Permintaan Mengikut Mata Pelajaran</div>
-              <div class="pm-bars">
-                <div class="pm-bar-wrap"><div class="pm-bar accent" style="height:90%"></div><div class="pm-bar-lbl">Matematik</div></div>
-                <div class="pm-bar-wrap"><div class="pm-bar gold" style="height:75%"></div><div class="pm-bar-lbl">Sains</div></div>
-                <div class="pm-bar-wrap"><div class="pm-bar" style="height:60%"></div><div class="pm-bar-lbl">BM</div></div>
-                <div class="pm-bar-wrap"><div class="pm-bar" style="height:55%"></div><div class="pm-bar-lbl">Eng</div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- STATS STRIP -->
-<div class="stats-strip">
-  <div class="stat-item">
-    <div class="stat-num"><span class="accent">16</span></div>
-    <div class="stat-label">Negeri diliputi</div>
-  </div>
-  <div class="stat-item">
-    <div class="stat-num">340<span style="font-size:28px;color:var(--muted)">+</span></div>
-    <div class="stat-label">Pejabat Pendidikan Daerah</div>
-  </div>
-  <div class="stat-item">
-    <div class="stat-num"><span class="gold">4</span></div>
-    <div class="stat-label">Instrumen dasar untuk disimulasi</div>
-  </div>
-  <div class="stat-item">
-    <div class="stat-num">2027</div>
-    <div class="stat-label">Tahun ramalan sasaran</div>
-  </div>
-</div>
-
-<!-- FEATURES -->
-<div id="features">
-  <div class="section">
-    <div class="section-eyebrow">Apa yang sistem lakukan</div>
-    <h2 class="section-title">Semua yang anda perlukan untuk<br><em>merancang keperluan tenaga kerja</em></h2>
-    <p class="section-sub">Daripada unjuran permintaan peringkat kebangsaan hingga penarafan keutamaan sekolah — semua didorong oleh pilihan dasar anda.</p>
-
-    <div class="feature-grid">
-      <div class="feature-card fc-teal">
-        <div class="fc-icon ti">
-          <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 3v18h18"/><path d="M7 16l4-4 4 4 4-4"/>
-          </svg>
-        </div>
-        <div class="fc-title">Ramalan Permintaan 2027</div>
-        <div class="fc-desc">Model Random Forest yang dilatih pada data enrolmen dan staf dari tahun 2022–2026 menganggar permintaan guru untuk setiap sekolah, mata pelajaran dan kumpulan tahun.</div>
-        <span class="fc-tag tt">Pembelajaran Mesin</span>
-      </div>
-      <div class="feature-card fc-gold">
-        <div class="fc-icon gi">
-          <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/>
-          </svg>
-        </div>
-        <div class="fc-title">Simulasi Senario Dasar</div>
-        <div class="fc-desc">Laraskan nisbah opsyen mata pelajaran, waktu pengajaran, kapasiti guru atau bahagian pengajaran bersama — secara tunggal atau gabungan — dan lihat impak tenaga kerja serta-merta.</div>
-        <span class="fc-tag gt">Berketentuan</span>
-      </div>
-      <div class="feature-card fc-amber">
-        <div class="fc-icon ai">
-          <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="6" width="18" height="13" rx="2"/><path d="M8 6V4h8v2"/><path d="M8 13h8M8 10h5"/>
-          </svg>
-        </div>
-        <div class="fc-title">Cadangan Peringkat Sekolah</div>
-        <div class="fc-desc">Penskoran berasaskan peraturan menyenaraikan setiap sekolah mengikut tahap impak kekurangan dan menjana cadangan tindakan dalam bahasa mudah untuk pengambilan, penempatan semula atau latihan.</div>
-        <span class="fc-tag at">Human-in-the-Loop</span>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- POLICY LEVERS -->
-<div id="policy" class="levers-section">
-  <div class="levers-inner">
-    <div>
-      <div class="section-eyebrow">Empat instrumen dasar</div>
-      <h2 class="section-title">Simulasi apa yang<br><em>benar-benar penting</em></h2>
-      <p class="section-sub" style="margin-bottom:0">Setiap instrumen memetakan keputusan dasar sebenar. Ubah satu atau gabungkan semuanya — model mengira semula dengan serta-merta.</p>
-      <div class="lever-list">
-        <div class="lever-item">
-          <div class="lever-num">01</div>
-          <div class="lever-text">
-            <h4>Nisbah Opsyen Mata Pelajaran</h4>
-            <p>Sasaran bahagian guru yang dikerahkan dalam opsyen mata pelajaran terlatih mereka — mengawal kualiti pengkhususan secara langsung.</p>
-          </div>
-        </div>
-        <div class="lever-item">
-          <div class="lever-num gold">02</div>
-          <div class="lever-text">
-            <h4>Waktu Pengajaran Tahunan</h4>
-            <p>Jumlah waktu pengajaran mata pelajaran yang dijadualkan setiap kelas setahun — mempengaruhi bilangan guru yang diperlukan setiap sekolah.</p>
-          </div>
-        </div>
-        <div class="lever-item">
-          <div class="lever-num amber">03</div>
-          <div class="lever-text">
-            <h4>Kapasiti Waktu Guru</h4>
-            <p>Maksimum waktu pengajaran tahunan yang boleh dilaksanakan seorang guru — peningkatan ini dapat mengurangkan bilangan guru yang diperlukan.</p>
-          </div>
-        </div>
-        <div class="lever-item">
-          <div class="lever-num rose">04</div>
-          <div class="lever-text">
-            <h4>Bahagian Pengajaran Bersama</h4>
-            <p>Bahagian kelas yang diajar berpasukan oleh dua guru — meluaskan liputan tanpa menambah jawatan tetap.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div>
-      <div class="levers-visual">
-        <div class="lv-title">Pratonton dasar langsung</div>
-        <div class="lv-row">
-          <div class="lv-label">Nisbah Opsyen Mata Pelajaran</div>
-          <div class="lv-track"><div class="lv-fill" style="width:70%"></div></div>
-          <div class="lv-val">70%</div>
-        </div>
-        <div class="lv-row">
-          <div class="lv-label">Waktu Pengajaran</div>
-          <div class="lv-track"><div class="lv-fill gold" style="width:55%"></div></div>
-          <div class="lv-val">198 h</div>
-        </div>
-        <div class="lv-row">
-          <div class="lv-label">Kapasiti Guru</div>
-          <div class="lv-track"><div class="lv-fill amber" style="width:65%"></div></div>
-          <div class="lv-val">810 h</div>
-        </div>
-        <div class="lv-row">
-          <div class="lv-label">Pengajaran Bersama</div>
-          <div class="lv-track"><div class="lv-fill rose" style="width:30%"></div></div>
-          <div class="lv-val">30%</div>
-        </div>
-        <div class="lv-result">
-          <div class="lv-result-label">Anggaran perubahan permintaan</div>
-          <div class="lv-result-val">−9.2%</div>
-          <div class="lv-result-sub">~1,148 FTE guru kurang berbanding asas</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- CTA BANNER -->
-<div class="cta-banner">
-  <h2><span>Data tenaga kerja anda.</span><br><em>Pilihan dasar anda.</em></h2>
-  <p>Jalankan simulasi sekarang — tiada akaun diperlukan, keputusan dalam beberapa saat.</p>
-  <div class="hero-cta-row">
-    <a href="/app/" class="btn-primary-lg" onclick="localStorage.setItem('appLang','bm')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <polygon points="5,3 19,12 5,21"/>
-      </svg>
-      Mulakan Simulasi
-    </a>
-  </div>
-</div>
-
-<!-- FOOTER -->
-<footer>
-  <div class="footer-left">Agen Simulasi Dasar dan Rekomendasi Perancangan Tenaga Kerja Pendidikan &nbsp;·&nbsp; Kementerian Pendidikan</div>
-  <div class="footer-right">MVP · Ramalan Tahun 2027 · Semua cadangan memerlukan semakan manusia</div>
-</footer>
-
-<!-- ANIMATED BACKGROUND CANVAS -->
-<script>
-(function () {
-  const canvas = document.getElementById('bgCanvas');
-  const ctx    = canvas.getContext('2d');
-  let W, H, nodes = [], animId;
-
-  function resize() {
-    W = canvas.width  = window.innerWidth;
-    H = canvas.height = window.innerHeight;
-  }
-
-  function init() {
-    nodes = [];
-    const count = Math.floor((W * H) / 22000);
-    for (let i = 0; i < count; i++) {
-      nodes.push({
-        x: Math.random() * W,
-        y: Math.random() * H,
-        vx: (Math.random() - 0.5) * 0.3,
-        vy: (Math.random() - 0.5) * 0.3,
-        r: 1.5 + Math.random() * 1.5,
-        color: Math.random() > 0.7 ? '#C4781C' : '#0CC8A8',
-      });
-    }
-  }
-
-  function draw() {
-    ctx.clearRect(0, 0, W, H);
-
-    // draw connections
-    for (let i = 0; i < nodes.length; i++) {
-      for (let j = i + 1; j < nodes.length; j++) {
-        const dx = nodes[i].x - nodes[j].x;
-        const dy = nodes[i].y - nodes[j].y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 130) {
-          const alpha = (1 - dist / 130) * 0.18;
-          ctx.strokeStyle = `rgba(12,200,168,${alpha})`;
-          ctx.lineWidth = 0.8;
-          ctx.beginPath();
-          ctx.moveTo(nodes[i].x, nodes[i].y);
-          ctx.lineTo(nodes[j].x, nodes[j].y);
-          ctx.stroke();
-        }
+      .section {
+        padding: 60px 20px;
       }
     }
 
-    // draw nodes
-    nodes.forEach(n => {
-      ctx.beginPath();
-      ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
-      ctx.fillStyle = n.color;
-      ctx.globalAlpha = 0.6;
-      ctx.fill();
-      ctx.globalAlpha = 1;
-    });
-  }
+    @media (prefers-reduced-motion: reduce) {
 
-  function update() {
-    nodes.forEach(n => {
-      n.x += n.vx;
-      n.y += n.vy;
-      if (n.x < 0 || n.x > W) n.vx *= -1;
-      if (n.y < 0 || n.y > H) n.vy *= -1;
-    });
-  }
+      *,
+      *::before,
+      *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
 
-  function loop() {
-    update();
-    draw();
-    animId = requestAnimationFrame(loop);
-  }
+    /* ── LANGUAGE TOGGLE ──────────────────────────── */
+    .lang-toggle {
+      display: flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      border-radius: 20px;
+      padding: 2px;
+      gap: 1px;
+    }
 
-  window.addEventListener('resize', () => { resize(); init(); });
-  resize();
-  init();
-  loop();
+    .lang-btn {
+      padding: 4px 12px;
+      border: none;
+      border-radius: 16px;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.45);
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.06em;
+      transition: background 0.18s, color 0.18s;
+    }
 
-  // Respect prefers-reduced-motion
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    cancelAnimationFrame(animId);
-    draw(); // static snapshot
-  }
-})();
-</script>
+    .lang-btn.active {
+      background: #0CC8A8;
+      color: #07091A;
+    }
 
-<script src="/app/true-focus.js?v=1"></script>
-<script>
-  if (window.initTrueFocus) {
-    window.initTrueFocus(document.getElementById('heroFocus'));
-  }
-</script>
+    .lang-btn:hover:not(.active) {
+      color: rgba(255, 255, 255, 0.80);
+    }
+  </style>
+  <link rel="stylesheet" href="/app/true-focus.css?v=1" />
+</head>
+
+<body>
+
+  <canvas id="bgCanvas"></canvas>
+
+  <!-- NAVBAR -->
+  <nav>
+    <a href="/" class="nav-logo">
+      <div class="nav-logo-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M12 3L2 8v2h2v9H2v2h20v-2h-2V10h2V8L12 3zm-4 18V10h2v11H8zm4 0V10h2v11h-2zm4 0V10h2v11h-2zm-4-15.18L17.6 8H6.4L12 5.82z" />
+        </svg>
+      </div>
+      <span>Agen Simulasi Dasar dan Cadangan Perancangan Tenaga Kerja Pendidikan</span>
+    </a>
+    <div class="nav-right">
+      <a href="#features" class="nav-link">Ciri-ciri</a>
+      <a href="#policy" class="nav-link">Instrumen Dasar</a>
+      <div class="lang-toggle">
+        <a class="lang-btn active" href="/">BM</a>
+        <a class="lang-btn" href="/en">EN</a>
+      </div>
+      <a href="/app/" class="btn-nav" onclick="localStorage.setItem('appLang','bm')">Buka Aplikasi →</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-eyebrow">Kementerian Pendidikan &nbsp;·&nbsp; Ramalan Tenaga Kerja 2027</div>
+    <h1 class="hero-headline" id="heroFocus">
+      <span data-glow="rgba(240,244,255,0.5)">Analisis.</span><br>
+      <span class="word-highlight" data-glow="#C4781C">Simulasi.</span><br>
+      <span class="word-teal" data-glow="#0CC8A8">Keputusan.</span>
+    </h1>
+    <p class="hero-sub">
+      Sistem <strong>sokongan keputusan</strong> disediakan untuk perancang tenaga kerja guru Malaysia —
+      meramal permintaan bagi tahun 2027, menguji senario dasar dan mengenal pasti sekolah yang memerlukan tindakan
+      segera.
+    </p>
+    <div class="hero-cta-row">
+      <a href="/app/" class="btn-primary-lg" onclick="localStorage.setItem('appLang','bm')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+          stroke-linejoin="round">
+          <polygon points="5,3 19,12 5,21" />
+        </svg>
+        Mulakan Simulasi
+      </a>
+      <a href="#features" class="btn-ghost-lg">Lihat cara ia berfungsi ↓</a>
+    </div>
+
+    <!-- MOCK PREVIEW WINDOW -->
+    <div class="hero-preview">
+      <div class="preview-bar">
+        <div class="preview-dot r"></div>
+        <div class="preview-dot y"></div>
+        <div class="preview-dot g"></div>
+        <div class="preview-url">127.0.0.1:8002/app/ — Education Workforce Policy Simulation System 2027</div>
+      </div>
+      <div class="preview-frame">
+        <div class="preview-mock">
+          <div class="pm-sidebar">
+            <div class="pm-sb-label">1 &nbsp;Skop Analisis</div>
+            <div class="pm-sb-row"></div>
+            <div class="pm-sb-row"></div>
+            <div class="pm-sb-row tall"></div>
+            <div style="height:8px"></div>
+            <div class="pm-sb-label">2 &nbsp;Simulasi Dasar</div>
+            <div class="pm-sb-card">
+              <div class="pm-sb-card-label">Nisbah Opsyen Matapelajaran &nbsp; 70%</div>
+              <div class="pm-sb-card-bar"></div>
+            </div>
+            <div class="pm-sb-row"></div>
+            <div class="pm-sb-row"></div>
+            <div class="pm-btn">Jalankan Simulasi Tahun 2027</div>
+          </div>
+          <div class="pm-main">
+            <div class="pm-kpi-row">
+              <div class="pm-kpi">
+                <div class="pm-kpi-val">12,480</div>
+                <div class="pm-kpi-lbl">Keperluan Guru</div>
+              </div>
+              <div class="pm-kpi">
+                <div class="pm-kpi-val gold">11,204</div>
+                <div class="pm-kpi-lbl">Guru Tersedia</div>
+              </div>
+              <div class="pm-kpi">
+                <div class="pm-kpi-val red">1,276</div>
+                <div class="pm-kpi-lbl">Kekurangan Guru</div>
+              </div>
+              <div class="pm-kpi">
+                <div class="pm-kpi-val">−9.2%</div>
+                <div class="pm-kpi-lbl">Impak Polisi/Dasar</div>
+              </div>
+            </div>
+            <div class="pm-chart-row">
+              <div class="pm-chart" style="flex:1.4">
+                <div class="pm-chart-title">Perbandingan Permintaan Guru</div>
+                <div class="pm-bars">
+                  <div class="pm-bar-wrap">
+                    <div class="pm-bar" style="height:55%"></div>
+                    <div class="pm-bar-lbl">2022</div>
+                  </div>
+                  <div class="pm-bar-wrap">
+                    <div class="pm-bar" style="height:60%"></div>
+                    <div class="pm-bar-lbl">2023</div>
+                  </div>
+                  <div class="pm-bar-wrap">
+                    <div class="pm-bar" style="height:65%"></div>
+                    <div class="pm-bar-lbl">2024</div>
+                  </div>
+                  <div class="pm-bar-wrap">
+                    <div class="pm-bar" style="height:72%"></div>
+                    <div class="pm-bar-lbl">2025</div>
+                  </div>
+                  <div class="pm-bar-wrap">
+                    <div class="pm-bar" style="height:78%"></div>
+                    <div class="pm-bar-lbl">2026</div>
+                  </div>
+                  <div class="pm-bar-wrap">
+                    <div class="pm-bar accent" style="height:88%"></div>
+                    <div class="pm-bar-lbl">2027</div>
+                  </div>
+                  <div class="pm-bar-wrap">
+                    <div class="pm-bar gold" style="height:80%"></div>
+                    <div class="pm-bar-lbl">Polisi/Dasar</div>
+                  </div>
+                </div>
+              </div>
+              <div class="pm-chart" style="flex:1">
+                <div class="pm-chart-title">Permintaan Mengikut Mata Pelajaran</div>
+                <div class="pm-bars">
+                  <div class="pm-bar-wrap">
+                    <div class="pm-bar accent" style="height:90%"></div>
+                    <div class="pm-bar-lbl">Matematik</div>
+                  </div>
+                  <div class="pm-bar-wrap">
+                    <div class="pm-bar gold" style="height:75%"></div>
+                    <div class="pm-bar-lbl">Sains</div>
+                  </div>
+                  <div class="pm-bar-wrap">
+                    <div class="pm-bar" style="height:60%"></div>
+                    <div class="pm-bar-lbl">BM</div>
+                  </div>
+                  <div class="pm-bar-wrap">
+                    <div class="pm-bar" style="height:55%"></div>
+                    <div class="pm-bar-lbl">Eng</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS STRIP -->
+  <div class="stats-strip">
+    <div class="stat-item">
+      <div class="stat-num"><span class="accent">16</span></div>
+      <div class="stat-label">Negeri diliputi</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">340<span style="font-size:28px;color:var(--muted)">+</span></div>
+      <div class="stat-label">Pejabat Pendidikan Daerah</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num"><span class="gold">4</span></div>
+      <div class="stat-label">Instrumen dasar untuk disimulasi</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">2027</div>
+      <div class="stat-label">Tahun ramalan sasaran</div>
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <div id="features">
+    <div class="section">
+      <div class="section-eyebrow">Apa yang sistem lakukan</div>
+      <h2 class="section-title">Semua yang anda perlukan untuk<br><em>merancang keperluan tenaga kerja</em></h2>
+      <p class="section-sub">Daripada unjuran permintaan peringkat kebangsaan hingga penarafan keutamaan sekolah — semua
+        didorong oleh pilihan dasar anda.</p>
+
+      <div class="feature-grid">
+        <div class="feature-card fc-teal">
+          <div class="fc-icon ti">
+            <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 3v18h18" />
+              <path d="M7 16l4-4 4 4 4-4" />
+            </svg>
+          </div>
+          <div class="fc-title">Ramalan Permintaan 2027</div>
+          <div class="fc-desc">Model Random Forest Regressor yang dilatih pada data enrolmen dan staf dari tahun
+            2022–2026 menganggar permintaan guru untuk setiap sekolah, mata pelajaran dan kumpulan tahun.</div>
+          <span class="fc-tag tt">Pembelajaran Mesin</span>
+        </div>
+        <div class="feature-card fc-gold">
+          <div class="fc-icon gi">
+            <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="9" />
+              <path d="M12 8v4l3 3" />
+            </svg>
+          </div>
+          <div class="fc-title">Simulasi Senario Dasar</div>
+          <div class="fc-desc">Laraskan nisbah opsyen mata pelajaran, waktu pengajaran, kapasiti guru atau bahagian
+            pengajaran bersama — secara tunggal atau gabungan — dan lihat impak tenaga kerja serta-merta.</div>
+          <span class="fc-tag gt">Berketentuan</span>
+        </div>
+        <div class="feature-card fc-amber">
+          <div class="fc-icon ai">
+            <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="6" width="18" height="13" rx="2" />
+              <path d="M8 6V4h8v2" />
+              <path d="M8 13h8M8 10h5" />
+            </svg>
+          </div>
+          <div class="fc-title">Cadangan Peringkat Sekolah</div>
+          <div class="fc-desc">Penskoran berasaskan peraturan menyenaraikan setiap sekolah mengikut tahap impak
+            kekurangan dan menjana cadangan tindakan dalam bahasa mudah untuk pengambilan, penempatan semula atau
+            latihan.</div>
+          <span class="fc-tag at">Human-in-the-Loop</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- POLICY LEVERS -->
+  <div id="policy" class="levers-section">
+    <div class="levers-inner">
+      <div>
+        <div class="section-eyebrow">Empat instrumen dasar</div>
+        <h2 class="section-title">Simulasi apa yang<br><em>benar-benar penting</em></h2>
+        <p class="section-sub" style="margin-bottom:0">Setiap instrumen memetakan keputusan dasar sebenar. Ubah satu
+          atau gabungkan semuanya — model mengira semula dengan serta-merta.</p>
+        <div class="lever-list">
+          <div class="lever-item">
+            <div class="lever-num">01</div>
+            <div class="lever-text">
+              <h4>Nisbah Opsyen Mata Pelajaran</h4>
+              <p>Sasaran bahagian guru yang dikerahkan dalam opsyen mata pelajaran terlatih mereka — mengawal kualiti
+                pengkhususan secara langsung.</p>
+            </div>
+          </div>
+          <div class="lever-item">
+            <div class="lever-num gold">02</div>
+            <div class="lever-text">
+              <h4>Waktu Pengajaran Tahunan</h4>
+              <p>Jumlah waktu pengajaran mata pelajaran yang dijadualkan setiap kelas setahun — mempengaruhi bilangan
+                guru yang diperlukan setiap sekolah.</p>
+            </div>
+          </div>
+          <div class="lever-item">
+            <div class="lever-num amber">03</div>
+            <div class="lever-text">
+              <h4>Kapasiti Waktu Guru</h4>
+              <p>Maksimum waktu pengajaran tahunan yang boleh dilaksanakan seorang guru — peningkatan ini dapat
+                mengurangkan bilangan guru yang diperlukan.</p>
+            </div>
+          </div>
+          <div class="lever-item">
+            <div class="lever-num rose">04</div>
+            <div class="lever-text">
+              <h4>Bahagian Pengajaran Bersama</h4>
+              <p>Bahagian kelas yang diajar berpasukan oleh dua guru — meluaskan liputan tanpa menambah jawatan tetap.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="levers-visual">
+          <div class="lv-title">Pratonton dasar langsung</div>
+          <div class="lv-row">
+            <div class="lv-label">Nisbah Opsyen Mata Pelajaran</div>
+            <div class="lv-track">
+              <div class="lv-fill" style="width:70%"></div>
+            </div>
+            <div class="lv-val">70%</div>
+          </div>
+          <div class="lv-row">
+            <div class="lv-label">Waktu Pengajaran</div>
+            <div class="lv-track">
+              <div class="lv-fill gold" style="width:55%"></div>
+            </div>
+            <div class="lv-val">198 h</div>
+          </div>
+          <div class="lv-row">
+            <div class="lv-label">Kapasiti Guru</div>
+            <div class="lv-track">
+              <div class="lv-fill amber" style="width:65%"></div>
+            </div>
+            <div class="lv-val">810 h</div>
+          </div>
+          <div class="lv-row">
+            <div class="lv-label">Pengajaran Bersama</div>
+            <div class="lv-track">
+              <div class="lv-fill rose" style="width:30%"></div>
+            </div>
+            <div class="lv-val">30%</div>
+          </div>
+          <div class="lv-result">
+            <div class="lv-result-label">Anggaran perubahan permintaan</div>
+            <div class="lv-result-val">−9.2%</div>
+            <div class="lv-result-sub">~1,148 FTE guru kurang berbanding asas</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA BANNER -->
+  <div class="cta-banner">
+    <h2><span>Data tenaga kerja anda.</span><br><em>Pilihan dasar anda.</em></h2>
+    <p>Jalankan simulasi sekarang — tiada akaun diperlukan, keputusan dalam beberapa saat.</p>
+    <div class="hero-cta-row">
+      <a href="/app/" class="btn-primary-lg" onclick="localStorage.setItem('appLang','bm')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+          stroke-linejoin="round">
+          <polygon points="5,3 19,12 5,21" />
+        </svg>
+        Mulakan Simulasi
+      </a>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-left">Agen Simulasi Dasar dan Cadangan Perancangan Tenaga Kerja Pendidikan &nbsp;·&nbsp;
+      Kementerian Pendidikan</div>
+    <div class="footer-right">MVP · Ramalan Tahun 2027 · Semua cadangan memerlukan semakan manusia</div>
+  </footer>
+
+  <!-- ANIMATED BACKGROUND CANVAS -->
+  <script>
+    (function () {
+      const canvas = document.getElementById('bgCanvas');
+      const ctx = canvas.getContext('2d');
+      let W, H, nodes = [], animId;
+
+      function resize() {
+        W = canvas.width = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+      }
+
+      function init() {
+        nodes = [];
+        const count = Math.floor((W * H) / 22000);
+        for (let i = 0; i < count; i++) {
+          nodes.push({
+            x: Math.random() * W,
+            y: Math.random() * H,
+            vx: (Math.random() - 0.5) * 0.3,
+            vy: (Math.random() - 0.5) * 0.3,
+            r: 1.5 + Math.random() * 1.5,
+            color: Math.random() > 0.7 ? '#C4781C' : '#0CC8A8',
+          });
+        }
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, W, H);
+
+        // draw connections
+        for (let i = 0; i < nodes.length; i++) {
+          for (let j = i + 1; j < nodes.length; j++) {
+            const dx = nodes[i].x - nodes[j].x;
+            const dy = nodes[i].y - nodes[j].y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 130) {
+              const alpha = (1 - dist / 130) * 0.18;
+              ctx.strokeStyle = `rgba(12,200,168,${alpha})`;
+              ctx.lineWidth = 0.8;
+              ctx.beginPath();
+              ctx.moveTo(nodes[i].x, nodes[i].y);
+              ctx.lineTo(nodes[j].x, nodes[j].y);
+              ctx.stroke();
+            }
+          }
+        }
+
+        // draw nodes
+        nodes.forEach(n => {
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+          ctx.fillStyle = n.color;
+          ctx.globalAlpha = 0.6;
+          ctx.fill();
+          ctx.globalAlpha = 1;
+        });
+      }
+
+      function update() {
+        nodes.forEach(n => {
+          n.x += n.vx;
+          n.y += n.vy;
+          if (n.x < 0 || n.x > W) n.vx *= -1;
+          if (n.y < 0 || n.y > H) n.vy *= -1;
+        });
+      }
+
+      function loop() {
+        update();
+        draw();
+        animId = requestAnimationFrame(loop);
+      }
+
+      window.addEventListener('resize', () => { resize(); init(); });
+      resize();
+      init();
+      loop();
+
+      // Respect prefers-reduced-motion
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        cancelAnimationFrame(animId);
+        draw(); // static snapshot
+      }
+    })();
+  </script>
+
+  <script src="/app/true-focus.js?v=1"></script>
+  <script>
+    if (window.initTrueFocus) {
+      window.initTrueFocus(document.getElementById('heroFocus'));
+    }
+  </script>
 
 </body>
+
 </html>

@@ -159,10 +159,10 @@ def get_system() -> tuple[WorkforceTools, Orchestrator]:
 
 def serialize_output(output: dict[str, Any]) -> dict[str, Any]:
     scenario_uses_ai = output["scenario_source"].startswith(
-        ("OpenAI Scenario Agent", "Groq Scenario Agent")
+        ("OpenAI Scenario Agent", "Groq Scenario Agent", "DeepSeek Scenario Agent")
     )
     explanation_uses_ai = output["explanation_source"].startswith(
-        ("OpenAI Explanation Agent", "Groq Explanation Agent")
+        ("OpenAI Explanation Agent", "Groq Explanation Agent", "DeepSeek Explanation Agent")
     )
     provider = get_ai_provider_label() if scenario_uses_ai or explanation_uses_ai else None
     recommendation_columns = [
@@ -249,16 +249,16 @@ def login(payload: LoginInput) -> dict[str, Any]:
             cursor.execute(
                 "SELECT username, email, password_hash, role_name, is_active, is_first_login, "
                 "COALESCE(can_view_audit_log, FALSE) "
-                "FROM users WHERE username = %s LIMIT 1",
-                [payload.username],
+                "FROM users WHERE email = %s LIMIT 1",
+                [payload.email],
             )
             row = cursor.fetchone()
     finally:
         connection.close()
 
     if not row:
-        write_audit_log(payload.username, "unknown", "login_failed", "no such user")
-        raise HTTPException(status_code=401, detail="Invalid username or password")
+        write_audit_log(payload.email, "unknown", "login_failed", "no such user")
+        raise HTTPException(status_code=401, detail="Invalid email or password")
 
     username, email, password_hash, role_name, is_active, is_first_login, can_view_audit_log = row
     if not is_active:
@@ -266,14 +266,14 @@ def login(payload: LoginInput) -> dict[str, Any]:
         raise HTTPException(status_code=403, detail="User account is inactive")
     if not verify_password(payload.password, password_hash):
         write_audit_log(username, role_name, "login_failed", "bad password")
-        raise HTTPException(status_code=401, detail="Invalid username or password")
+        raise HTTPException(status_code=401, detail="Invalid email or password")
 
     write_connection = db.get_connection(read_only=False)
     try:
         with write_connection.cursor() as cursor:
             cursor.execute(
-                "UPDATE users SET last_login_at = CURRENT_TIMESTAMP WHERE username = %s",
-                [username],
+                "UPDATE users SET last_login_at = CURRENT_TIMESTAMP WHERE email = %s",
+                [email],
             )
         write_connection.commit()
     finally:
@@ -317,14 +317,20 @@ def create_user(
     try:
         with connection.cursor() as cursor:
             cursor.execute(
-                "SELECT id FROM users WHERE username = %s LIMIT 1",
-                [payload.username],
+                "SELECT username, email FROM users WHERE username = %s OR email = %s LIMIT 1",
+                [payload.username, payload.email],
             )
             existing = cursor.fetchone()
     finally:
         connection.close()
 
     if existing:
+        existing_username, existing_email = existing
+        # Email is checked too (not just username) because email is now the
+        # login credential — two accounts sharing an email would make login
+        # match an arbitrary one of them.
+        if existing_email == payload.email:
+            raise HTTPException(status_code=400, detail=f"Email '{payload.email}' already exists")
         raise HTTPException(status_code=400, detail=f"Username '{payload.username}' already exists")
 
     temp_password = email_utils.generate_temp_password()
@@ -493,7 +499,7 @@ def deactivate_user(
 @app.post("/api/auth/change-password")
 def change_password(
     payload: ChangePasswordInput,
-    session: dict[str, Any] = Depends(require_role("superadmin", "admin", "user")),
+    session: dict[str, Any] = Depends(require_role("superadmin", "user")),
     x_auth_token: str | None = Header(default=None),
 ) -> dict[str, Any]:
     connection = db.get_connection(read_only=True)
@@ -569,7 +575,7 @@ def filters(
 @app.post("/api/forecast/2027")
 def forecast_2027(
     payload: ForecastInput,
-    session: dict[str, Any] = Depends(require_role("superadmin", "admin")),
+    session: dict[str, Any] = Depends(require_role("superadmin", "user")),
 ) -> dict[str, Any]:
     """Return the ML baseline projection without changing policy parameters."""
     try:
@@ -593,7 +599,7 @@ def forecast_2027(
 @app.post("/api/simulate")
 def simulate(
     payload: ScenarioInput,
-    session: dict[str, Any] = Depends(require_role("superadmin", "admin", "user")),
+    session: dict[str, Any] = Depends(require_role("superadmin", "user")),
 ) -> dict[str, Any]:
     try:
         _, orchestrator = get_system()
@@ -607,7 +613,7 @@ def simulate(
 @app.post("/api/agent/run")
 def run_agent(
     payload: AgentQuestionInput,
-    session: dict[str, Any] = Depends(require_role("superadmin", "admin", "user")),
+    session: dict[str, Any] = Depends(require_role("superadmin", "user")),
 ) -> dict[str, Any]:
     try:
         _, orchestrator = get_system()
@@ -621,7 +627,7 @@ def run_agent(
 @app.get("/api/runs/{run_id}/detail.csv")
 def download_run(
     run_id: str,
-    session: dict[str, Any] = Depends(require_role("superadmin", "admin")),
+    session: dict[str, Any] = Depends(require_role("superadmin", "user")),
 ):
     if not run_id.startswith("RUN_") or not run_id.replace("_", "").isalnum():
         raise HTTPException(status_code=400, detail="Invalid run_id")
@@ -639,9 +645,9 @@ def download_run(
 
 @app.get("/api/audit-log")
 def get_audit_log(
-    session: dict[str, Any] = Depends(require_role("superadmin", "admin")),
+    session: dict[str, Any] = Depends(require_role("superadmin", "user")),
 ) -> dict[str, Any]:
-    if session["role_name"] == "admin" and not session.get("can_view_audit_log"):
+    if session["role_name"] == "user" and not session.get("can_view_audit_log"):
         raise HTTPException(status_code=403, detail="Audit log is not enabled for this account")
 
     connection = db.get_connection(read_only=True)
@@ -678,7 +684,7 @@ def get_audit_log(
 @app.get("/api/runs/{run_id}/summary.csv")
 def download_run_summary(
     run_id: str,
-    session: dict[str, Any] = Depends(require_role("superadmin", "admin", "user")),
+    session: dict[str, Any] = Depends(require_role("superadmin", "user")),
 ):
     if not run_id.startswith("RUN_") or not run_id.replace("_", "").isalnum():
         raise HTTPException(status_code=400, detail="Invalid run_id")

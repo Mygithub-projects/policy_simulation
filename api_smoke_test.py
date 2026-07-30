@@ -7,7 +7,7 @@ from main import app
 
 client = TestClient(app)
 
-_login = client.post("/api/auth/login", json={"username": "superadmin", "password": "P@ssword.123"})
+_login = client.post("/api/auth/login", json={"email": "superadmin@example.com", "password": "P@ssword.123"})
 assert _login.status_code == 200, _login.text
 AUTH_HEADERS = {"X-Auth-Token": _login.json()["token"]}
 

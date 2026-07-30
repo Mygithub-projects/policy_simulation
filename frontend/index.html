@@ -7,9 +7,11 @@
   <title>Sistem Simulasi Dasar Tenaga Kerja Pendidikan 2027</title>
   <link rel="stylesheet" href="styles.css?v=15" />
   <link rel="stylesheet" href="aurora-bg.css?v=1" />
+  <link rel="stylesheet" href="logo-loop.css?v=1" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script src="aurora-bg.js?v=1"></script>
+  <script src="logo-loop.js?v=1"></script>
 </head>
 
 <body>
@@ -99,9 +101,9 @@
           <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
         </div>
         <div class="login-form">
-          <label for="loginUsername" data-i18n="login.username">Nama Pengguna</label>
-          <input id="loginUsername" class="form-control" type="text" autocomplete="username"
-            data-i18n-placeholder="login.placeholder.username" placeholder="admin" />
+          <label for="loginUsername" data-i18n="login.username">Email</label>
+          <input id="loginUsername" class="form-control" type="email" autocomplete="email"
+            data-i18n-placeholder="login.placeholder.username" placeholder="nama@contoh.com" />
 
           <label for="loginPassword" data-i18n="login.password">Katalaluan</label>
           <input id="loginPassword" class="form-control" type="password" autocomplete="current-password"
@@ -114,6 +116,8 @@
           </button>
         </div>
       </div>
+
+      <div class="login-logo-loop" id="loginLogoLoop"></div>
     </div>
 
     <div class="login-screen" id="changePasswordScreen">
@@ -208,7 +212,8 @@
                 <circle cx="14" cy="15" r="2" stroke-width="1.5" />
               </svg>
               <span data-i18n="sidebar.group.forecast">Forecast Analysis</span>
-              <svg class="sgh-chevron" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <svg class="sgh-chevron" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true">
                 <polyline points="2,4 6,8 10,4" stroke-linecap="round" stroke-linejoin="round" />
               </svg>
             </button>
@@ -290,12 +295,14 @@
                       </div>
                       <div class="pc-check">
                         <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <polyline points="2,6 5,9 10,3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                          <polyline points="2,6 5,9 10,3" stroke-width="1.8" stroke-linecap="round"
+                            stroke-linejoin="round" />
                         </svg>
                       </div>
                     </div>
                     <span class="pc-label" data-i18n="pc.option_ratio.label">Nisbah Opsyen Mata Pelajaran</span>
-                    <span class="pc-desc" data-i18n="pc.option_ratio.desc">Sasaran bahagian guru dalam opsyen mata pelajaran
+                    <span class="pc-desc" data-i18n="pc.option_ratio.desc">Sasaran bahagian guru dalam opsyen mata
+                      pelajaran
                       mereka</span>
                   </label>
 
@@ -311,12 +318,14 @@
                       </div>
                       <div class="pc-check">
                         <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <polyline points="2,6 5,9 10,3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                          <polyline points="2,6 5,9 10,3" stroke-width="1.8" stroke-linecap="round"
+                            stroke-linejoin="round" />
                         </svg>
                       </div>
                     </div>
                     <span class="pc-label" data-i18n="pc.teaching_hours.label">Waktu Pengajaran</span>
-                    <span class="pc-desc" data-i18n="pc.teaching_hours.desc">Waktu pengajaran mata pelajaran tahunan setiap
+                    <span class="pc-desc" data-i18n="pc.teaching_hours.desc">Waktu pengajaran mata pelajaran tahunan
+                      setiap
                       kelas</span>
                   </label>
 
@@ -331,7 +340,8 @@
                       </div>
                       <div class="pc-check">
                         <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <polyline points="2,6 5,9 10,3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                          <polyline points="2,6 5,9 10,3" stroke-width="1.8" stroke-linecap="round"
+                            stroke-linejoin="round" />
                         </svg>
                       </div>
                     </div>
@@ -351,7 +361,8 @@
                       </div>
                       <div class="pc-check">
                         <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <polyline points="2,6 5,9 10,3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                          <polyline points="2,6 5,9 10,3" stroke-width="1.8" stroke-linecap="round"
+                            stroke-linejoin="round" />
                         </svg>
                       </div>
                     </div>
@@ -395,7 +406,8 @@
                 <path d="M7 6V4.5a3 3 0 016 0V6" stroke-width="1.5" stroke-linecap="round" />
               </svg>
               <span data-i18n="sidebar.group.agent">AI Agent</span>
-              <svg class="sgh-chevron" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <svg class="sgh-chevron" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true">
                 <polyline points="2,4 6,8 10,4" stroke-linecap="round" stroke-linejoin="round" />
               </svg>
             </button>
@@ -457,7 +469,8 @@
                   stroke-linejoin="round" />
               </svg>
               <span data-i18n="sidebar.group.report">Report</span>
-              <svg class="sgh-chevron" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <svg class="sgh-chevron" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true">
                 <polyline points="2,4 6,8 10,4" stroke-linecap="round" stroke-linejoin="round" />
               </svg>
             </button>
@@ -543,11 +556,16 @@
         <div class="results-wrapper" id="resultsWrapper">
 
           <div class="result-tabs" id="resultTabs">
-            <button class="result-tab active" data-tab="overview" onclick="setActiveResultTab('overview')" data-i18n="tab.overview">Ikhtisar</button>
-            <button class="result-tab" data-tab="charts" onclick="setActiveResultTab('charts')" data-i18n="tab.charts">Carta</button>
-            <button class="result-tab" data-tab="explanation" onclick="setActiveResultTab('explanation')" data-i18n="tab.explanation">Penjelasan</button>
-            <button class="result-tab" data-tab="recs" onclick="setActiveResultTab('recs')" data-i18n="tab.recs">Cadangan Strategik</button>
-            <button class="result-tab" data-tab="schools" onclick="setActiveResultTab('schools')" data-i18n="tab.schools">Sekolah Keutamaan</button>
+            <button class="result-tab active" data-tab="overview" onclick="setActiveResultTab('overview')"
+              data-i18n="tab.overview">Ringkasan</button>
+            <button class="result-tab" data-tab="charts" onclick="setActiveResultTab('charts')"
+              data-i18n="tab.charts">Carta</button>
+            <button class="result-tab" data-tab="explanation" onclick="setActiveResultTab('explanation')"
+              data-i18n="tab.explanation">Penjelasan</button>
+            <button class="result-tab" data-tab="recs" onclick="setActiveResultTab('recs')"
+              data-i18n="tab.recs">Cadangan Strategik</button>
+            <button class="result-tab" data-tab="schools" onclick="setActiveResultTab('schools')"
+              data-i18n="tab.schools">Sekolah Keutamaan</button>
           </div>
 
           <div class="tab-panel active" data-tab="overview">
@@ -683,8 +701,7 @@
                     <div class="form-group">
                       <label for="newRole" data-i18n="admin.role">Peranan</label>
                       <select id="newRole" class="form-control" onchange="onNewRoleChange()">
-                        <option value="user" data-i18n="admin.role.user">Pengguna Biasa (Policy Maker)</option>
-                        <option value="admin" data-i18n="admin.role.admin">Admin (Pegawai Perancangan)</option>
+                        <option value="user" data-i18n="admin.role.user">Pengguna</option>
                         <option value="superadmin" data-i18n="admin.role.superadmin">Superadmin (Akses Penuh)</option>
                       </select>
                     </div>
@@ -862,26 +879,26 @@
       if (window.matchMedia('(prefers-reduced-motion:reduce)').matches) { draw(); } else { tick(); }
     })();
   </script>
-  <script src="lang.js?v=11"></script>
-  <script src="app.js?v=28"></script>
-  <script src="tour.js?v=2"></script>
+  <script src="lang.js?v=12"></script>
+  <script src="app.js?v=29"></script>
+  <script src="tour.js?v=3"></script>
 
-    <!-- ===================== SAVE SIMULATION MODAL ===================== -->
-    <div class="modal-overlay" id="saveSimModal" style="display:none;">
-      <div class="modal-box">
-        <h3 data-i18n="modal.save.title">Save Simulation</h3>
-        <p class="hint" data-i18n="modal.save.hint">Give this simulation a name so you can find it later in My Runs.</p>
-        <label for="saveSimNameInput" data-i18n="modal.save.label">Simulation Name</label>
-        <input id="saveSimNameInput" class="form-control" type="text" maxlength="200"
-          data-i18n-placeholder="modal.save.placeholder" placeholder="e.g. Johor Science 70% option ratio" />
-        <div class="modal-actions">
-          <button class="btn btn-outline btn-sm" id="saveSimCancelBtn" onclick="closeSaveSimulationModal()"
-            data-i18n="modal.save.cancel">Cancel</button>
-          <button class="btn btn-primary btn-sm" id="saveSimConfirmBtn" onclick="submitSaveSimulation()"
-            data-i18n="modal.save.confirm">Save</button>
-        </div>
+  <!-- ===================== SAVE SIMULATION MODAL ===================== -->
+  <div class="modal-overlay" id="saveSimModal" style="display:none;">
+    <div class="modal-box">
+      <h3 data-i18n="modal.save.title">Save Simulation</h3>
+      <p class="hint" data-i18n="modal.save.hint">Give this simulation a name so you can find it later in My Runs.</p>
+      <label for="saveSimNameInput" data-i18n="modal.save.label">Simulation Name</label>
+      <input id="saveSimNameInput" class="form-control" type="text" maxlength="200"
+        data-i18n-placeholder="modal.save.placeholder" placeholder="e.g. Johor Science 70% option ratio" />
+      <div class="modal-actions">
+        <button class="btn btn-outline btn-sm" id="saveSimCancelBtn" onclick="closeSaveSimulationModal()"
+          data-i18n="modal.save.cancel">Cancel</button>
+        <button class="btn btn-primary btn-sm" id="saveSimConfirmBtn" onclick="submitSaveSimulation()"
+          data-i18n="modal.save.confirm">Save</button>
       </div>
     </div>
+  </div>
 
 </body>
 

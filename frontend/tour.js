@@ -38,8 +38,23 @@ const TOUR_STEPS = [
     },
   },
   {
+    target: '.sidebar-rail',
+    position: 'right',
+    bm: {
+      title: 'Bar Sisi Boleh Buka/Tutup',
+      body:  'Panel kiri kini disusun kepada tiga kumpulan: <strong>Analisis Ramalan</strong>, <strong>Ejen AI</strong>, dan <strong>Laporan</strong>. Klik ikon di sini untuk membuka mana-mana kumpulan, atau klik anak panah untuk tutup keseluruhan bar sisi bagi ruang paparan yang lebih luas.',
+      note:  'Kumpulan yang aktif diserlahkan pada ikon.',
+    },
+    en: {
+      title: 'Collapsible Sidebar',
+      body:  'The left panel is now organized into three groups: <strong>Forecast Analysis</strong>, <strong>AI Agent</strong>, and <strong>Report</strong>. Click any icon here to open that group, or click the arrow to collapse the whole sidebar for more viewing room.',
+      note:  'The active group stays highlighted on the icon rail.',
+    },
+  },
+  {
     target: '.sidebar-section:first-child',
     position: 'right',
+    group: 'forecast',
     bm: {
       title: 'Langkah 1 — Tetapkan Skop Analisis',
       body:  'Pilih <strong>Mata Pelajaran</strong>, <strong>Negeri</strong>, <strong>PPD</strong>, <strong>Sekolah</strong>, dan <strong>Tahun / Tingkatan</strong> untuk menentukan skop analisis anda. Biarkan semua pada "Semua" untuk paparan nasional.',
@@ -54,6 +69,7 @@ const TOUR_STEPS = [
   {
     target: '.policy-mode-toggle',
     position: 'right',
+    group: 'forecast',
     bm: {
       title: 'Langkah 2 — Pilih Mod Dasar',
       body:  '<strong>Dasar Tunggal</strong> membolehkan anda menguji satu tuas dasar pada satu masa. <strong>Gabungan</strong> membolehkan anda menguji dua, tiga, atau keempat-empat tuas sekaligus untuk melihat kesan bersama.',
@@ -68,6 +84,7 @@ const TOUR_STEPS = [
   {
     target: '#policyCards',
     position: 'right',
+    group: 'forecast',
     bm: {
       title: 'Empat Tuas Dasar',
       body:  'Pilih satu tuas (atau lebih dalam mod Gabungan):<br/><br/>' +
@@ -90,6 +107,7 @@ const TOUR_STEPS = [
   {
     target: '#policyValueArea',
     position: 'right',
+    group: 'forecast',
     bm: {
       title: 'Tetapkan Nilai Dasar',
       body:  'Setelah tuas dipilih, slaid atau medan nilai akan muncul di sini. Laraskan nilai untuk mensimulasikan impak yang ingin anda uji. Setiap perubahan memberi kesan langsung kepada pengiraan permintaan 2027.',
@@ -104,55 +122,77 @@ const TOUR_STEPS = [
   {
     target: '#btnSimulate',
     position: 'right',
+    group: 'forecast',
     bm: {
       title: 'Langkah 3 — Jalankan Simulasi',
       body:  'Klik butang ini untuk menjalankan unjuran permintaan guru 2027 menggunakan skop dan parameter dasar yang anda tetapkan. Keputusan muncul di panel utama dalam beberapa saat.',
-      note:  'Model Random Forest digunakan untuk unjuran permintaan asas.',
+      note:  'Bar sisi akan tutup secara automatik selepas keputusan dipaparkan.',
     },
     en: {
       title: 'Step 3 — Run the Simulation',
       body:  'Click this button to run the 2027 teacher demand projection using your selected scope and policy parameters. Results appear in the main panel within seconds.',
-      note:  'A Random Forest model is used for the baseline demand projection.',
-    },
-  },
-  {
-    target: '.main-panel',
-    position: 'left',
-    bm: {
-      title: 'Panel Keputusan',
-      body:  'Keputusan simulasi dipaparkan di sini dalam beberapa bahagian:<br/><br/>' +
-             '• <strong>KPI</strong> — permintaan, impak dasar, kekurangan<br/>' +
-             '• <strong>Carta</strong> — perbandingan permintaan, mengikut mata pelajaran, dan ranking risiko negeri<br/>' +
-             '• <strong>Cadangan</strong> — tindakan yang disyorkan<br/>' +
-             '• <strong>Sekolah Keutamaan</strong> — 30 sekolah teratas memerlukan perhatian<br/>' +
-             '• <strong>Muat turun CSV</strong> untuk laporan lanjut',
-      note:  'Semua cadangan memerlukan semakan dan kelulusan manusia.',
-    },
-    en: {
-      title: 'Results Panel',
-      body:  'Simulation results are displayed here in several sections:<br/><br/>' +
-             '• <strong>KPIs</strong> — demand, policy impact, shortages<br/>' +
-             '• <strong>Charts</strong> — demand comparison, by subject, and state risk ranking<br/>' +
-             '• <strong>Recommendations</strong> — suggested actions<br/>' +
-             '• <strong>Priority Schools</strong> — top 30 schools needing attention<br/>' +
-             '• <strong>Download CSV</strong> for further reporting',
-      note:  'All recommendations require human review and approval.',
+      note:  'The sidebar automatically collapses once results appear.',
     },
   },
   {
     target: '.agent-section',
     position: 'top',
+    group: 'agent',
     bm: {
       title: 'Ejen AI — Tanya dalam Bahasa Semula Jadi',
       body:  'Taip soalan dalam <strong>Bahasa Melayu atau Bahasa Inggeris</strong>. Ejen AI akan mentafsirkan soalan anda, menjalankan simulasi yang sesuai, dan menyampaikan penjelasan dalam bahasa mudah.<br/><br/>' +
              'Contoh: <em>"Ramal permintaan guru Sains di Johor untuk 2027 dengan nisbah opsyen 70%"</em>',
-      note:  'Ejen hanya menerangkan — semua pengiraan dilaksanakan oleh Python.',
+      note:  'Bar sisi akan tutup secara automatik selepas keputusan dipaparkan.',
     },
     en: {
       title: 'AI Agent — Ask in Natural Language',
       body:  'Type a question in <strong>Bahasa Melayu or English</strong>. The AI Agent interprets your question, runs the appropriate simulation, and returns an explanation in plain language.<br/><br/>' +
              'Example: <em>"Forecast Science teacher demand in Johor for 2027 with a 70% subject-option ratio"</em>',
-      note:  'The agent explains only — all calculations are executed by Python.',
+      note:  'The sidebar automatically collapses once results appear.',
+    },
+  },
+  {
+    // Targets the always-visible outer panel, not '.result-tabs' itself —
+    // the tabs live inside #resultsWrapper, which is display:none until the
+    // user's first simulation runs, so it'd be a hidden target beforehand.
+    target: '.main-panel',
+    position: 'left',
+    bm: {
+      title: 'Panel Keputusan — Lima Tab',
+      body:  'Keputusan simulasi kini disusun dalam <strong>lima tab</strong>:<br/><br/>' +
+             '• <strong>Ringkasan</strong> — KPI dan impak dasar<br/>' +
+             '• <strong>Carta</strong> — perbandingan permintaan, mengikut mata pelajaran, dan ranking risiko negeri<br/>' +
+             '• <strong>Penjelasan</strong> — ringkasan bahasa mudah<br/>' +
+             '• <strong>Cadangan Strategik</strong> — tindakan yang disyorkan<br/>' +
+             '• <strong>Sekolah Keutamaan</strong> — 30 sekolah teratas memerlukan perhatian<br/><br/>' +
+             'Klik setiap tab untuk beralih.',
+      note:  'Semua cadangan memerlukan semakan dan kelulusan manusia.',
+    },
+    en: {
+      title: 'Results Panel — Five Tabs',
+      body:  'Simulation results are now organized into <strong>five tabs</strong>:<br/><br/>' +
+             '• <strong>Overview</strong> — KPIs and policy impact<br/>' +
+             '• <strong>Charts</strong> — demand comparison, by subject, and state risk ranking<br/>' +
+             '• <strong>Explanation</strong> — plain-language summary<br/>' +
+             '• <strong>Recommendations</strong> — suggested actions<br/>' +
+             '• <strong>Priority Schools</strong> — top 30 schools needing attention<br/><br/>' +
+             'Click each tab to switch between them.',
+      note:  'All recommendations require human review and approval.',
+    },
+  },
+  {
+    target: '.sidebar-rail-icon[data-group="report"]',
+    position: 'right',
+    group: 'report',
+    bm: {
+      title: 'Muat Turun & Simpan Simulasi',
+      body:  'Selepas keputusan tersedia, muat turun CSV/PDF atau simpan senario anda di sini, dalam kumpulan <strong>Laporan</strong> pada bar sisi — bukan lagi di panel utama.',
+      note:  'Butang ini muncul selepas simulasi pertama anda selesai.',
+    },
+    en: {
+      title: 'Download & Save Simulation',
+      body:  'Once results are ready, download CSV/PDF or save your scenario here, under the <strong>Report</strong> group in the sidebar — no longer in the main panel.',
+      note:  'These buttons appear after your first simulation completes.',
     },
   },
   {
@@ -464,6 +504,13 @@ function _renderStep(idx) {
       `<div class="tour-dot${i === idx ? ' active' : ''}"></div>`
     ).join('');
 
+  // If this step lives inside a collapsible sidebar group, open that group
+  // (and expand the sidebar if it's currently collapsed) before measuring
+  // its position — otherwise the target is a zero-height, hidden element.
+  if (step.group && typeof setActiveGroup === 'function') {
+    setActiveGroup(step.group);
+  }
+
   // Position
   const targetEl = step.target ? _getEl(step.target) : null;
   const tooltip  = document.getElementById('tour-tooltip');
@@ -481,9 +528,12 @@ function _renderStep(idx) {
     tooltip.style.top  = '';
     tooltip.style.left = '';
     tooltip.style.transform = '';
-    // Scroll target into view, then position after settle
+    // Scroll target into view, then position after settle. Sidebar-group
+    // steps need a longer delay so the accordion's open transition
+    // (~0.4s, see .sidebar-group-body in styles.css) finishes first.
+    const settleDelay = step.group ? 450 : 200;
     targetEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    setTimeout(() => _applySpotlight(step, targetEl), 200);
+    setTimeout(() => _applySpotlight(step, targetEl), settleDelay);
   }
 }
 

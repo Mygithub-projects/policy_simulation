@@ -64,13 +64,14 @@ const LANG_STRINGS = {
     /* ── CTA / FOOTER (landing) ──────────────── */
     'cta.h2.line1': 'Data tenaga kerja anda.',
     'cta.h2.em': 'Pilihan dasar anda.',
-    'cta.sub': 'Jalankan simulasi sekarang — tiada akaun diperlukan, keputusan dalam beberapa saat.',
+    'cta.sub': 'Jalankan simulasi sekarang, keputusan dalam beberapa saat.',
     'footer.left': 'Sistem Simulasi Dasar Tenaga Kerja Pendidikan  ·  Kementerian Pendidikan',
     'footer.right': 'POC · Ramalan 2027 · Semua cadangan memerlukan semakan manusia',
 
     /* ── HEADER (simulation) ─────────────────── */
-    'header.title': 'Sistem Simulasi Dasar Tenaga Kerja Pendidikan',
-    'header.sub': 'Kementerian Pendidika  ·  Ramalan 2027',
+    'header.title': 'Ejen Simulasi Dasar dan Cadangan Tenaga Kerja Pendidikan
+',
+    'header.sub': 'Kementerian Pendidikan  ·  Ramalan 2027',
     'status.checking': 'Menyemak…',
     'status.online': 'Sistem Dalam Talian',
     'status.issue': 'Sistem Bermasalah',
@@ -131,14 +132,14 @@ const LANG_STRINGS = {
 
     /* ── LOGIN SCREEN ───────────────────────── */
     'login.title': 'Log masuk ke papan pemuka dasar',
-    'login.subtitle': 'Masukkan nama pengguna dan kata laluan anda untuk meneruskan ke sistem sokongan keputusan.',
-    'login.username': 'Nama Pengguna',
+    'login.subtitle': 'Masukkan e-mel dan kata laluan anda untuk meneruskan ke sistem sokongan keputusan.',
+    'login.username': 'Email',
     'login.password': 'Kata laluan',
-    'login.placeholder.username': 'Masukkan nama pengguna',
+    'login.placeholder.username': 'Masukkan alamat e-mel anda',
     'login.placeholder.password': 'Masukkan kata laluan',
     'login.submit': 'Log Masuk',
-    'login.error.missing': 'Sila masukkan nama pengguna dan kata laluan.',
-    'login.error.invalid': 'Nama pengguna atau kata laluan tidak sah.',
+    'login.error.missing': 'Sila masukkan e-mel dan kata laluan.',
+    'login.error.invalid': 'E-mel atau kata laluan tidak sah.',
     'login.error.network': 'Tidak dapat menyambung ke pelayan. Sila cuba lagi.',
     'login.logout': 'Keluar',
 
@@ -148,7 +149,7 @@ const LANG_STRINGS = {
     'admin.email': 'E-mel',
     'admin.password': 'Kata laluan Awal',
     'admin.role': 'Peranan',
-    'admin.role.user': 'Pengguna Biasa (Policy Maker)',
+    'admin.role.user': 'Pengguna',
     'admin.role.admin': 'Admin (Pegawai Perancangan)',
     'admin.role.superadmin': 'Superadmin (Akses Penuh)',
     'admin.create.btn': 'Cipta Pengguna',
@@ -232,7 +233,7 @@ const LANG_STRINGS = {
     'user.menu.back': 'Kembali',
 
     /* ── RESULT CARD HEADERS ─────────────────── */
-    'tab.overview': 'Ikhtisar',
+    'tab.overview': 'Ringkasan',
     'tab.charts': 'Carta',
     'tab.explanation': 'Penjelasan',
     'tab.recs': 'Cadangan Strategik',
@@ -372,7 +373,7 @@ const LANG_STRINGS = {
     /* ── NAV (landing) ──────────────────────── */
     'nav.brand': 'Education Workforce Policy Simulation',
     'nav.features': 'Features',
-    'nav.policy': 'Policy Levers',
+    'nav.policy': 'Policy Instruments',
     'nav.launch': 'Launch App →',
 
     /* ── HERO (landing) ──────────────────────── */
@@ -387,7 +388,7 @@ const LANG_STRINGS = {
     /* ── STATS ───────────────────────────────── */
     'stats.states': 'States covered',
     'stats.ppd': 'District Education Offices',
-    'stats.levers': 'Policy levers to simulate',
+    'stats.levers': 'Policy instrument to simulate',
     'stats.year': 'Target forecast horizon',
 
     /* ── FEATURES (landing) ──────────────────── */
@@ -396,7 +397,7 @@ const LANG_STRINGS = {
     'features.title.em': 'think in workforce',
     'features.sub': 'From national-level demand projection to school-by-school priority ranking — all driven by your policy choices.',
     'feat1.title': '2027 Demand Forecast',
-    'feat1.desc': 'A Random Forest model trained on 2022–2026 enrolment and staffing data estimates teacher demand for every school, subject, and year group.',
+    'feat1.desc': 'A Random Forest model trained on 2022–2026 enrolment and staffing data estimates teacher demand for every school, subject and year group.',
     'feat1.tag': 'Machine Learning',
     'feat2.title': 'Policy Scenario Simulation',
     'feat2.desc': 'Adjust the subject-option ratio, teaching hours, teacher capacity, or co-teaching share — alone or combined — and see the workforce impact immediately.',
@@ -406,7 +407,7 @@ const LANG_STRINGS = {
     'feat3.tag': 'Human-in-the-loop',
 
     /* ── POLICY LEVERS (landing) ─────────────── */
-    'levers.eyebrow': 'Four policy levers',
+    'levers.eyebrow': 'Four policy instruments',
     'levers.title.1': 'Simulate what',
     'levers.title.em': 'actually matters',
     'levers.sub': 'Each lever maps to a real policy decision. Change one or combine them all — the model recalculates instantly.',
@@ -430,7 +431,7 @@ const LANG_STRINGS = {
     'footer.right': 'MVP · 2027 Forecast · All recommendations require human review',
 
     /* ── HEADER (simulation) ─────────────────── */
-    'header.title': 'Education Workforce Policy Simulation System',
+    'header.title': 'Education Workforce Policy Simulation & Recommendation Agent',
     'header.sub': 'Ministry of Education Malaysia  ·  2027 Forecast',
     'status.checking': 'Checking…',
     'status.online': 'System Online',
@@ -455,7 +456,7 @@ const LANG_STRINGS = {
     'step2.title': 'Policy Simulation',
     'mode.single': 'Single Policy',
     'mode.combined': 'Combined',
-    'hint.single': 'Select one policy lever to simulate.',
+    'hint.single': 'Select one policy instrument to simulate.',
     'hint.combined': 'Select at least two policies to combine.',
 
     'pc.option_ratio.label': 'Subject-Option Ratio',
@@ -485,21 +486,21 @@ const LANG_STRINGS = {
     'ob1.label': 'Set the scope',
     'ob1.desc': 'Choose subject, state, district, school, and year groups on the left panel',
     'ob2.label': 'Choose a policy',
-    'ob2.desc': 'Select which lever to test — ratio, hours, capacity, or co-teaching',
+    'ob2.desc': 'Select which policy instrument to test — ratio, hours, capacity, or co-teaching',
     'ob3.label': 'Read the results',
     'ob3.desc': 'Review the 2027 demand forecast, shortages, and recommended actions',
     'empty.hint': 'Or ask the <strong>AI Agent</strong> in the left panel — type a question and it runs the simulation for you.',
 
     /* ── LOGIN SCREEN ───────────────────────── */
     'login.title': 'Sign in to the policy dashboard',
-    'login.subtitle': 'Enter your credentials to continue to the decision support system.',
-    'login.username': 'Username',
+    'login.subtitle': 'Enter your email and password to continue to the decision support system.',
+    'login.username': 'Email',
     'login.password': 'Password',
-    'login.placeholder.username': 'Enter your username',
+    'login.placeholder.username': 'Enter your email address',
     'login.placeholder.password': 'Enter your password',
     'login.submit': 'Sign In',
-    'login.error.missing': 'Please enter both username and password.',
-    'login.error.invalid': 'Invalid username or password.',
+    'login.error.missing': 'Please enter both email and password.',
+    'login.error.invalid': 'Invalid email or password.',
     'login.error.network': 'Unable to reach the server. Please try again.',
     'login.logout': 'Sign Out',
 
@@ -509,7 +510,7 @@ const LANG_STRINGS = {
     'admin.email': 'Email',
     'admin.password': 'Initial Password',
     'admin.role': 'Role',
-    'admin.role.user': 'Regular User (Policy Maker)',
+    'admin.role.user': 'User',
     'admin.role.admin': 'Admin (Forecasting Officer)',
     'admin.role.superadmin': 'Superadmin (Full Access)',
     'admin.create.btn': 'Create User',
@@ -555,7 +556,7 @@ const LANG_STRINGS = {
     'pdf.charts.title': 'Data Visualizations',
     'pdf.chart.comparison': 'Teacher Demand Comparison',
     'pdf.chart.subject': 'Demand by Subject',
-    'pdf.footer': 'Generated by the Ministry of Education Policy Simulation System',
+    'pdf.footer': 'Generated by the Ministry of Education Education Workforce Policy Simulation & Recommendation Agent',
 
     'admin.canviewaudit': 'Can View Audit Log',
     'admin.section.create': 'Create User',

@@ -96,41 +96,64 @@ def has_groq_key() -> bool:
     return bool(os.getenv("GROQ_API_KEY", "").strip())
 
 
-def get_ai_provider() -> str:
-    """Return groq, openai or local without exposing any credential."""
+def get_deepseek_model() -> str:
+    return os.getenv("DEEPSEEK_MODEL", "deepseek-chat").strip()
+
+
+def has_deepseek_key() -> bool:
+    return bool(os.getenv("DEEPSEEK_API_KEY", "").strip())
+
+
+_PROVIDER_MODELS = {
+    "groq": get_groq_model,
+    "deepseek": get_deepseek_model,
+    "openai": get_openai_model,
+}
+_PROVIDER_KEYS = {
+    "groq": has_groq_key,
+    "deepseek": has_deepseek_key,
+    "openai": has_openai_key,
+}
+_PROVIDER_LABELS = {"groq": "Groq", "deepseek": "DeepSeek", "openai": "OpenAI", "local": "Local"}
+
+
+def get_ai_provider_chain() -> list[str]:
+    """Ordered providers to try, filtered to those with a key configured.
+
+    AI_PROVIDER can pin a single provider (or "local" to disable AI entirely).
+    Left unset, the default fallback order is groq -> deepseek -> openai, so a
+    rate-limited/exhausted Groq key automatically falls through to DeepSeek,
+    and callers still fall back to the deterministic local parser if every
+    configured provider fails.
+    """
     configured = os.getenv("AI_PROVIDER", "").strip().lower()
-    if configured and configured not in {"groq", "openai", "local"}:
-        raise ValueError("AI_PROVIDER must be groq, openai or local.")
-    if configured == "groq":
-        return "groq" if has_groq_key() else "local"
-    if configured == "openai":
-        return "openai" if has_openai_key() else "local"
+    if configured and configured not in {"groq", "openai", "deepseek", "local"}:
+        raise ValueError("AI_PROVIDER must be groq, openai, deepseek or local.")
     if configured == "local":
-        return "local"
-    if has_groq_key():
-        return "groq"
-    if has_openai_key():
-        return "openai"
-    return "local"
+        return []
+    chain = [configured] if configured in _PROVIDER_KEYS else ["groq", "deepseek", "openai"]
+    return [provider for provider in chain if _PROVIDER_KEYS[provider]()]
 
 
-def get_ai_model() -> str | None:
-    provider = get_ai_provider()
-    if provider == "groq":
-        return get_groq_model()
-    if provider == "openai":
-        return get_openai_model()
+def get_ai_provider() -> str:
+    """Return the first provider that would be tried, or "local" if none are configured."""
+    chain = get_ai_provider_chain()
+    return chain[0] if chain else "local"
+
+
+def get_ai_model(provider: str | None = None) -> str | None:
+    provider = provider if provider is not None else get_ai_provider()
+    if provider in _PROVIDER_MODELS:
+        return _PROVIDER_MODELS[provider]()
     return None
 
 
-def get_ai_provider_label() -> str:
-    return {"groq": "Groq", "openai": "OpenAI", "local": "Local"}[
-        get_ai_provider()
-    ]
+def get_ai_provider_label(provider: str | None = None) -> str:
+    return _PROVIDER_LABELS[provider if provider is not None else get_ai_provider()]
 
 
 def has_ai_key() -> bool:
-    return get_ai_provider() in {"groq", "openai"}
+    return bool(get_ai_provider_chain())
 
 
 def get_smtp_host() -> str:
