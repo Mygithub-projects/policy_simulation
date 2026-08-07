@@ -23,7 +23,7 @@ con.commit()
 def _describe(table_name):
     cursor.execute(
         "SELECT column_name, data_type FROM information_schema.columns "
-        "WHERE table_schema = 'public' AND table_name = %s ORDER BY ordinal_position",
+        "WHERE table_schema = 'g5_p1' AND table_name = %s ORDER BY ordinal_position",
         [table_name],
     )
     return cursor.fetchall()

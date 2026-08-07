@@ -69,8 +69,7 @@ const LANG_STRINGS = {
     'footer.right': 'POC · Ramalan 2027 · Semua cadangan memerlukan semakan manusia',
 
     /* ── HEADER (simulation) ─────────────────── */
-    'header.title': 'Ejen Simulasi Dasar dan Cadangan Tenaga Kerja Pendidikan
-',
+    'header.title': 'Ejen Simulasi Dasar dan Cadangan Tenaga Kerja Pendidikan',
     'header.sub': 'Kementerian Pendidikan  ·  Ramalan 2027',
     'status.checking': 'Menyemak…',
     'status.online': 'Sistem Dalam Talian',

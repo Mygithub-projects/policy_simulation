@@ -6,3 +6,6 @@ outputs/RUN_*.json
 public.dump
 .playwright-mcp/
 tests/anaconda_projects/db/
+data/*.duckdb
+.claude/worktrees/
+.claude/settings.local.json

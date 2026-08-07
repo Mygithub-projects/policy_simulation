@@ -1,0 +1,13 @@
+.split-char {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(40px);
+  transition-property: opacity, transform;
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform, opacity;
+}
+
+.split-char.split-in {
+  opacity: 1;
+  transform: translateY(0);
+}

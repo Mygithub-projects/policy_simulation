@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+.env
+.git/
+.gitignore
+outputs/*
+!outputs/.gitkeep
+data/*.duckdb
+public.dump
+uvicorn.log
+.claude/
+docs/
+tests/
+*.md

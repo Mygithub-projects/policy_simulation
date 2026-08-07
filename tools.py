@@ -81,7 +81,7 @@ class WorkforceTools:
                 is_read_only = cursor.fetchone()[0] == "on"
                 cursor.execute(
                     "SELECT table_name FROM information_schema.tables "
-                    "WHERE table_schema = 'public'"
+                    "WHERE table_schema = 'g5_p1'"
                 )
                 tables = {row[0] for row in cursor.fetchall()}
         finally:

@@ -12,7 +12,7 @@ con.commit()
 
 cursor.execute(
     "SELECT column_name, data_type FROM information_schema.columns "
-    "WHERE table_schema = 'public' AND table_name = 'simulation_run_log' ORDER BY ordinal_position"
+    "WHERE table_schema = 'g5_p1' AND table_name = 'simulation_run_log' ORDER BY ordinal_position"
 )
 print(cursor.fetchall())
 cursor.close()

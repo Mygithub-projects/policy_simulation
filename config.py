@@ -196,9 +196,14 @@ def get_postgres_password() -> str:
     return os.getenv("POSTGRES_PASSWORD", "").strip()
 
 
+def get_postgres_schema() -> str:
+    return os.getenv("POSTGRES_SCHEMA", "g5_p1").strip() or "g5_p1"
+
+
 def get_postgres_dsn() -> str:
     return (
         f"host={get_postgres_host()} port={get_postgres_port()} "
         f"dbname={get_postgres_db()} user={get_postgres_user()} "
-        f"password={get_postgres_password()}"
+        f"password={get_postgres_password()} "
+        f"options='-c search_path={get_postgres_schema()},public'"
     )
