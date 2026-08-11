@@ -147,13 +147,13 @@ def _write_run_log(output: dict[str, Any], session: dict[str, Any], run_type: st
 @lru_cache(maxsize=1)
 def get_system() -> tuple[WorkforceTools, Orchestrator]:
     try:
-        tools = WorkforceTools(get_database_path(), get_model_path())
+        tools = WorkforceTools(get_database_path(required=False), get_model_path())
     except Exception as error:
         # Fall back to a lightweight mock tools implementation so tests and notebooks
         # can run in environments where native extensions or model files fail to load.
         from tools import MockWorkforceTools
 
-        tools = MockWorkforceTools(get_database_path(), get_model_path())
+        tools = MockWorkforceTools(get_database_path(required=False), get_model_path())
     return tools, Orchestrator(tools)
 
 

@@ -39,11 +39,12 @@ def _resolve_input_file(
     folder: Path,
     suffixes: tuple[str, ...],
     description: str,
+    required: bool = True,
 ) -> Path:
     configured = os.getenv(env_name, "").strip()
     if configured:
         path = Path(configured).expanduser().resolve()
-        if not path.exists():
+        if not path.exists() and required:
             raise FileNotFoundError(f"{description} configured in {env_name} not found: {path}")
         return path
 
@@ -54,6 +55,8 @@ def _resolve_input_file(
     if len(matches) == 1:
         return matches[0].resolve()
     if not matches:
+        if not required:
+            return folder / f"{description.lower().replace(' ', '-')}-not-found"
         raise FileNotFoundError(
             f"No {description} found in {folder}. Copy the file there or set {env_name} in .env."
         )
@@ -62,12 +65,13 @@ def _resolve_input_file(
     )
 
 
-def get_database_path() -> Path:
+def get_database_path(required: bool = True) -> Path:
     return _resolve_input_file(
         "DATA_FILE",
         DATA_DIR,
         (".duckdb",),
         "DuckDB database",
+        required=required,
     )
 
 
