@@ -1,4 +1,4 @@
-name: Test GCP Authentication
+name: Deploy policy_simulation
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  test-gcp:
+  deploy:
     runs-on: ubuntu-latest
 
     permissions:
@@ -28,26 +28,44 @@ jobs:
       - name: Set up gcloud
         uses: google-github-actions/setup-gcloud@v3
 
-      - name: Verify GCP authentication
-        run: |
-          gcloud auth list
-          gcloud config get-value project
-
       - name: Authenticate Docker to Artifact Registry
         run: |
           gcloud auth configure-docker asia-southeast1-docker.pkg.dev --quiet
 
       - name: Build Docker image
         run: |
-          docker build -t asia-southeast1-docker.pkg.dev/prestij-mohye-delimanextgen/policy-simulation/policy-simulation:${{ github.sha }} .
+          docker build \
+            -t asia-southeast1-docker.pkg.dev/prestij-mohye-delimanextgen/policy-simulation/policy-simulation:${{ github.sha }} \
+            .
 
       - name: Push Docker image
         run: |
-          docker push asia-southeast1-docker.pkg.dev/prestij-mohye-delimanextgen/policy-simulation/policy-simulation:${{ github.sha }}
+          docker push \
+            asia-southeast1-docker.pkg.dev/prestij-mohye-delimanextgen/policy-simulation/policy-simulation:${{ github.sha }}
 
-      - name: Test deployment server
+      - name: Deploy to deployment-server
         run: |
           gcloud compute ssh deployment-server \
             --zone=asia-southeast1-b \
             --tunnel-through-iap \
-            --command="hostname && docker --version"
+            --command="
+              docker pull asia-southeast1-docker.pkg.dev/prestij-mohye-delimanextgen/policy-simulation/policy-simulation:${{ github.sha }};
+              docker stop policy_simulation || true;
+              docker rm policy_simulation || true;
+              docker run -d \
+                --name policy_simulation \
+                -p 8002:8002 \
+                --env-file /opt/policy_simulation/.env \
+                -v /opt/policy_simulation/outputs:/app/outputs \
+                asia-southeast1-docker.pkg.dev/prestij-mohye-delimanextgen/policy-simulation/policy-simulation:${{ github.sha }}
+            "
+
+      - name: Verify deployment
+        run: |
+          gcloud compute ssh deployment-server \
+            --zone=asia-southeast1-b \
+            --tunnel-through-iap \
+            --command="
+              docker ps --filter name=policy_simulation;
+              docker logs --tail 20 policy_simulation
+            "
