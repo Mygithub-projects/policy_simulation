@@ -45,7 +45,7 @@ jobs:
 
       - name: Deploy to deployment-server
         run: |
-          gcloud compute ssh deployment-server \
+          gcloud compute ssh jothikannan2009@deployment-server \
             --zone=asia-southeast1-b \
             --tunnel-through-iap \
             --command="
