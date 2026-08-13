@@ -33,9 +33,9 @@ jobs:
           gcloud auth list
           gcloud config get-value project
 
-       - name: Test deployment server
-         run: |
-           gcloud compute ssh deployment-server \
-             --zone=asia-southeast1-b \
-             --tunnel-through-iap \
-             --command="hostname && docker --version"
+      - name: Test deployment server
+        run: |
+          gcloud compute ssh deployment-server \
+            --zone=asia-southeast1-b \
+            --tunnel-through-iap \
+            --command="hostname && docker --version"
