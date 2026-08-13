@@ -1,0 +1,31 @@
+name: Test GCP Authentication
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-gcp:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: prestij-mohye-delimanextgen
+          workload_identity_provider: projects/4415568906/locations/global/workloadIdentityPools/github-actions-pool/providers/github
+          service_account: github-actions@prestij-mohye-delimanextgen.iam.gserviceaccount.com
+
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@v3
+
+      - name: Verify GCP authentication
+        run: |
+          gcloud auth list
+          gcloud config get-value project
