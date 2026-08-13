@@ -1,6 +1,9 @@
 name: Test GCP Authentication
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
