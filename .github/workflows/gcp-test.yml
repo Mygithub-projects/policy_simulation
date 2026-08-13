@@ -33,6 +33,18 @@ jobs:
           gcloud auth list
           gcloud config get-value project
 
+      - name: Authenticate Docker to Artifact Registry
+        run: |
+          gcloud auth configure-docker asia-southeast1-docker.pkg.dev --quiet
+
+      - name: Build Docker image
+        run: |
+          docker build -t asia-southeast1-docker.pkg.dev/prestij-mohye-delimanextgen/policy-simulation/policy-simulation:${{ github.sha }} .
+
+      - name: Push Docker image
+        run: |
+          docker push asia-southeast1-docker.pkg.dev/prestij-mohye-delimanextgen/policy-simulation/policy-simulation:${{ github.sha }}
+
       - name: Test deployment server
         run: |
           gcloud compute ssh deployment-server \
