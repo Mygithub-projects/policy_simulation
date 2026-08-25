@@ -15,7 +15,7 @@ import email_utils
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, RedirectResponse
+from fastapi.responses import FileResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from agents import Orchestrator
@@ -25,9 +25,12 @@ from api_models import (
     CreateUserInput,
     ForecastInput,
     LoginInput,
+    ReportChartSpec,
+    ReportPdfInput,
     SaveRunInput,
     ScenarioInput,
 )
+from reports.pdf_report import ChartDatasetData, ChartSpecData, KpiCardData, ReportData, build_report_pdf
 from config import (
     get_ai_model,
     get_ai_provider,
@@ -698,6 +701,47 @@ def download_run_summary(
                 filename=file_path.name,
             )
     raise HTTPException(status_code=404, detail="Run summary not found")
+
+
+def _chart_spec_data(spec: ReportChartSpec) -> ChartSpecData:
+    return ChartSpecData(
+        labels=spec.labels,
+        datasets=[ChartDatasetData(label=ds.label, data=ds.data) for ds in spec.datasets],
+    )
+
+
+@app.post("/api/runs/{run_id}/report.pdf")
+def download_run_report_pdf(
+    run_id: str,
+    payload: ReportPdfInput,
+    session: dict[str, Any] = Depends(require_role("superadmin", "user")),
+):
+    if not run_id.startswith("RUN_") or not run_id.replace("_", "").isalnum():
+        raise HTTPException(status_code=400, detail="Invalid run_id")
+
+    report_data = ReportData(
+        generated_date=payload.generated_date,
+        scope_rows=payload.scope_rows,
+        policy_rows=payload.policy_rows,
+        explanation_text=payload.explanation_text,
+        explanation_source_label=payload.explanation_source_label,
+        kpi_cards=[KpiCardData(**card.model_dump()) for card in payload.kpi_cards],
+        chart_comparison=_chart_spec_data(payload.chart_comparison),
+        chart_subject=_chart_spec_data(payload.chart_subject),
+        chart_risk=_chart_spec_data(payload.chart_risk),
+        section_titles=payload.section_titles,
+    )
+    try:
+        pdf_bytes = build_report_pdf(report_data)
+    except Exception as error:
+        raise HTTPException(status_code=500, detail=f"Failed to generate PDF: {error}") from error
+
+    filename = f"simulation_2027_report_{run_id}.pdf"
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
 
 
 def _read_run_scenario(run_id: str) -> dict[str, Any] | None:

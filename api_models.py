@@ -64,3 +64,51 @@ class ForecastInput(BaseModel):
 class SaveRunInput(BaseModel):
     run_id: str = Field(min_length=1, max_length=80)
     run_name: str = Field(default="", max_length=200)
+
+
+class ReportKpiCard(BaseModel):
+    label: str
+    value: str
+    sub_label: str = ""
+    color: Literal["default", "teal", "amber", "green", "red"] = "default"
+    value_style: Literal["default", "positive", "negative"] = "default"
+
+
+class ReportChartDataset(BaseModel):
+    label: str
+    data: list[float]
+
+
+class ReportChartSpec(BaseModel):
+    """Raw chart data (not a rendered image) — the backend draws the chart
+    itself with ReportLab's native charting, so sizing/resolution is always
+    consistent regardless of the browser's on-screen layout at capture time.
+    See reports/pdf_report.py for the drawing logic."""
+
+    labels: list[str] = Field(default_factory=list)
+    datasets: list[ReportChartDataset] = Field(default_factory=list)
+
+
+class ReportPdfInput(BaseModel):
+    """Request body for POST /api/runs/{run_id}/report.pdf.
+
+    All text is already translated client-side (same as the rest of the app) —
+    this model carries pre-formatted strings/labels, not raw scenario fields,
+    so the backend never needs its own i18n logic.
+
+    section_titles keys: title, params_title, summary_title, kpi_title,
+    charts_title, chart_comparison, chart_subject, chart_risk, footer,
+    params_scope_subtitle, params_policy_subtitle.
+    """
+
+    lang: Literal["bm", "en"] = "en"
+    generated_date: str
+    scope_rows: list[tuple[str, str]]
+    policy_rows: list[tuple[str, str]]
+    explanation_text: str
+    explanation_source_label: str = ""
+    kpi_cards: list[ReportKpiCard]
+    chart_comparison: ReportChartSpec
+    chart_subject: ReportChartSpec
+    chart_risk: ReportChartSpec
+    section_titles: dict[str, str]

@@ -9,3 +9,4 @@ scikit-learn>=1.4,<2
 joblib>=1.4,<2
 python-dotenv>=1.0,<2
 openai>=1.50,<3
+reportlab>=4.0,<5

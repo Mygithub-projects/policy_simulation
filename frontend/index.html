@@ -5,11 +5,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sistem Simulasi Dasar Tenaga Kerja Pendidikan 2027</title>
-  <link rel="stylesheet" href="styles.css?v=15" />
+  <link rel="stylesheet" href="styles.css?v=18" />
   <link rel="stylesheet" href="aurora-bg.css?v=1" />
   <link rel="stylesheet" href="logo-loop.css?v=1" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script src="aurora-bg.js?v=1"></script>
   <script src="logo-loop.js?v=1"></script>
 </head>
@@ -480,7 +479,7 @@
                   data-i18n="btn.download">
                   ⬇ Muat Turun CSV
                 </button>
-                <button class="btn btn-outline btn-sm" id="btnDownloadSummary" onclick="downloadSummaryPDF()"
+                <button class="btn btn-outline btn-sm" id="btnDownloadSummary" onclick="downloadReportPDF()"
                   style="display:none;" data-i18n="btn.download.summary">
                   ⬇ Muat Turun Laporan PDF
                 </button>
@@ -811,47 +810,9 @@
     </div>
   </div>
 
-  <!-- ===================== HIDDEN PDF TEMPLATE ===================== -->
-  <div id="pdfTemplate" style="display:none;">
-    <div class="pdf-container" id="pdfContent">
-      <div class="pdf-header">
-        <h1 data-i18n="pdf.title">Laporan Simulasi Tenaga Kerja Pendidikan 2027</h1>
-        <p id="pdfDate" class="pdf-date"></p>
-      </div>
-
-      <div class="pdf-section">
-        <h2 data-i18n="pdf.params.title">Parameter Simulasi</h2>
-        <div id="pdfParams"></div>
-      </div>
-
-      <div class="pdf-section pdf-page-break">
-        <h2 data-i18n="pdf.summary.title">Ringkasan Penjelasan</h2>
-        <div id="pdfExplanation" class="pdf-explanation"></div>
-      </div>
-
-      <div class="pdf-section pdf-page-break">
-        <h2 data-i18n="pdf.kpi.title">Penunjuk Prestasi Utama (KPI)</h2>
-        <div id="pdfKpiGrid" class="pdf-kpi-grid"></div>
-      </div>
-
-      <div class="pdf-section pdf-page-break">
-        <h2 data-i18n="pdf.charts.title">Visualisasi Data</h2>
-        <div class="pdf-charts">
-          <div class="pdf-chart-item">
-            <h3 data-i18n="pdf.chart.comparison">Perbandingan Permintaan Guru</h3>
-            <img id="pdfChartComparison" src="" alt="Comparison Chart" />
-          </div>
-          <div class="pdf-chart-item" style="margin-top: 20px;">
-            <h3 data-i18n="pdf.chart.subject">Permintaan Mengikut Mata Pelajaran</h3>
-            <img id="pdfChartSubject" src="" alt="Subject Chart" />
-          </div>
-        </div>
-        <div class="pdf-footer">
-          <span data-i18n="pdf.footer">Dijana oleh Sistem Simulasi Dasar Kementerian Pendidikan Malaysia</span>
-        </div>
-      </div>
-    </div>
-  </div>
+  <!-- The PDF report is now generated server-side (ReportLab, see
+       reports/pdf_report.py) from data POSTed by downloadReportPDF() in
+       app.js — no hidden DOM template needed here anymore. -->
 
   <button class="agent-fab" id="agentFab" onclick="focusAgentSection()" title="Ejen AI" data-i18n-title="agent.title"
     style="display:none;">
@@ -879,8 +840,8 @@
       if (window.matchMedia('(prefers-reduced-motion:reduce)').matches) { draw(); } else { tick(); }
     })();
   </script>
-  <script src="lang.js?v=13"></script>
-  <script src="app.js?v=29"></script>
+  <script src="lang.js?v=14"></script>
+  <script src="app.js?v=33"></script>
   <script src="tour.js?v=3"></script>
 
   <!-- ===================== SAVE SIMULATION MODAL ===================== -->

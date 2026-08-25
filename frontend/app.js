@@ -1239,10 +1239,12 @@ async function runSimulation() {
 /** Re-runs an archived scenario (from the "Simulasi Saya" list) through the
  *  normal simulate → render → PDF pipeline, so a Policy Maker can get back a
  *  report for a scenario they ran earlier without re-configuring the sidebar.
- *  Switches to the dashboard first — Chart.js needs a real, visible-sized
- *  canvas to draw into, so this cannot happen invisibly in the background
- *  (see the comments on downloadSummaryPDF for the related, already-fixed
- *  cold-render failure mode this would otherwise risk repeating). */
+ *  Switches to the dashboard first so the on-screen charts render correctly
+ *  (Chart.js needs a real, visible-sized canvas). The PDF itself no longer
+ *  depends on that on-screen rendering, though — its chart data
+ *  (state.lastChart*) is captured synchronously inside renderResults(),
+ *  before Chart.js even starts its entrance animation on the canvas — so no
+ *  extra wait is needed before calling downloadReportPDF(). */
 async function downloadPdfForRun(scenario) {
   goToDashboard();
   showLoading(t('loading.sim'));
@@ -1254,12 +1256,7 @@ async function downloadPdfForRun(scenario) {
     state.currentRunId = data.artifacts?.run_id ?? null;
     renderResults(data, payload);
     collapseSidebarAfterResult('forecast');
-
-    // Chart.js animates new charts in (~1s by default) — wait for that to
-    // finish before html2canvas captures them, otherwise the PDF can contain
-    // a mid-animation frame with partially-drawn bars.
-    await new Promise(resolve => setTimeout(resolve, 1200));
-    await downloadSummaryPDF();
+    await downloadReportPDF();
   } catch (err) {
     showLoading(null);
     showError(`Failed to regenerate report: ${err.message}`);
@@ -1349,13 +1346,13 @@ function renderResults(data, payload) {
   const { summary, subject_summary, top_recommendations, rules, explanation,
           explanation_source, artifacts, policy_impacts } = data;
 
-  // Kept so the PDF report can rebuild its own parameters/KPI sections
-  // (rather than copying the dashboard's dark-themed HTML, which html2canvas
-  // renders inconsistently on the report's white background — see
-  // buildPdfKpiHtml for details).
+  // Kept so the PDF report request body can be built from the same data
+  // this render used, without re-deriving anything or reading back out of
+  // the DOM (see downloadReportPDF/buildPdfParamsData/buildPdfKpiData).
   state.lastPayload = payload;
   state.lastSummary = summary;
   state.lastTopRecommendations = top_recommendations;
+  state.lastSubjectSummary = subject_summary;
 
   // Hide loader and show results area
   showLoading(null);
@@ -1381,10 +1378,14 @@ function renderResults(data, payload) {
   const expBox = document.getElementById('explanationBox');
   const _noExp = _uiLang() === 'bm' ? 'Tiada penjelasan tersedia.' : 'No explanation available.';
   const _srcLabel = _uiLang() === 'bm' ? 'Sumber' : 'Source';
-  expBox.innerHTML = (explanation || _noExp).replace(/\n/g, '<br/>');
+  const explanationText = explanation || _noExp;
+  expBox.innerHTML = explanationText.replace(/\n/g, '<br/>');
+  state.lastExplanation = explanationText;
+  state.lastExplanationSourceLabel = '';
   if (explanation_source) {
     const sourceText = formatExplanationSource(explanation_source);
-    expBox.innerHTML += `<span class="explanation-source">${_srcLabel}: ${sourceText}</span>`;
+    state.lastExplanationSourceLabel = `${_srcLabel}: ${sourceText}`;
+    expBox.innerHTML += `<span class="explanation-source">${state.lastExplanationSourceLabel}</span>`;
   }
 
   // --- Rules ---
@@ -1563,13 +1564,18 @@ function renderRiskRankingChart(topRecommendations) {
 
   const labels = rows.map(r => r[0]);
   const data   = rows.map(r => r[1]);
+  const riskLabel = t('chart.risk.label');
+
+  // See the equivalent comment in renderComparisonChart — kept for the
+  // server-side PDF chart, independent of this canvas's visibility.
+  state.lastChartRisk = { labels, datasets: [{ label: riskLabel, data }] };
 
   state.chartRisk = new Chart(ctx, {
     type: 'bar',
     data: {
       labels,
       datasets: [{
-        label: t('chart.risk.label'),
+        label: riskLabel,
         data,
         backgroundColor: 'rgba(232,160,32,0.85)',
         borderColor: 'rgba(232,160,32,1)',
@@ -1679,13 +1685,28 @@ function renderComparisonChart(summary, subjectSummary, payload = {}) {
         isOptionPolicy ? (summary?.scenario_option_gap ?? 0) : (summary?.scenario_required_2027 ?? 0)
       )];
 
+  const baseLabel = isOptionPolicy ? t('chart.base.label') : t('chart.rf.label');
+  const scenLabel = isOptionPolicy ? t('chart.scen.label', targetPct) : t('chart.policy.label');
+
+  // Kept alongside the Chart.js instance so the PDF report (built server-side
+  // with ReportLab's own charting, not a screenshot of this canvas — see
+  // downloadReportPDF) can draw the exact same data without depending on
+  // this canvas ever having been visible/sized.
+  state.lastChartComparison = {
+    labels,
+    datasets: [
+      { label: baseLabel, data: baseData },
+      { label: scenLabel, data: scenData },
+    ],
+  };
+
   state.chartComparison = new Chart(ctx, {
     type: 'bar',
     data: {
       labels,
       datasets: [
         {
-          label: isOptionPolicy ? t('chart.base.label') : t('chart.rf.label'),
+          label: baseLabel,
           data: baseData,
           backgroundColor: 'rgba(35,86,160,0.75)',
           borderColor: 'rgba(35,86,160,1)',
@@ -1693,7 +1714,7 @@ function renderComparisonChart(summary, subjectSummary, payload = {}) {
           borderRadius: 10,
         },
         {
-          label: isOptionPolicy ? t('chart.scen.label', targetPct) : t('chart.policy.label'),
+          label: scenLabel,
           data: scenData,
           backgroundColor: 'rgba(15,124,124,0.75)',
           borderColor: 'rgba(15,124,124,1)',
@@ -1730,11 +1751,26 @@ function renderSubjectChart(subjectSummary) {
   if (state.chartSubject) state.chartSubject.destroy();
 
   const rows = subjectSummary || [];
-  if (!rows.length) return;
+  if (!rows.length) {
+    state.lastChartSubject = { labels: [], datasets: [] };
+    return;
+  }
 
   const labels   = rows.map(r => formatSubject(r.subjek || '—'));
   const gapData  = rows.map(r => Math.round(r.scenario_teacher_gap ?? 0));
   const optData  = rows.map(r => Math.round(r.scenario_option_gap  ?? 0));
+  const gapLabel = t('kpi.scen.gap.label');
+  const optLabel = t('th.opt.shortage');
+
+  // See the equivalent comment in renderComparisonChart — kept for the
+  // server-side PDF chart, independent of this canvas's visibility.
+  state.lastChartSubject = {
+    labels,
+    datasets: [
+      { label: gapLabel, data: gapData },
+      { label: optLabel, data: optData },
+    ],
+  };
 
   state.chartSubject = new Chart(ctx, {
     type: 'bar',
@@ -1742,7 +1778,7 @@ function renderSubjectChart(subjectSummary) {
       labels,
       datasets: [
         {
-          label: t('kpi.scen.gap.label'),
+          label: gapLabel,
           data: gapData,
           backgroundColor: 'rgba(185,32,32,0.75)',
           borderColor: 'rgba(185,32,32,1)',
@@ -1750,7 +1786,7 @@ function renderSubjectChart(subjectSummary) {
           borderRadius: 10,
         },
         {
-          label: t('th.opt.shortage'),
+          label: optLabel,
           data: optData,
           backgroundColor: 'rgba(232,160,32,0.75)',
           borderColor: 'rgba(232,160,32,1)',
@@ -1969,15 +2005,13 @@ async function downloadSummaryCSV() {
   }
 }
 
-/** Builds the "Simulation Parameters" HTML block for the PDF report from the last run's payload. */
-function buildPdfParamsHtml(payload) {
-  if (!payload) return '';
+/** Builds the "Simulation Parameters" scope/policy label:value rows for the
+ *  PDF report request body — plain [label, value] pairs, not HTML, since the
+ *  PDF itself is now built server-side (ReportLab) from this data. */
+function buildPdfParamsData(payload) {
+  if (!payload) return { scopeRows: [], policyRows: [] };
   const lang = _uiLang();
-  const row = (label, value) => `
-    <div class="pdf-param-row">
-      <span class="pdf-param-label">${label}</span>
-      <span class="pdf-param-value">${value}</span>
-    </div>`;
+  const row = (label, value) => [label, value];
 
   const allLabel = lang === 'bm' ? 'Semua' : 'All';
   const scopeSubject = payload.subject === 'SEMUA' || !payload.subject ? t('all.subjects') : formatSubject(payload.subject);
@@ -1999,59 +2033,54 @@ function buildPdfParamsHtml(payload) {
     : [payload.policy_type].filter(Boolean);
   const policyNames = activePolicies.map(p => policyLabels[p] || p).join(', ') || '—';
 
-  let scopeRows =
-    row(t('label.subject'), scopeSubject) +
-    row(t('label.state'), scopeNegeri) +
-    row(t('label.ppd'), scopePPD) +
-    row(t('label.school'), scopeSchool) +
-    row(t('label.grade'), scopeGrades);
+  const scopeRows = [
+    row(t('label.subject'), scopeSubject),
+    row(t('label.state'), scopeNegeri),
+    row(t('label.ppd'), scopePPD),
+    row(t('label.school'), scopeSchool),
+    row(t('label.grade'), scopeGrades),
+  ];
 
-  let policyRows =
-    row(lang === 'bm' ? 'Mod Dasar' : 'Policy Mode', modeLabel) +
-    row(lang === 'bm' ? 'Dasar Aktif' : 'Active Policies', policyNames);
+  const policyRows = [
+    row(lang === 'bm' ? 'Mod Dasar' : 'Policy Mode', modeLabel),
+    row(lang === 'bm' ? 'Dasar Aktif' : 'Active Policies', policyNames),
+  ];
 
   if (activePolicies.includes('option_ratio')) {
-    policyRows += row(t('val1.label'), `${Math.round((payload.option_ratio ?? 0.7) * 100)}%`);
+    policyRows.push(row(t('val1.label'), `${Math.round((payload.option_ratio ?? 0.7) * 100)}%`));
   }
   if (activePolicies.includes('teaching_hours')) {
-    policyRows += row(t('val2.label'), `${payload.teaching_hours_change_pct ?? 0}%`);
+    policyRows.push(row(t('val2.label'), `${payload.teaching_hours_change_pct ?? 0}%`));
   }
   if (activePolicies.includes('teacher_capacity')) {
-    policyRows += row(t('val3.label'), `${payload.teacher_capacity_change_pct ?? 0}%`);
+    policyRows.push(row(t('val3.label'), `${payload.teacher_capacity_change_pct ?? 0}%`));
   }
   if (activePolicies.includes('coteaching')) {
-    policyRows += row(t('val4.label'), `${payload.coteaching_share_pct ?? 0}%`);
+    policyRows.push(row(t('val4.label'), `${payload.coteaching_share_pct ?? 0}%`));
   }
 
-  return `
-    <div class="pdf-params-subtitle">${lang === 'bm' ? 'Skop Analisis' : 'Analysis Scope'}</div>
-    <div class="pdf-params-grid">${scopeRows}</div>
-    <div class="pdf-params-subtitle" style="margin-top:16px;">${lang === 'bm' ? 'Tetapan Dasar' : 'Policy Settings'}</div>
-    <div class="pdf-params-grid">${policyRows}</div>`;
+  return { scopeRows, policyRows };
 }
 
 /**
- * Builds the PDF report's own KPI cards from the raw summary data, using the
- * light-themed `.pdf-kpi-card` styles (plain hex colors, no CSS custom
- * properties). This is deliberate, not copied from `renderKPICards`'s
- * `.kpi-card` markup: html2canvas renders that dark, CSS-variable-driven
- * card style inconsistently once the report gets tall enough (KPI cards
- * come out washed out/illegible on some captures) — using plain hex colors
- * in a dedicated PDF-only template avoids that entirely.
+ * Builds the PDF report's KPI card data from the raw summary data — plain
+ * {label, value, sub_label, color, value_style} objects, not HTML, since the
+ * PDF itself is now built server-side (ReportLab) from this data.
  */
-function buildPdfKpiHtml(summary, payload, topRecommendations) {
-  if (!summary) return '';
+function buildPdfKpiData(summary, payload, topRecommendations) {
+  if (!summary) return [];
   const card = (label, value, subLabel, colorClass) => {
     const numVal = typeof value === 'number' ? Math.round(value) : (value ?? '—');
-    const valClass = typeof numVal === 'number'
-      ? (numVal > 0 ? 'positive' : numVal < 0 ? 'negative' : '')
-      : '';
-    return `
-      <div class="pdf-kpi-card ${colorClass || ''}">
-        <h4>${label}</h4>
-        <div class="pdf-kpi-value ${valClass}">${typeof numVal === 'number' ? numVal.toLocaleString('en-MY') : numVal}</div>
-        <div class="pdf-kpi-sub">${subLabel || ''}</div>
-      </div>`;
+    const valueStyle = typeof numVal === 'number'
+      ? (numVal > 0 ? 'positive' : numVal < 0 ? 'negative' : 'default')
+      : 'default';
+    return {
+      label,
+      value: typeof numVal === 'number' ? numVal.toLocaleString('en-MY') : String(numVal),
+      sub_label: subLabel || '',
+      color: colorClass || 'default',
+      value_style: valueStyle,
+    };
   };
 
   const base           = summary.baseline_required_2027   ?? 0;
@@ -2068,13 +2097,14 @@ function buildPdfKpiHtml(summary, payload, topRecommendations) {
       ? t('kpi.delta.dec')
       : t('kpi.delta.none');
 
-  let cards =
-    card(t('kpi.base.label'), base, t('kpi.base.sub'), '') +
-    card(t('kpi.available.label'), available, t('kpi.available.sub'), 'teal') +
-    card(t('kpi.shortage.label'), scenarioGap, t('kpi.shortage.sub'), scenarioGap > 0 ? 'red' : 'green') +
-    card(t('kpi.optiongap.label'), optionGap, t('kpi.optiongap.sub'), optionGap > 0 ? 'amber' : 'green') +
-    card(t('kpi.higheststate.label'), highestState, t('kpi.higheststate.sub'), 'amber') +
-    card(t('kpi.policyimpact.label'), delta, deltaText, delta > 0 ? 'amber' : 'green');
+  const cards = [
+    card(t('kpi.base.label'), base, t('kpi.base.sub'), 'default'),
+    card(t('kpi.available.label'), available, t('kpi.available.sub'), 'teal'),
+    card(t('kpi.shortage.label'), scenarioGap, t('kpi.shortage.sub'), scenarioGap > 0 ? 'red' : 'green'),
+    card(t('kpi.optiongap.label'), optionGap, t('kpi.optiongap.sub'), optionGap > 0 ? 'amber' : 'green'),
+    card(t('kpi.higheststate.label'), highestState, t('kpi.higheststate.sub'), 'amber'),
+    card(t('kpi.policyimpact.label'), delta, deltaText, delta > 0 ? 'amber' : 'green'),
+  ];
 
   const activePolicies = payload?.active_policies?.length
     ? payload.active_policies
@@ -2092,124 +2122,92 @@ function buildPdfKpiHtml(summary, payload, topRecommendations) {
         ? t('kpi.opt.chg.inc', optionChange.toLocaleString('en-MY'))
         : t('kpi.opt.chg.none');
 
-    cards +=
-      card(t('kpi.opt.base.label'), baselineOptGap, t('kpi.opt.base.sub'), 'amber') +
-      card(t('kpi.opt.scen.label', targetPct), scenarioOptGap, t('kpi.opt.scen.sub'), scenarioOptGap > 0 ? 'amber' : 'green') +
-      card(t('kpi.opt.chg.label'), optionChange, optionChangeText, optionChange > 0 ? 'red' : 'green');
+    cards.push(
+      card(t('kpi.opt.base.label'), baselineOptGap, t('kpi.opt.base.sub'), 'amber'),
+      card(t('kpi.opt.scen.label', targetPct), scenarioOptGap, t('kpi.opt.scen.sub'), scenarioOptGap > 0 ? 'amber' : 'green'),
+      card(t('kpi.opt.chg.label'), optionChange, optionChangeText, optionChange > 0 ? 'red' : 'green'),
+    );
   }
 
   return cards;
 }
 
 /**
- * Generates and downloads a beautifully formatted PDF report of the summary.
+ * Generates the PDF report server-side (ReportLab — see reports/pdf_report.py)
+ * and downloads it. Replaces the old html2canvas/html2pdf.js screenshot flow,
+ * which produced blank charts, missing page margins on overflow, and a
+ * duplicated-content bug from its page-break spacer-injection hack — all
+ * structural consequences of screenshotting the DOM instead of generating
+ * a real paginated document.
+ *
+ * Charts are sent as raw data (state.lastChartComparison/Subject/Risk, kept
+ * up to date by renderComparisonChart/renderSubjectChart/
+ * renderRiskRankingChart) rather than captured canvas images — the backend
+ * draws them itself with ReportLab's own charting. That also means, unlike
+ * the old flow, this never needs the Charts tab's canvases to have been
+ * visible/sized: the data exists as soon as renderResults() has run.
  */
-async function downloadSummaryPDF() {
+async function downloadReportPDF() {
   if (!state.currentRunId) {
     showToast('No simulation result is available for download.', 'warning');
     return;
   }
-  
+
   showToast(t('toast.pdf.generating') || 'Menjana PDF...', 'success');
-  
-  // Set date
+
+  const lang = _uiLang();
+  const paramsData = buildPdfParamsData(state.lastPayload);
+  const kpiCards = buildPdfKpiData(state.lastSummary, state.lastPayload, state.lastTopRecommendations);
   const dateObj = new Date();
-  document.getElementById('pdfDate').innerText = dateObj.toLocaleDateString('ms-MY', { year: 'numeric', month: 'long', day: 'numeric' });
-  
-  // Simulation parameters (scope + policy settings used for this run)
-  document.getElementById('pdfParams').innerHTML = buildPdfParamsHtml(state.lastPayload);
 
-  // Explanation text
-  const explanationHtml = document.getElementById('explanationBox').innerHTML;
-  document.getElementById('pdfExplanation').innerHTML = explanationHtml;
-
-  // KPI Grid — built from raw data (see buildPdfKpiHtml for why), not copied
-  // from the dashboard's #kpiGrid.
-  document.getElementById('pdfKpiGrid').innerHTML =
-    buildPdfKpiHtml(state.lastSummary, state.lastPayload, state.lastTopRecommendations);
-  
-  // Convert charts to images
-  const chartCompCanvas = document.getElementById('chartComparison');
-  const pdfChartComparisonImg = document.getElementById('pdfChartComparison');
-  if (chartCompCanvas) {
-    pdfChartComparisonImg.src = chartCompCanvas.toDataURL('image/png', 1.0);
-  }
-
-  const chartSubjCanvas = document.getElementById('chartSubject');
-  const pdfChartSubjectImg = document.getElementById('pdfChartSubject');
-  if (chartSubjCanvas) {
-    pdfChartSubjectImg.src = chartSubjCanvas.toDataURL('image/png', 1.0);
-  }
-
-  const element = document.getElementById('pdfContent');
-
-  // Make it momentarily visible so html2canvas can render it correctly.
-  // Uses `position: fixed` (viewport-relative), not `absolute` (document-relative):
-  // the download button sits near the bottom of a long scrollable results page, so
-  // clicking it scrolls the page down first. An absolutely-positioned element pinned
-  // to document (0,0) then sits far above the current scroll position — html2canvas
-  // captures relative to the current viewport and produces a near-blank result in
-  // that case. `fixed` keeps it at the viewport's origin regardless of scroll offset.
-  // A high (not negative) z-index is required too: stacking the template behind the
-  // dark dashboard/animated background canvas produced a washed-out capture (compositing
-  // artifact from the layers behind it), even though the underlying content was correct.
-  // Placing it on top very briefly — for the handful of milliseconds this function
-  // runs — is a fine trade-off since it's hidden again in the `finally` block below.
-  const pdfTemplate = document.getElementById('pdfTemplate');
-  pdfTemplate.style.display = 'block';
-  pdfTemplate.style.position = 'fixed';
-  pdfTemplate.style.left = '0';
-  pdfTemplate.style.top = '0';
-  pdfTemplate.style.zIndex = '999999';
-  // 794px ≈ the full A4 page width (8.27in * 96 CSS px/in), because the 2.54cm
-  // margin is applied as real CSS padding on .pdf-container (see styles.css)
-  // rather than via html2pdf's own `margin` option below (which is left at 0).
-  // html2pdf's `margin` option has a real bug in this version: it scales the
-  // captured content to the FULL page width regardless of the margin value,
-  // then shifts it right by the margin — clipping that same amount off the
-  // right edge, no matter how narrow the source content is. Baking the
-  // margin in as padding sidesteps that bug entirely (confirmed: margin: 0
-  // renders with no clipping, at any content width).
-  pdfTemplate.style.width = '794px';
-
-  // Wait for the browser to actually paint the newly-shown template, then
-  // explicitly wait for the chart <img> data URIs to finish decoding before
-  // html2canvas captures it. On a freshly loaded page, this is the FIRST
-  // time these <img> elements ever get a src — decoding a large data URI
-  // for the first time is genuinely async and not guaranteed to finish
-  // within a fixed number of animation frames, unlike a warm/cached decode
-  // on a repeat run. Without awaiting decode() here, the capture races the
-  // decode and produces a near-blank PDF (reproduced reliably on cold page loads).
-  await new Promise(resolve => requestAnimationFrame(resolve));
-  await Promise.all([
-    pdfChartComparisonImg.src ? pdfChartComparisonImg.decode().catch(() => {}) : Promise.resolve(),
-    pdfChartSubjectImg.src ? pdfChartSubjectImg.decode().catch(() => {}) : Promise.resolve(),
-  ]);
-
-  const opt = {
-    // 0, not 1in — the 2.54cm margin is applied as real CSS padding on
-    // .pdf-container instead (see the width comment above for why).
-    margin:       0,
-    filename:     `simulation_2027_report_${state.currentRunId}.pdf`,
-    image:        { type: 'jpeg', quality: 0.98 },
-    // scrollX/scrollY: 0 is required here — html2canvas computes the capture
-    // region using the page's current scroll offset by default, but this button
-    // sits near the bottom of a long scrollable results page, so the page is
-    // already scrolled down when this runs. Without pinning these to 0, the
-    // capture region is offset by the scroll amount and grabs mostly blank
-    // space instead of the (position:fixed, viewport-pinned) template.
-    html2canvas:  { scale: 2, useCORS: true, scrollX: 0, scrollY: 0 },
-    jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+  const body = {
+    lang,
+    generated_date: dateObj.toLocaleDateString('ms-MY', { year: 'numeric', month: 'long', day: 'numeric' }),
+    scope_rows: paramsData.scopeRows,
+    policy_rows: paramsData.policyRows,
+    explanation_text: state.lastExplanation || '',
+    explanation_source_label: state.lastExplanationSourceLabel || '',
+    kpi_cards: kpiCards,
+    chart_comparison: state.lastChartComparison || { labels: [], datasets: [] },
+    chart_subject: state.lastChartSubject || { labels: [], datasets: [] },
+    chart_risk: state.lastChartRisk || { labels: [], datasets: [] },
+    section_titles: {
+      title: t('pdf.title'),
+      params_title: t('pdf.params.title'),
+      summary_title: t('pdf.summary.title'),
+      kpi_title: t('pdf.kpi.title'),
+      charts_title: t('pdf.charts.title'),
+      chart_comparison: t('pdf.chart.comparison'),
+      chart_subject: t('pdf.chart.subject'),
+      chart_risk: t('pdf.chart.risk'),
+      footer: t('pdf.footer'),
+      params_scope_subtitle: lang === 'bm' ? 'Skop Analisis' : 'Analysis Scope',
+      params_policy_subtitle: lang === 'bm' ? 'Tetapan Dasar' : 'Policy Settings',
+    },
   };
 
   try {
-    await html2pdf().set(opt).from(element).save();
+    const res = await fetch(`${API_BASE}/api/runs/${state.currentRunId}/report.pdf`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(state.auth?.token ? { 'X-Auth-Token': state.auth.token } : {}),
+      },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const blob = await res.blob();
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `simulation_2027_report_${state.currentRunId}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
     showToast(t('toast.pdf.ok') || 'Berjaya muat turun PDF', 'success');
-  } catch (e) {
-    console.error('PDF generation error:', e);
+  } catch (err) {
+    console.error('PDF generation error:', err);
     showToast('Failed to generate PDF', 'error');
-  } finally {
-    pdfTemplate.style.display = 'none';
   }
 }
 
