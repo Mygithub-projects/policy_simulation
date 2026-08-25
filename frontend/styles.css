@@ -1864,6 +1864,7 @@ table.rec-table {
   .app-body { flex-direction: column; }
   .sidebar {
     width: 100%;
+    flex-direction: column;
     border-right: none;
     border-bottom: 1px solid var(--border);
     max-height: 60vh;

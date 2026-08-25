@@ -897,8 +897,20 @@ function initPolicyCards() {
         card.classList.toggle('selected', input.checked);
       }
       renderPolicyValueArea();
+      revealRunSection();
     });
   });
+}
+
+/** Scrolls the "Run Simulation" section into view within the sidebar's
+ *  scrollable accordion panel. Combined mode can stack several policy value
+ *  inputs above it, pushing it out of view — this is called right after a
+ *  policy selection changes so the button surfaces on its own instead of
+ *  requiring the user to notice the panel scrolls (e.g. by tabbing through
+ *  it). A no-op if the button is already fully visible. */
+function revealRunSection() {
+  const runSection = document.querySelector('.sidebar-section--run');
+  if (runSection) runSection.scrollIntoView({ behavior: 'smooth', block: 'end' });
 }
 
 function getPolicyMode() {
@@ -923,6 +935,7 @@ function onPolicyModeChange() {
     document.getElementById('policyModeHint').textContent = t('hint.combined');
   }
   renderPolicyValueArea();
+  revealRunSection();
 }
 
 function getSelectedPolicies() {
