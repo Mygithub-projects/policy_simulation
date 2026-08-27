@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy:
+  build-and-push:
     runs-on: ubuntu-latest
 
     permissions:
@@ -15,15 +15,15 @@ jobs:
       id-token: write
 
     steps:
-      - name: Checkout
+      - name: Checkout source code
         uses: actions/checkout@v4
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v3
         with:
-          project_id: prestij-mohye-delimanextgen
-          workload_identity_provider: projects/4415568906/locations/global/workloadIdentityPools/github-actions-pool/providers/github
-          service_account: github-actions@prestij-mohye-delimanextgen.iam.gserviceaccount.com
+          project_id: prestij-khairunnisa-policy
+          workload_identity_provider: projects/9576107772/locations/global/workloadIdentityPools/github-actions-pool/providers/github
+          service_account: github-actions-policy@prestij-khairunnisa-policy.iam.gserviceaccount.com
 
       - name: Set up gcloud
         uses: google-github-actions/setup-gcloud@v3
@@ -35,37 +35,10 @@ jobs:
       - name: Build Docker image
         run: |
           docker build \
-            -t asia-southeast1-docker.pkg.dev/prestij-mohye-delimanextgen/policy-simulation/policy-simulation:${{ github.sha }} \
+            -t asia-southeast1-docker.pkg.dev/prestij-khairunnisa-policy/policy-simulation/policy-simulation:${{ github.sha }} \
             .
 
       - name: Push Docker image
         run: |
           docker push \
-            asia-southeast1-docker.pkg.dev/prestij-mohye-delimanextgen/policy-simulation/policy-simulation:${{ github.sha }}
-
-      - name: Deploy to deployment-server
-        run: |
-          gcloud compute ssh jothikannan2009@deployment-server \
-            --zone=asia-southeast1-b \
-            --tunnel-through-iap \
-            --command="
-              docker pull asia-southeast1-docker.pkg.dev/prestij-mohye-delimanextgen/policy-simulation/policy-simulation:${{ github.sha }};
-              docker stop policy_simulation || true;
-              docker rm policy_simulation || true;
-              docker run -d \
-                --name policy_simulation \
-                -p 8002:8002 \
-                --env-file /opt/policy_simulation/.env \
-                -v /opt/policy_simulation/outputs:/app/outputs \
-                asia-southeast1-docker.pkg.dev/prestij-mohye-delimanextgen/policy-simulation/policy-simulation:${{ github.sha }}
-            "
-
-      - name: Verify deployment
-        run: |
-          gcloud compute ssh jothikannan2009@deployment-server \
-            --zone=asia-southeast1-b \
-            --tunnel-through-iap \
-            --command="
-              docker ps --filter name=policy_simulation;
-              docker logs --tail 20 policy_simulation
-            "
+            asia-southeast1-docker.pkg.dev/prestij-khairunnisa-policy/policy-simulation/policy-simulation:${{ github.sha }}
