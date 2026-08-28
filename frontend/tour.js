@@ -1,6 +1,8 @@
 /**
  * tour.js — Bilingual interactive tour for the Education Workforce Policy Simulation system.
- * Theme: matches existing dark system (--bg #07091A, --teal #0CC8A8, --gold #C4781C).
+ * Theme: reads the app's CSS custom properties (--bg-card, --teal, --gold, --fg-rgb, etc. —
+ * see styles.css's :root / :root[data-theme="light"] blocks), so the tour matches whichever
+ * of the two themes is currently active instead of being hardcoded to the original dark one.
  * No external dependencies.
  */
 
@@ -21,6 +23,20 @@ const TOUR_STEPS = [
       title: 'Welcome to the Education Workforce Policy Simulation System',
       body:  'This short guided tour introduces you to how this decision-support system works. It is designed for education workforce policy planners at the Ministry of Education Malaysia.',
       note:  '2027 Projection · All recommendations require human review',
+    },
+  },
+  {
+    target: '.theme-toggle',
+    position: 'bottom-left',
+    bm: {
+      title: 'Tema Terang / Gelap',
+      body:  'Klik ikon ini untuk menukar antara tema <strong>gelap</strong> (asal) dan <strong>terang</strong>. Kedua-dua tema disokong sepenuhnya di seluruh papan pemuka, termasuk panduan ini.',
+      note:  'Pilihan tema anda diingati dalam pelayar ini.',
+    },
+    en: {
+      title: 'Light / Dark Theme',
+      body:  'Click this icon to switch between the <strong>dark</strong> (original) theme and the new <strong>light</strong> theme. Both are fully supported across the dashboard, including this guided tour.',
+      note:  'Your theme choice is remembered in this browser.',
     },
   },
   {
@@ -264,31 +280,31 @@ function _injectTourStyles() {
     /* ── Highlight ring ── */
     #tour-ring {
       position: fixed; z-index: 9050; pointer-events: none;
-      border: 2px solid #0CC8A8;
+      border: 2px solid var(--teal);
       border-radius: 8px;
-      box-shadow: 0 0 0 3px rgba(12,200,168,0.15), 0 0 20px rgba(12,200,168,0.12);
+      box-shadow: 0 0 0 3px rgba(var(--teal-rgb),0.15), 0 0 20px rgba(var(--teal-rgb),0.12);
       display: none;
       transition: top 0.22s ease, left 0.22s ease, width 0.22s ease, height 0.22s ease;
       animation: tourRingPulse 2.2s ease-in-out infinite;
     }
     @keyframes tourRingPulse {
-      0%,100% { box-shadow: 0 0 0 3px rgba(12,200,168,0.15), 0 0 20px rgba(12,200,168,0.12); }
-      50%      { box-shadow: 0 0 0 6px rgba(12,200,168,0.06), 0 0 28px rgba(12,200,168,0.08); }
+      0%,100% { box-shadow: 0 0 0 3px rgba(var(--teal-rgb),0.15), 0 0 20px rgba(var(--teal-rgb),0.12); }
+      50%      { box-shadow: 0 0 0 6px rgba(var(--teal-rgb),0.06), 0 0 28px rgba(var(--teal-rgb),0.08); }
     }
 
     /* ── Tooltip card ── */
     #tour-tooltip {
       position: fixed;
       z-index: 9100;
-      width: 356px;
+      width: 380px;
       max-width: calc(100vw - 24px);
-      background: #0D1228;
-      border: 1px solid rgba(255,255,255,0.07);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
       border-radius: 10px;
-      box-shadow: 0 8px 40px rgba(0,0,0,0.65), 0 2px 8px rgba(0,0,0,0.4);
+      box-shadow: var(--shadow-lg), var(--shadow);
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       font-size: 13px;
-      color: #F0F4FF;
+      color: var(--text);
       display: none;
       pointer-events: auto;
       overflow: hidden;
@@ -302,94 +318,98 @@ function _injectTourStyles() {
 
     /* Tooltip header */
     #tour-tt-header {
-      background: #141B33;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
+      background: var(--bg-elevated);
+      border-bottom: 1px solid var(--border-light);
       padding: 13px 16px 11px;
       display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;
     }
     #tour-tt-step {
       font-size: 10px; font-weight: 600; letter-spacing: 0.09em;
-      color: #0CC8A8; text-transform: uppercase; margin-bottom: 3px;
+      color: var(--teal); text-transform: uppercase; margin-bottom: 3px;
     }
     #tour-tt-title {
       font-family: 'Palatino Linotype', Palatino, Georgia, serif;
       font-size: 14.5px; font-weight: 700;
-      color: #F0F4FF; line-height: 1.35;
+      color: var(--text); line-height: 1.35;
     }
     #tour-tt-close {
       background: none; border: none; cursor: pointer;
-      color: rgba(200,210,240,0.35); font-size: 17px; line-height: 1;
+      color: var(--text-muted); font-size: 17px; line-height: 1;
       flex-shrink: 0; padding: 1px 2px; margin-top: 1px;
       transition: color 0.15s;
     }
-    #tour-tt-close:hover { color: #F0F4FF; }
+    #tour-tt-close:hover { color: var(--text); }
 
     /* Tooltip body */
     #tour-tt-body {
       padding: 13px 16px 8px;
-      font-size: 13px; color: rgba(200,210,240,0.88); line-height: 1.65;
+      font-size: 13px; color: var(--text); line-height: 1.65;
     }
-    #tour-tt-body strong { color: #0CC8A8; font-weight: 600; }
-    #tour-tt-body em { color: #E8A04A; font-style: normal; }
+    #tour-tt-body strong { color: var(--teal); font-weight: 600; }
+    #tour-tt-body em { color: var(--gold-lt); font-style: normal; }
 
     /* Tooltip note */
     #tour-tt-note {
       margin: 6px 16px 0;
       padding: 7px 11px;
-      background: rgba(196,120,28,0.10);
-      border-left: 2.5px solid #C4781C;
+      background: var(--gold-muted);
+      border-left: 2.5px solid var(--gold);
       border-radius: 4px;
-      font-size: 11.5px; color: rgba(200,210,240,0.55); line-height: 1.5;
+      font-size: 11.5px; color: var(--text-muted); line-height: 1.5;
     }
 
     /* Tooltip footer */
     #tour-tt-footer {
-      padding: 11px 16px 13px;
-      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      padding: 11px 14px 13px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 8px;
     }
     #tour-progress {
-      display: flex; gap: 4px; align-items: center;
+      display: flex; gap: 3px; align-items: center;
+      flex-wrap: wrap; row-gap: 4px;
     }
     .tour-dot {
       width: 6px; height: 6px; border-radius: 50%;
-      background: rgba(255,255,255,0.12); flex-shrink: 0;
+      background: rgba(var(--fg-rgb),0.12); flex-shrink: 0;
       transition: background 0.2s, width 0.2s;
     }
-    .tour-dot.active { background: #0CC8A8; width: 16px; border-radius: 3px; }
-    .tour-btns { display: flex; gap: 7px; }
+    .tour-dot.active { background: var(--teal); width: 14px; border-radius: 3px; }
+    /* margin-left:auto keeps the buttons pinned to the right edge if the
+       progress dots (one per tour step) ever wrap onto their own line. */
+    .tour-btns { display: flex; gap: 7px; margin-left: auto; }
 
     #tour-btn-prev {
       background: none;
-      border: 1px solid rgba(255,255,255,0.14);
-      color: rgba(200,210,240,0.55);
-      border-radius: 6px; padding: 6px 15px;
+      border: 1px solid rgba(var(--fg-rgb),0.14);
+      color: var(--text-muted);
+      border-radius: 6px; padding: 6px 13px;
       font-size: 12.5px; cursor: pointer;
       font-family: 'Segoe UI', system-ui, sans-serif;
       transition: border-color 0.15s, color 0.15s;
     }
     #tour-btn-prev:hover:not(:disabled) {
-      border-color: #0CC8A8; color: #0CC8A8;
+      border-color: var(--teal); color: var(--teal);
     }
     #tour-btn-prev:disabled { opacity: 0.28; cursor: default; }
 
     #tour-btn-next {
-      background: #0CC8A8; color: #07091A;
+      background: var(--teal); color: #07091A;
       border: none; border-radius: 6px;
-      padding: 6px 18px; font-size: 12.5px;
+      padding: 6px 15px; font-size: 12.5px;
       cursor: pointer; font-weight: 700;
       font-family: 'Segoe UI', system-ui, sans-serif;
       transition: background 0.15s;
     }
-    #tour-btn-next:hover { background: #09A088; }
-    #tour-btn-next.is-finish { background: #C4781C; color: #fff; }
-    #tour-btn-next.is-finish:hover { background: #D4861E; }
+    #tour-btn-next:hover { background: var(--teal-hover); }
+    #tour-btn-next.is-finish { background: var(--gold); color: #fff; }
+    #tour-btn-next.is-finish:hover { background: var(--gold-hover); }
 
     /* ── Launch button ── */
     #tour-launch-btn {
       display: inline-flex; align-items: center; gap: 6px;
-      background: rgba(12,200,168,0.08);
-      border: 1px solid rgba(12,200,168,0.28);
-      color: #0CC8A8; border-radius: 20px;
+      background: rgba(var(--teal-rgb),0.08);
+      border: 1px solid rgba(var(--teal-rgb),0.28);
+      color: var(--teal); border-radius: 20px;
       padding: 5px 13px; font-size: 12px; font-weight: 600;
       cursor: pointer;
       font-family: 'Segoe UI', system-ui, sans-serif;
@@ -397,8 +417,8 @@ function _injectTourStyles() {
       transition: background 0.18s, border-color 0.18s;
     }
     #tour-launch-btn:hover {
-      background: rgba(12,200,168,0.16);
-      border-color: rgba(12,200,168,0.55);
+      background: rgba(var(--teal-rgb),0.16);
+      border-color: rgba(var(--teal-rgb),0.55);
     }
     #tour-launch-btn svg { flex-shrink: 0; }
   `;

@@ -638,7 +638,27 @@ const state = {
 // Saved once at startup so resetAll() can restore it without hardcoding HTML
 let emptyStateOriginalHTML = '';
 
+// ===== THEME TOGGLE (light/dark) =====
+// The <html data-theme> attribute is set as early as possible by an inline
+// script in index.html's <head> (before first paint, to avoid a flash of
+// the wrong theme) — this just keeps the header icon in sync with it.
+function toggleTheme() {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  syncThemeToggleIcon();
+}
+
+function syncThemeToggleIcon() {
+  const icon = document.getElementById('themeToggleIcon');
+  if (!icon) return;
+  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  icon.textContent = isLight ? '☀️' : '🌙';
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  syncThemeToggleIcon();
   emptyStateOriginalHTML = document.getElementById('emptyState').innerHTML;
   buildGradeGrid();        // Draw the grade/form checkboxes
   initPolicyCards();       // Set up policy type radio card clicks

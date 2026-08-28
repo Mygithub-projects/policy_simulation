@@ -5,7 +5,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sistem Simulasi Dasar Tenaga Kerja Pendidikan 2027</title>
-  <link rel="stylesheet" href="styles.css?v=18" />
+  <script>
+    // Set before first paint to avoid a flash of the wrong theme.
+    (function () {
+      var saved = localStorage.getItem('theme');
+      document.documentElement.setAttribute('data-theme', saved === 'light' ? 'light' : 'dark');
+    })();
+  </script>
+  <link rel="stylesheet" href="styles.css?v=20" />
   <link rel="stylesheet" href="aurora-bg.css?v=1" />
   <link rel="stylesheet" href="logo-loop.css?v=1" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
@@ -32,6 +39,9 @@
         </div>
       </div>
       <div class="header-spacer"></div>
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle light/dark theme">
+        <span id="themeToggleIcon">🌙</span>
+      </button>
       <div class="lang-toggle">
         <button class="lang-btn" data-lang="bm" onclick="setLang('bm')">BM</button>
         <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
@@ -841,8 +851,8 @@
     })();
   </script>
   <script src="lang.js?v=14"></script>
-  <script src="app.js?v=33"></script>
-  <script src="tour.js?v=3"></script>
+  <script src="app.js?v=34"></script>
+  <script src="tour.js?v=5"></script>
 
   <!-- ===================== SAVE SIMULATION MODAL ===================== -->
   <div class="modal-overlay" id="saveSimModal" style="display:none;">
