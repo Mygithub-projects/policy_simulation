@@ -403,6 +403,19 @@ Key decisions:
 
 Known follow-up (not part of this change): the original panel feedback was about font sizes across the whole dashboard being too small — this sidebar restructure only widened room for the *sidebar's own* future type-scale increase; the broader font-size pass across KPI cards, charts, and tables discussed earlier is still separate, unimplemented work.
 
+## Light / Dark Theme Toggle (implemented)
+
+Adds a header toggle (🌙/☀️, next to the language switch) that switches the whole dashboard between the original dark theme and a new light theme, so the app is no longer dark-only. Explored as a prototype first — colors were mapped and screenshotted in both themes before committing to the approach — then extended to cover real data and the guided tour once the direction was confirmed. Design discussion: 2026-08-28.
+
+Key decisions:
+
+- **CSS custom properties, not a rewrite.** [styles.css](frontend/styles.css) already centralized most colors in one `:root` token block, so the light theme is a second `:root[data-theme="light"]` block redefining those same tokens — not a parallel stylesheet. The one gap was the ~90 places that wrote `rgba(255,255,255,0.XX)` (and a few `rgba(7,9,26,0.XX)` / `rgba(13,18,40,0.XX)`) directly as "light/dark overlay on a dark surface" instead of through a token; these were swept to reference new RGB-triplet custom properties (`--fg-rgb`, `--chrome-rgb`, `--surface-rgb`, `--teal-rgb`, `--gold-rgb` — no `rgba()` wrapper, so a rule writes `rgba(var(--fg-rgb), 0.XX)` and every opacity step flips from one redefinition instead of needing its own light-mode override).
+- **The login screen stays dark-only, on purpose.** Its aurora glow background ([aurora-bg.js](frontend/aurora-bg.js)) is dark-only by design, so `:root[data-theme="light"] .login-screen { ... }` re-declares the original dark token values scoped to that screen — the global toggle never reaches it, regardless of which theme is active elsewhere.
+- **Applied before first paint.** An inline script at the top of `index.html`'s `<head>` (before the stylesheet link) reads `localStorage.getItem('theme')` and sets `<html data-theme="...">` immediately, so there's no flash of the wrong theme on load. `toggleTheme()` in `app.js` flips the attribute and persists the choice back to `localStorage`.
+- **The guided tour ([tour.js](frontend/tour.js)) was re-themed too, not left dark-only.** Its injected `<style>` block used to hardcode the original dark palette directly; it now reads the same CSS custom properties as the rest of the app, so the tour card matches whichever theme is active — including if the user toggles theme mid-tour. A new tour step was added introducing the toggle itself. Growing the tour to 13 steps (one progress dot per step) also outgrew the footer's fixed button/dot layout, clipping the Previous/Next buttons — fixed by widening the tooltip and tightening the dot spacing and button padding.
+- **Left unthemed for now**: the marketing landing pages (`landing.html`/`landing-en.html`) and native `<select>` dropdown popups (`.form-control option`, browser-rendered chrome that's unreliable to restyle across browsers) — both minor, out of scope for this pass.
+- **Chart.js charts were not touched.** They were never given explicit tick/grid colors, only Chart.js's own defaults (a mid-gray), which already read acceptably on both a dark and a light background — so no theme-aware chart re-render logic was needed.
+
 ## Future Enhancement Ideas
 
 Possible future improvements:
