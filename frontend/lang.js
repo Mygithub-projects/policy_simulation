@@ -124,10 +124,10 @@ const LANG_STRINGS = {
     'ob1.label': 'Tetapkan skop',
     'ob1.desc': 'Pilih mata pelajaran, negeri, daerah, sekolah, dan kumpulan tahun di panel kiri',
     'ob2.label': 'Pilih dasar',
-    'ob2.desc': 'Pilih tuas yang hendak diuji — nisbah, waktu, kapasiti, atau pengajaran bersama',
+    'ob2.desc': 'Pilih instrumen dasar yang hendak diuji — nisbah, waktu, kapasiti, atau pengajaran bersama',
     'ob3.label': 'Baca keputusan',
     'ob3.desc': 'Semak ramalan permintaan 2027, kekurangan, dan tindakan yang disyorkan',
-    'empty.hint': 'Atau tanya <strong>Ejen AI</strong> di panel kiri — taip soalan dan ia menjalankan simulasi untuk anda.',
+    'empty.hint': 'Atau tanya <strong>Ejen AI</strong> di panel kiri - taip soalan dan ia menjalankan simulasi untuk anda.',
 
     /* ── LOGIN SCREEN ───────────────────────── */
     'login.title': 'Log masuk ke papan pemuka dasar',
@@ -489,7 +489,7 @@ const LANG_STRINGS = {
     'ob2.desc': 'Select which policy instrument to test — ratio, hours, capacity, or co-teaching',
     'ob3.label': 'Read the results',
     'ob3.desc': 'Review the 2027 demand forecast, shortages, and recommended actions',
-    'empty.hint': 'Or ask the <strong>AI Agent</strong> in the left panel — type a question and it runs the simulation for you.',
+    'empty.hint': 'Or ask the <strong>AI Agent</strong> in the left panel - type a question and it runs the simulation for you.',
 
     /* ── LOGIN SCREEN ───────────────────────── */
     'login.title': 'Sign in to the policy dashboard',
