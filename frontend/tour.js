@@ -88,12 +88,12 @@ const TOUR_STEPS = [
     group: 'forecast',
     bm: {
       title: 'Langkah 2 — Pilih Mod Dasar',
-      body: '<strong>Dasar Tunggal</strong> membolehkan anda menguji satu tuas dasar pada satu masa. <strong>Gabungan</strong> membolehkan anda menguji dua, tiga, atau keempat-empat tuas sekaligus untuk melihat kesan bersama.',
+      body: '<strong>Dasar Tunggal</strong> membolehkan anda menguji satu instrumen dasar pada satu masa. <strong>Gabungan</strong> membolehkan anda menguji dua, tiga, atau keempat-empat instrumen dasar sekaligus untuk melihat kesan bersama.',
       note: 'Mod gabungan berguna untuk senario dasar yang komprehensif.',
     },
     en: {
       title: 'Step 2 — Choose Policy Mode',
-      body: '<strong>Single Policy</strong> lets you test one policy lever at a time. <strong>Combined</strong> lets you test two, three, or all four levers together to see their joint effect.',
+      body: '<strong>Single Policy</strong> lets you test one policy instrument at a time. <strong>Combined</strong> lets you test two, three, or all four policy instruments together to see their joint effect.',
       note: 'Combined mode is useful for comprehensive policy scenario testing.',
     },
   },
