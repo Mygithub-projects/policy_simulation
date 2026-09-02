@@ -16,13 +16,13 @@ const TOUR_STEPS = [
     position: 'center',
     bm: {
       title: 'Selamat Datang ke Sistem Simulasi Dasar Tenaga Kerja Pendidikan',
-      body:  'Panduan ringkas ini akan memperkenalkan anda kepada cara menggunakan sistem sokongan keputusan ini. Ia direka untuk perancang dasar tenaga kerja pendidikan di Kementerian Pendidikan Malaysia.',
-      note:  'Unjuran 2027 · Semua cadangan memerlukan semakan manusia',
+      body: 'Panduan ringkas ini akan memperkenalkan anda kepada cara menggunakan sistem sokongan keputusan ini. Ia direka untuk perancang dasar tenaga kerja pendidikan di Kementerian Pendidikan Malaysia.',
+      note: 'Unjuran 2027 · Semua cadangan memerlukan semakan manusia',
     },
     en: {
       title: 'Welcome to the Education Workforce Policy Simulation System',
-      body:  'This short guided tour introduces you to how this decision-support system works. It is designed for education workforce policy planners at the Ministry of Education Malaysia.',
-      note:  '2027 Projection · All recommendations require human review',
+      body: 'This short guided tour introduces you to how this decision-support system works. It is designed for education workforce policy planners at the Ministry of Education Malaysia.',
+      note: '2027 Projection · All recommendations require human review',
     },
   },
   {
@@ -30,13 +30,13 @@ const TOUR_STEPS = [
     position: 'bottom-left',
     bm: {
       title: 'Tema Terang / Gelap',
-      body:  'Klik ikon ini untuk menukar antara tema <strong>gelap</strong> (asal) dan <strong>terang</strong>. Kedua-dua tema disokong sepenuhnya di seluruh papan pemuka, termasuk panduan ini.',
-      note:  'Pilihan tema anda diingati dalam pelayar ini.',
+      body: 'Klik ikon ini untuk menukar antara tema <strong>gelap</strong> (asal) dan <strong>terang</strong>. Kedua-dua tema disokong sepenuhnya di seluruh papan pemuka, termasuk panduan ini.',
+      note: 'Pilihan tema anda ditetapkan dalam pelayar ini.',
     },
     en: {
       title: 'Light / Dark Theme',
-      body:  'Click this icon to switch between the <strong>dark</strong> (original) theme and the new <strong>light</strong> theme. Both are fully supported across the dashboard, including this guided tour.',
-      note:  'Your theme choice is remembered in this browser.',
+      body: 'Click this icon to switch between the <strong>dark</strong> (original) theme and the new <strong>light</strong> theme. Both are fully supported across the dashboard, including this guided tour.',
+      note: 'Your theme choice is remembered in this browser.',
     },
   },
   {
@@ -44,13 +44,13 @@ const TOUR_STEPS = [
     position: 'bottom-left',
     bm: {
       title: 'Tukar Bahasa',
-      body:  'Klik <strong>BM</strong> untuk Bahasa Melayu atau <strong>EN</strong> untuk Bahasa Inggeris. Semua label, arahan, dan kandungan antara muka akan dikemas kini dengan serta-merta.',
-      note:  'Pilihan bahasa diingati dalam pelayar anda.',
+      body: 'Klik <strong>BM</strong> untuk Bahasa Melayu atau <strong>EN</strong> untuk Bahasa Inggeris. Semua label, arahan, dan kandungan antara muka akan dikemas kini dengan serta-merta.',
+      note: 'Pilihan bahasa dalam pelayar anda.',
     },
     en: {
       title: 'Language Toggle',
-      body:  'Click <strong>BM</strong> for Bahasa Melayu or <strong>EN</strong> for English. All interface labels, instructions, and content update immediately.',
-      note:  'Your language preference is remembered in your browser.',
+      body: 'Click <strong>BM</strong> for Bahasa Melayu or <strong>EN</strong> for English. All interface labels, instructions, and content update immediately.',
+      note: 'Your language preference is remembered in your browser.',
     },
   },
   {
@@ -58,13 +58,13 @@ const TOUR_STEPS = [
     position: 'right',
     bm: {
       title: 'Bar Sisi Boleh Buka/Tutup',
-      body:  'Panel kiri kini disusun kepada tiga kumpulan: <strong>Analisis Ramalan</strong>, <strong>Ejen AI</strong>, dan <strong>Laporan</strong>. Klik ikon di sini untuk membuka mana-mana kumpulan, atau klik anak panah untuk tutup keseluruhan bar sisi bagi ruang paparan yang lebih luas.',
-      note:  'Kumpulan yang aktif diserlahkan pada ikon.',
+      body: 'Panel kiri kini disusun kepada tiga kumpulan: <strong>Analisis Ramalan</strong>, <strong>Ejen AI</strong>, dan <strong>Laporan</strong>. Klik ikon di sini untuk membuka mana-mana kumpulan, atau klik anak panah untuk tutup keseluruhan bar sisi bagi ruang paparan yang lebih luas.',
+      note: 'Kumpulan yang aktif diserlahkan pada ikon.',
     },
     en: {
       title: 'Collapsible Sidebar',
-      body:  'The left panel is now organized into three groups: <strong>Forecast Analysis</strong>, <strong>AI Agent</strong>, and <strong>Report</strong>. Click any icon here to open that group, or click the arrow to collapse the whole sidebar for more viewing room.',
-      note:  'The active group stays highlighted on the icon rail.',
+      body: 'The left panel is now organized into three groups: <strong>Forecast Analysis</strong>, <strong>AI Agent</strong>, and <strong>Report</strong>. Click any icon here to open that group, or click the arrow to collapse the whole sidebar for more viewing room.',
+      note: 'The active group stays highlighted on the icon rail.',
     },
   },
   {
@@ -73,13 +73,13 @@ const TOUR_STEPS = [
     group: 'forecast',
     bm: {
       title: 'Langkah 1 — Tetapkan Skop Analisis',
-      body:  'Pilih <strong>Mata Pelajaran</strong>, <strong>Negeri</strong>, <strong>PPD</strong>, <strong>Sekolah</strong>, dan <strong>Tahun / Tingkatan</strong> untuk menentukan skop analisis anda. Biarkan semua pada "Semua" untuk paparan nasional.',
-      note:  'Pilihan PPD dan Sekolah aktif selepas negeri dipilih.',
+      body: 'Pilih <strong>Mata Pelajaran</strong>, <strong>Negeri</strong>, <strong>PPD</strong>, <strong>Sekolah</strong>, dan <strong>Tahun / Tingkatan</strong> untuk menentukan skop analisis anda. Biarkan semua pada "Semua" untuk paparan nasional.',
+      note: 'Pilihan PPD dan Sekolah aktif selepas negeri dipilih.',
     },
     en: {
       title: 'Step 1 — Set Analysis Scope',
-      body:  'Select <strong>Subject</strong>, <strong>State</strong>, <strong>PPD</strong>, <strong>School</strong>, and <strong>Year / Form</strong> to define your analysis scope. Leave all on "All" for a national-level view.',
-      note:  'PPD and School dropdowns activate after a state is selected.',
+      body: 'Select <strong>Subject</strong>, <strong>State</strong>, <strong>PPD</strong>, <strong>School</strong>, and <strong>Year / Form</strong> to define your analysis scope. Leave all on "All" for a national-level view.',
+      note: 'PPD and School dropdowns activate after a state is selected.',
     },
   },
   {
@@ -88,13 +88,13 @@ const TOUR_STEPS = [
     group: 'forecast',
     bm: {
       title: 'Langkah 2 — Pilih Mod Dasar',
-      body:  '<strong>Dasar Tunggal</strong> membolehkan anda menguji satu tuas dasar pada satu masa. <strong>Gabungan</strong> membolehkan anda menguji dua, tiga, atau keempat-empat tuas sekaligus untuk melihat kesan bersama.',
-      note:  'Mod gabungan berguna untuk senario dasar yang komprehensif.',
+      body: '<strong>Dasar Tunggal</strong> membolehkan anda menguji satu tuas dasar pada satu masa. <strong>Gabungan</strong> membolehkan anda menguji dua, tiga, atau keempat-empat tuas sekaligus untuk melihat kesan bersama.',
+      note: 'Mod gabungan berguna untuk senario dasar yang komprehensif.',
     },
     en: {
       title: 'Step 2 — Choose Policy Mode',
-      body:  '<strong>Single Policy</strong> lets you test one policy lever at a time. <strong>Combined</strong> lets you test two, three, or all four levers together to see their joint effect.',
-      note:  'Combined mode is useful for comprehensive policy scenario testing.',
+      body: '<strong>Single Policy</strong> lets you test one policy lever at a time. <strong>Combined</strong> lets you test two, three, or all four levers together to see their joint effect.',
+      note: 'Combined mode is useful for comprehensive policy scenario testing.',
     },
   },
   {
@@ -102,22 +102,22 @@ const TOUR_STEPS = [
     position: 'right',
     group: 'forecast',
     bm: {
-      title: 'Empat Tuas Dasar',
-      body:  'Pilih satu tuas (atau lebih dalam mod Gabungan):<br/><br/>' +
-             '• <strong>Nisbah Opsyen</strong> — bahagian sasaran guru opsyen<br/>' +
-             '• <strong>Waktu Pengajaran</strong> — jam mata pelajaran tahunan setiap kelas<br/>' +
-             '• <strong>Kapasiti Guru</strong> — jam pengajaran tahunan setiap guru<br/>' +
-             '• <strong>Pengajaran Bersama</strong> — bahagian kelas dua guru',
-      note:  'Setiap tuas memetakan keputusan dasar sebenar.',
+      title: 'Empat Instrumen Dasar',
+      body: 'Pilih satu instrumen dasar (atau lebih dalam mod Gabungan):<br/><br/>' +
+        '• <strong>Nisbah Opsyen</strong> — bahagian sasaran guru opsyen<br/>' +
+        '• <strong>Waktu Pengajaran</strong> — jam mata pelajaran tahunan setiap kelas<br/>' +
+        '• <strong>Kapasiti Guru</strong> — jam pengajaran tahunan setiap guru<br/>' +
+        '• <strong>Pengajaran Bersama</strong> — bahagian kelas dua guru',
+      note: 'Setiap instrumen dasar memetakan keputusan dasar sebenar.',
     },
     en: {
-      title: 'Four Policy Levers',
-      body:  'Select one lever (or more in Combined mode):<br/><br/>' +
-             '• <strong>Option Ratio</strong> — target share of subject-option teachers<br/>' +
-             '• <strong>Teaching Hours</strong> — annual subject hours per class<br/>' +
-             '• <strong>Teacher Capacity</strong> — annual teaching hours per teacher<br/>' +
-             '• <strong>Co-teaching</strong> — share of classes with two teachers',
-      note:  'Each lever maps to a real policy decision.',
+      title: 'Four Policy Instruments',
+      body: 'Select one instrument (or more in Combined mode):<br/><br/>' +
+        '• <strong>Option Ratio</strong> — target share of subject-option teachers<br/>' +
+        '• <strong>Teaching Hours</strong> — annual subject hours per class<br/>' +
+        '• <strong>Teacher Capacity</strong> — annual teaching hours per teacher<br/>' +
+        '• <strong>Co-teaching</strong> — share of classes with two teachers',
+      note: 'Each instrument maps to a real policy decision.',
     },
   },
   {
@@ -126,13 +126,13 @@ const TOUR_STEPS = [
     group: 'forecast',
     bm: {
       title: 'Tetapkan Nilai Dasar',
-      body:  'Setelah tuas dipilih, slaid atau medan nilai akan muncul di sini. Laraskan nilai untuk mensimulasikan impak yang ingin anda uji. Setiap perubahan memberi kesan langsung kepada pengiraan permintaan 2027.',
-      note:  'Semua pengiraan adalah deterministik — formula telus, bukan AI.',
+      body: 'Setelah instrumen dasar dipilih, slaid atau medan nilai akan muncul di sini. Laraskan nilai untuk mensimulasikan impak yang ingin anda uji. Setiap perubahan memberi kesan langsung kepada pengiraan permintaan 2027.',
+      note: 'Semua pengiraan adalah deterministik — formula telus, bukan AI.',
     },
     en: {
       title: 'Set Policy Values',
-      body:  'Once a lever is selected, a slider or value field appears here. Adjust the value to simulate the impact you wish to test. Each change directly affects the 2027 demand calculation.',
-      note:  'All calculations are deterministic — transparent formulas, not AI.',
+      body: 'Once a instrument is selected, a slider or value field appears here. Adjust the value to simulate the impact you wish to test. Each change directly affects the 2027 demand calculation.',
+      note: 'All calculations are deterministic — transparent formulas, not AI.',
     },
   },
   {
@@ -141,13 +141,13 @@ const TOUR_STEPS = [
     group: 'forecast',
     bm: {
       title: 'Langkah 3 — Jalankan Simulasi',
-      body:  'Klik butang ini untuk menjalankan unjuran permintaan guru 2027 menggunakan skop dan parameter dasar yang anda tetapkan. Keputusan muncul di panel utama dalam beberapa saat.',
-      note:  'Bar sisi akan tutup secara automatik selepas keputusan dipaparkan.',
+      body: 'Klik butang ini untuk menjalankan unjuran permintaan guru 2027 menggunakan skop dan parameter dasar yang anda tetapkan. Keputusan muncul di panel utama dalam beberapa saat.',
+      note: 'Bar sisi akan tutup secara automatik selepas keputusan dipaparkan.',
     },
     en: {
       title: 'Step 3 — Run the Simulation',
-      body:  'Click this button to run the 2027 teacher demand projection using your selected scope and policy parameters. Results appear in the main panel within seconds.',
-      note:  'The sidebar automatically collapses once results appear.',
+      body: 'Click this button to run the 2027 teacher demand projection using your selected scope and policy parameters. Results appear in the main panel within seconds.',
+      note: 'The sidebar automatically collapses once results appear.',
     },
   },
   {
@@ -156,15 +156,15 @@ const TOUR_STEPS = [
     group: 'agent',
     bm: {
       title: 'Ejen AI — Tanya dalam Bahasa Semula Jadi',
-      body:  'Taip soalan dalam <strong>Bahasa Melayu atau Bahasa Inggeris</strong>. Ejen AI akan mentafsirkan soalan anda, menjalankan simulasi yang sesuai, dan menyampaikan penjelasan dalam bahasa mudah.<br/><br/>' +
-             'Contoh: <em>"Ramal permintaan guru Sains di Johor untuk 2027 dengan nisbah opsyen 70%"</em>',
-      note:  'Bar sisi akan tutup secara automatik selepas keputusan dipaparkan.',
+      body: 'Taip soalan dalam <strong>Bahasa Melayu atau Bahasa Inggeris</strong>. Ejen AI akan mentafsirkan soalan anda, menjalankan simulasi yang sesuai, dan menyampaikan penjelasan dalam bahasa mudah.<br/><br/>' +
+        'Contoh: <em>"Ramal permintaan guru Sains di Johor untuk 2027 dengan nisbah opsyen 70%"</em>',
+      note: 'Bar sisi akan tutup secara automatik selepas keputusan dipaparkan.',
     },
     en: {
       title: 'AI Agent — Ask in Natural Language',
-      body:  'Type a question in <strong>Bahasa Melayu or English</strong>. The AI Agent interprets your question, runs the appropriate simulation, and returns an explanation in plain language.<br/><br/>' +
-             'Example: <em>"Forecast Science teacher demand in Johor for 2027 with a 70% subject-option ratio"</em>',
-      note:  'The sidebar automatically collapses once results appear.',
+      body: 'Type a question in <strong>Bahasa Melayu or English</strong>. The AI Agent interprets your question, runs the appropriate simulation, and returns an explanation in plain language.<br/><br/>' +
+        'Example: <em>"Forecast Science teacher demand in Johor for 2027 with a 70% subject-option ratio"</em>',
+      note: 'The sidebar automatically collapses once results appear.',
     },
   },
   {
@@ -175,25 +175,25 @@ const TOUR_STEPS = [
     position: 'left',
     bm: {
       title: 'Panel Keputusan — Lima Tab',
-      body:  'Keputusan simulasi kini disusun dalam <strong>lima tab</strong>:<br/><br/>' +
-             '• <strong>Ringkasan</strong> — KPI dan impak dasar<br/>' +
-             '• <strong>Carta</strong> — perbandingan permintaan, mengikut mata pelajaran, dan ranking risiko negeri<br/>' +
-             '• <strong>Penjelasan</strong> — ringkasan bahasa mudah<br/>' +
-             '• <strong>Cadangan Strategik</strong> — tindakan yang disyorkan<br/>' +
-             '• <strong>Sekolah Keutamaan</strong> — 30 sekolah teratas memerlukan perhatian<br/><br/>' +
-             'Klik setiap tab untuk beralih.',
-      note:  'Semua cadangan memerlukan semakan dan kelulusan manusia.',
+      body: 'Keputusan simulasi kini disusun dalam <strong>lima tab</strong>:<br/><br/>' +
+        '• <strong>Ringkasan</strong> — KPI dan impak dasar<br/>' +
+        '• <strong>Carta</strong> — perbandingan permintaan, mengikut mata pelajaran, dan ranking risiko negeri<br/>' +
+        '• <strong>Penjelasan</strong> — ringkasan bahasa mudah<br/>' +
+        '• <strong>Cadangan Strategik</strong> — tindakan yang disyorkan<br/>' +
+        '• <strong>Sekolah Keutamaan</strong> — 30 sekolah teratas memerlukan perhatian<br/><br/>' +
+        'Klik setiap tab untuk beralih.',
+      note: 'Semua cadangan memerlukan semakan dan kelulusan manusia.',
     },
     en: {
       title: 'Results Panel — Five Tabs',
-      body:  'Simulation results are now organized into <strong>five tabs</strong>:<br/><br/>' +
-             '• <strong>Overview</strong> — KPIs and policy impact<br/>' +
-             '• <strong>Charts</strong> — demand comparison, by subject, and state risk ranking<br/>' +
-             '• <strong>Explanation</strong> — plain-language summary<br/>' +
-             '• <strong>Recommendations</strong> — suggested actions<br/>' +
-             '• <strong>Priority Schools</strong> — top 30 schools needing attention<br/><br/>' +
-             'Click each tab to switch between them.',
-      note:  'All recommendations require human review and approval.',
+      body: 'Simulation results are now organized into <strong>five tabs</strong>:<br/><br/>' +
+        '• <strong>Overview</strong> — KPIs and policy impact<br/>' +
+        '• <strong>Charts</strong> — demand comparison, by subject, and state risk ranking<br/>' +
+        '• <strong>Explanation</strong> — plain-language summary<br/>' +
+        '• <strong>Recommendations</strong> — suggested actions<br/>' +
+        '• <strong>Priority Schools</strong> — top 30 schools needing attention<br/><br/>' +
+        'Click each tab to switch between them.',
+      note: 'All recommendations require human review and approval.',
     },
   },
   {
@@ -202,13 +202,13 @@ const TOUR_STEPS = [
     group: 'report',
     bm: {
       title: 'Muat Turun & Simpan Simulasi',
-      body:  'Selepas keputusan tersedia, muat turun CSV/PDF atau simpan senario anda di sini, dalam kumpulan <strong>Laporan</strong> pada bar sisi — bukan lagi di panel utama.',
-      note:  'Butang ini muncul selepas simulasi pertama anda selesai.',
+      body: 'Selepas keputusan tersedia, muat turun CSV/PDF atau simpan senario anda di sini, dalam kumpulan <strong>Laporan</strong> pada bar sisi — bukan lagi di panel utama.',
+      note: 'Butang ini muncul selepas simulasi pertama anda selesai.',
     },
     en: {
       title: 'Download & Save Simulation',
-      body:  'Once results are ready, download CSV/PDF or save your scenario here, under the <strong>Report</strong> group in the sidebar — no longer in the main panel.',
-      note:  'These buttons appear after your first simulation completes.',
+      body: 'Once results are ready, download CSV/PDF or save your scenario here, under the <strong>Report</strong> group in the sidebar — no longer in the main panel.',
+      note: 'These buttons appear after your first simulation completes.',
     },
   },
   {
@@ -216,15 +216,15 @@ const TOUR_STEPS = [
     position: 'center',
     bm: {
       title: 'Anda Sudah Bersedia!',
-      body:  'Anda kini memahami cara menggunakan sistem ini. Mulakan dengan menetapkan skop analisis di panel kiri, kemudian pilih dasar anda dan jalankan simulasi.<br/><br/>' +
-             'Ingat: semua keputusan dan cadangan memerlukan semakan daripada pembuat keputusan manusia.',
-      note:  'Sokongan keputusan berasaskan bukti untuk perancangan pendidikan yang lebih baik.',
+      body: 'Anda kini memahami cara menggunakan sistem ini. Mulakan dengan menetapkan skop analisis di panel kiri, kemudian pilih dasar anda dan jalankan simulasi.<br/><br/>' +
+        'Ingat: semua keputusan dan cadangan memerlukan semakan daripada pembuat keputusan manusia.',
+      note: 'Sokongan keputusan berasaskan bukti untuk perancangan pendidikan yang lebih baik.',
     },
     en: {
       title: 'You Are Ready!',
-      body:  'You now understand how to use this system. Begin by setting the analysis scope in the left panel, then select your policy and run the simulation.<br/><br/>' +
-             'Remember: all results and recommendations require review by a human decision-maker.',
-      note:  'Evidence-informed decision support for better education planning.',
+      body: 'You now understand how to use this system. Begin by setting the analysis scope in the left panel, then select your policy and run the simulation.<br/><br/>' +
+        'Remember: all results and recommendations require review by a human decision-maker.',
+      note: 'Evidence-informed decision support for better education planning.',
     },
   },
 ];
@@ -234,7 +234,7 @@ const TOUR_STEPS = [
    TOUR STATE
    ───────────────────────────────────────────────────────────────── */
 
-let _tourStep   = 0;
+let _tourStep = 0;
 let _tourActive = false;
 
 
@@ -444,7 +444,7 @@ function _buildTourDOM() {
     <rect width="100%" height="100%" fill="rgba(7,9,26,0.82)" mask="url(#tour-mask)"/>
   </svg>`;
   // Click outside tooltip → skip
-  overlay.addEventListener('click', function(e) {
+  overlay.addEventListener('click', function (e) {
     if (e.target === overlay || e.target.nodeName === 'svg' || e.target.nodeName === 'rect') {
       _tourEnd();
     }
@@ -492,10 +492,10 @@ function _buildTourDOM() {
    ───────────────────────────────────────────────────────────────── */
 
 function _renderStep(idx) {
-  const step   = TOUR_STEPS[idx];
-  const total  = TOUR_STEPS.length;
-  const lang   = _tourLang();
-  const copy   = step[lang] || step['en'];
+  const step = TOUR_STEPS[idx];
+  const total = TOUR_STEPS.length;
+  const lang = _tourLang();
+  const copy = step[lang] || step['en'];
   const isLast = (idx === total - 1);
   const prevLabel = lang === 'bm' ? 'Sebelumnya' : 'Previous';
   const nextLabel = isLast
@@ -507,16 +507,16 @@ function _renderStep(idx) {
 
   // Fill content
   document.getElementById('tour-tt-step').textContent = stepLabel;
-  document.getElementById('tour-tt-title').innerHTML  = copy.title;
-  document.getElementById('tour-tt-body').innerHTML   = copy.body;
-  document.getElementById('tour-tt-note').innerHTML   = copy.note;
+  document.getElementById('tour-tt-title').innerHTML = copy.title;
+  document.getElementById('tour-tt-body').innerHTML = copy.body;
+  document.getElementById('tour-tt-note').innerHTML = copy.note;
 
   const prevBtn = document.getElementById('tour-btn-prev');
   const nextBtn = document.getElementById('tour-btn-next');
   prevBtn.textContent = prevLabel;
-  prevBtn.disabled    = (idx === 0);
+  prevBtn.disabled = (idx === 0);
   nextBtn.textContent = nextLabel;
-  nextBtn.className   = isLast ? 'is-finish' : '';
+  nextBtn.className = isLast ? 'is-finish' : '';
 
   // Progress dots
   document.getElementById('tour-progress').innerHTML =
@@ -533,9 +533,9 @@ function _renderStep(idx) {
 
   // Position
   const targetEl = step.target ? _getEl(step.target) : null;
-  const tooltip  = document.getElementById('tour-tooltip');
-  const ring     = document.getElementById('tour-ring');
-  const cutout   = document.getElementById('tour-cutout');
+  const tooltip = document.getElementById('tour-tooltip');
+  const ring = document.getElementById('tour-ring');
+  const cutout = document.getElementById('tour-cutout');
 
   if (!targetEl || step.position === 'center') {
     // Centre modal — hide spotlight
@@ -545,7 +545,7 @@ function _renderStep(idx) {
     tooltip.classList.add('tour-center');
   } else {
     tooltip.classList.remove('tour-center');
-    tooltip.style.top  = '';
+    tooltip.style.top = '';
     tooltip.style.left = '';
     tooltip.style.transform = '';
     // Scroll target into view, then position after settle. Sidebar-group
@@ -558,60 +558,60 @@ function _renderStep(idx) {
 }
 
 function _applySpotlight(step, targetEl) {
-  const PAD  = 8;
-  const r    = targetEl.getBoundingClientRect(); // already in viewport coords (fixed)
-  const ring    = document.getElementById('tour-ring');
-  const cutout  = document.getElementById('tour-cutout');
+  const PAD = 8;
+  const r = targetEl.getBoundingClientRect(); // already in viewport coords (fixed)
+  const ring = document.getElementById('tour-ring');
+  const cutout = document.getElementById('tour-cutout');
   const tooltip = document.getElementById('tour-tooltip');
 
   // SVG cutout (viewport-relative since overlay is fixed)
-  cutout.setAttribute('x',      r.left - PAD);
-  cutout.setAttribute('y',      r.top  - PAD);
-  cutout.setAttribute('width',  r.width  + PAD * 2);
+  cutout.setAttribute('x', r.left - PAD);
+  cutout.setAttribute('y', r.top - PAD);
+  cutout.setAttribute('width', r.width + PAD * 2);
   cutout.setAttribute('height', r.height + PAD * 2);
 
   // Highlight ring
   ring.style.display = 'block';
-  ring.style.left    = (r.left - PAD) + 'px';
-  ring.style.top     = (r.top  - PAD) + 'px';
-  ring.style.width   = (r.width  + PAD * 2) + 'px';
-  ring.style.height  = (r.height + PAD * 2) + 'px';
+  ring.style.left = (r.left - PAD) + 'px';
+  ring.style.top = (r.top - PAD) + 'px';
+  ring.style.width = (r.width + PAD * 2) + 'px';
+  ring.style.height = (r.height + PAD * 2) + 'px';
 
   // Tooltip placement
-  const TW  = 360;
-  const TH  = tooltip.offsetHeight || 240;
-  const vw  = window.innerWidth;
-  const vh  = window.innerHeight;
+  const TW = 360;
+  const TH = tooltip.offsetHeight || 240;
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
   const pos = step.position;
   let top, left, transform = '';
 
   if (pos === 'right') {
-    top  = r.top;
+    top = r.top;
     left = r.right + 16;
     if (left + TW > vw - 8) left = r.left - TW - 16;
   } else if (pos === 'left') {
-    top  = r.top;
+    top = r.top;
     left = r.left - TW - 16;
     if (left < 8) left = r.right + 16;
   } else if (pos === 'bottom' || pos === 'bottom-left') {
-    top  = r.bottom + 12;
+    top = r.bottom + 12;
     left = pos === 'bottom-left'
       ? Math.max(8, r.right - TW)
       : r.left;
   } else {
     // top
-    top  = r.top - TH - 12;
+    top = r.top - TH - 12;
     left = r.left;
   }
 
   // Clamp
   if (top + TH > vh - 8) top = vh - TH - 8;
-  if (top < 8)           top = 8;
+  if (top < 8) top = 8;
   if (left + TW > vw - 8) left = vw - TW - 8;
-  if (left < 8)            left = 8;
+  if (left < 8) left = 8;
 
-  tooltip.style.top       = top  + 'px';
-  tooltip.style.left      = left + 'px';
+  tooltip.style.top = top + 'px';
+  tooltip.style.left = left + 'px';
   tooltip.style.transform = transform;
 }
 
@@ -642,7 +642,7 @@ function _tourEnd() {
   // Hide all tour elements — critical: must remove tour-visible so pointer events clear
   const overlay = document.getElementById('tour-overlay');
   const tooltip = document.getElementById('tour-tooltip');
-  const ring    = document.getElementById('tour-ring');
+  const ring = document.getElementById('tour-ring');
 
   if (overlay) {
     overlay.classList.remove('tour-visible');
@@ -657,7 +657,7 @@ function _tourEnd() {
   }
 
   // Restore scroll and pointer events
-  document.body.style.overflow     = '';
+  document.body.style.overflow = '';
   document.body.style.pointerEvents = '';
 }
 
@@ -670,7 +670,7 @@ function startTour() {
   _injectTourStyles();
   if (!document.getElementById('tour-overlay')) _buildTourDOM();
 
-  _tourStep  = 0;
+  _tourStep = 0;
   _tourActive = true;
 
   const overlay = document.getElementById('tour-overlay');
@@ -725,7 +725,7 @@ function _updateTourBtnLabel() {
 function _hookLangSwitch() {
   if (typeof setLang !== 'function' || window._tourLangHooked) return;
   const _orig = setLang;
-  window.setLang = function(lang) {
+  window.setLang = function (lang) {
     _orig(lang);
     _updateTourBtnLabel();
     if (_tourActive) _renderStep(_tourStep);
