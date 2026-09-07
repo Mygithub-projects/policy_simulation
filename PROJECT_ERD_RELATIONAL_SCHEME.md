@@ -169,8 +169,22 @@ erDiagram
         DOUBLE delta_guru
     }
 
+    TSSEKOLAH {
+        VARCHAR KODSEKOLAH
+        VARCHAR NAMASEKOLAH
+        VARCHAR ALAMATLOKASISEKOLAH
+        VARCHAR BANDARLOKASISEKOLAH
+        VARCHAR POSKODLOKASISEKOLAH
+        VARCHAR KODNEGERILOKASISEKOLAH
+        VARCHAR KODPPD
+        VARCHAR KODJENISSEKOLAH
+        VARCHAR KODPERINGKAT
+        VARCHAR GREDSEKOLAH
+    }
+
     MASTER_MODEL ||--o{ BASE_MURID_DETAIL : "aggregates demand by tahun/kod_sekolah/subjek"
     MASTER_MODEL ||--o{ BASE_SUPPLY_GURU : "uses supply by tahun/kod_sekolah and subject option"
+    TSSEKOLAH ||--o{ MASTER_MODEL : "looked up by kod_sekolah = KODSEKOLAH for the school name"
     POLICY_PARAMETERS ||--o{ SCENARIO_PARAMETER_VALUES : "provides default policy values"
     SCENARIO_VERSION ||--o{ SCENARIO_PARAMETER_VALUES : "has scenario parameters"
     SCENARIO_VERSION ||--o{ SIMULATION_RUN_LOG : "has simulation runs"
@@ -289,6 +303,41 @@ tahun + kod_sekolah + subjek
 Role:
 
 Main modelling and simulation table. This is the key table used by the Random Forest forecasting component and policy simulation engine.
+
+### 3a. School Reference (tssekolah)
+
+```text
+tssekolah(
+    KODSEKOLAH,
+    NAMASEKOLAH,
+    ALAMATLOKASISEKOLAH,
+    BANDARLOKASISEKOLAH,
+    POSKODLOKASISEKOLAH,
+    KODNEGERILOKASISEKOLAH,
+    KODPPD,
+    KODJENISSEKOLAH,
+    KODPERINGKAT,
+    GREDSEKOLAH,
+    ... (wide reference table with ~90 school-metadata columns in total)
+)
+```
+
+Suggested logical key:
+
+```text
+KODSEKOLAH
+```
+
+Role:
+
+Reference table mapping a school code to its official name and metadata (address,
+state, school type, etc.), imported separately from the yearly demand/supply
+snapshots. The app only reads `KODSEKOLAH`/`NAMASEKOLAH` today, joined against
+`master_model_2022_2026.kod_sekolah`, to show the school name in the school
+filter dropdown and the recommendation priority table instead of a bare code.
+Not every historical `kod_sekolah` has a matching row here (e.g. closed or
+merged schools) — the app falls back to displaying the code itself when no
+name is found.
 
 ### 4. Policy Parameter Reference
 
@@ -543,6 +592,7 @@ The database can be understood as five main groups:
 |---|---|---|
 | Demand data | `base_murid_detail_2022_2026`, `master_model_2022_2026` | Shows how many students, classes, teaching hours, and teachers are needed. |
 | Supply data | `base_supply_guru_2022_2026` | Shows available teachers, subject option, contract status, and retirement risk. |
+| Reference data | `tssekolah` | Maps a school code to its official name (and other school metadata) for display purposes. |
 | Policy data | `policy_parameters`, `scenario_parameter_values`, `scenario_version` | Stores baseline policy settings and scenario-specific changes. |
 | Simulation data | `sim_ratio_2026`, `sim_jam_2026`, `sim_coteaching_2026`, `simulation_run_log` | Stores or supports policy simulation runs. |
 | Recommendation data | `recommendation_rules`, `recommendation_output_log` | Stores rule-based recommendation logic and generated recommendations. |
@@ -553,6 +603,7 @@ The database can be understood as five main groups:
 |---|---|---|
 | `base_murid_detail_2022_2026` to `master_model_2022_2026` | `tahun + kod_sekolah + subjek` | Detail-level demand is aggregated into the master school-subject model. |
 | `base_supply_guru_2022_2026` to `master_model_2022_2026` | `tahun + kod_sekolah`, with subject-option logic | Teacher supply supports school-subject demand and option-ratio analysis. |
+| `tssekolah` to `master_model_2022_2026` | `KODSEKOLAH = kod_sekolah` (left join, code may be unmatched) | Supplies the school name shown in the school filter dropdown and the recommendation priority table. |
 | `scenario_version` to `scenario_parameter_values` | `scenario_id` | One scenario can contain many changed policy parameters. |
 | `policy_parameters` to `scenario_parameter_values` | `parameter_code + subjek + kodtingkatantahun` | Scenario values are based on or override baseline policy parameters. |
 | `scenario_version` to `simulation_run_log` | `scenario_id` | A scenario may be run multiple times. |
@@ -569,4 +620,5 @@ The database can be understood as five main groups:
 - `master_model_2022_2026` is the main table for forecasting and simulation.
 - `base_murid_detail_2022_2026` is needed when simulation requires year/form-level workload.
 - `base_supply_guru_2022_2026` contains sensitive teacher-level data and must be handled carefully.
+- `tssekolah` is a wide reference table (~90 columns); only `KODSEKOLAH`/`NAMASEKOLAH` are consumed by the app today. Always `LEFT JOIN` (never `INNER JOIN`) against it, since some `kod_sekolah` values have no matching row.
 - Recommendations are rule-based and require human review.

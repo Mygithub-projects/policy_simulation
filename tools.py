@@ -132,6 +132,28 @@ class WorkforceTools:
         source_column = (
             '"KODTINGKATANTAHUN"' if field == "kodtingkatantahun" else field
         )
+        if field == "kod_sekolah":
+            # School names come from the tssekolah reference table, joined by
+            # code — not every historical kod_sekolah has a matching row there
+            # (e.g. closed/merged schools), so fall back to the code itself.
+            query = f"""
+                SELECT DISTINCT m.kod_sekolah, COALESCE(t."NAMASEKOLAH", m.kod_sekolah)
+                FROM master_model_2022_2026 m
+                LEFT JOIN tssekolah t ON t."KODSEKOLAH" = m.kod_sekolah
+                WHERE {' AND '.join(clauses)} AND m.kod_sekolah IS NOT NULL
+                ORDER BY m.kod_sekolah
+            """
+            connection = self._connect()
+            try:
+                with connection.cursor() as cursor:
+                    cursor.execute(query, parameters)
+                    values = [
+                        {"code": row[0], "name": row[1]} for row in cursor.fetchall()
+                    ]
+            finally:
+                connection.close()
+            return [{"code": "SEMUA", "name": None}, *values]
+
         query = f"""
             SELECT DISTINCT {source_column}
             FROM {source_table}
@@ -216,22 +238,24 @@ class WorkforceTools:
                 parameters.append(value)
         query = f"""
             SELECT
-                CAST(tahun AS INTEGER) AS source_year,
-                kod_sekolah,
-                negeri,
-                ppd,
-                subjek,
-                CAST(enrolmen_murid AS DOUBLE PRECISION) AS prev_enrolment,
-                CAST(bil_kelas AS DOUBLE PRECISION) AS prev_classes,
-                CAST("FTE_guru_diperlukan_akhir" AS DOUBLE PRECISION) AS prev_fte_required,
-                CAST(guru_diperlukan_akhir AS DOUBLE PRECISION) AS prev_teachers_required,
-                CAST(guru_sedia_ada AS DOUBLE PRECISION) AS prev_teachers_available,
-                CAST(guru_opsyen_semasa AS DOUBLE PRECISION) AS prev_option_teachers,
-                CAST(guru_bukan_opsyen_semasa AS DOUBLE PRECISION) AS prev_nonoption_teachers,
-                CAST(nisbah_opsyen_semasa AS DOUBLE PRECISION) AS prev_option_ratio
-            FROM master_model_2022_2026
+                CAST(m.tahun AS INTEGER) AS source_year,
+                m.kod_sekolah,
+                m.negeri,
+                m.ppd,
+                m.subjek,
+                CAST(m.enrolmen_murid AS DOUBLE PRECISION) AS prev_enrolment,
+                CAST(m.bil_kelas AS DOUBLE PRECISION) AS prev_classes,
+                CAST(m."FTE_guru_diperlukan_akhir" AS DOUBLE PRECISION) AS prev_fte_required,
+                CAST(m.guru_diperlukan_akhir AS DOUBLE PRECISION) AS prev_teachers_required,
+                CAST(m.guru_sedia_ada AS DOUBLE PRECISION) AS prev_teachers_available,
+                CAST(m.guru_opsyen_semasa AS DOUBLE PRECISION) AS prev_option_teachers,
+                CAST(m.guru_bukan_opsyen_semasa AS DOUBLE PRECISION) AS prev_nonoption_teachers,
+                CAST(m.nisbah_opsyen_semasa AS DOUBLE PRECISION) AS prev_option_ratio,
+                COALESCE(t."NAMASEKOLAH", m.kod_sekolah) AS school_name
+            FROM master_model_2022_2026 m
+            LEFT JOIN tssekolah t ON t."KODSEKOLAH" = m.kod_sekolah
             WHERE {' AND '.join(clauses)}
-            ORDER BY kod_sekolah, subjek
+            ORDER BY m.kod_sekolah, m.subjek
         """
         connection = self._connect()
         try:
@@ -488,8 +512,10 @@ class MockWorkforceTools:
     def health_check(self) -> dict[str, Any]:
         return {"database": self.database_path.name, "access_mode": "read_only", "model": self.model_path.name}
 
-    def get_filter_options(self, field: str, negeri: str = "SEMUA", ppd: str = "SEMUA") -> list[str]:
+    def get_filter_options(self, field: str, negeri: str = "SEMUA", ppd: str = "SEMUA") -> list[Any]:
         # Minimal, deterministic options for tests
+        if field == "kod_sekolah":
+            return [{"code": "SEMUA", "name": None}, {"code": "S1", "name": "Mock School S1"}]
         return ["SEMUA", "JOHOR", "KEDAH"]
 
     def load_coteaching_scope(self, scenario: ScenarioRequest):
@@ -515,6 +541,7 @@ class MockWorkforceTools:
                 {
                     "source_year": 2026,
                     "kod_sekolah": "S1",
+                    "school_name": "Mock School S1",
                     "negeri": scenario.negeri,
                     "ppd": scenario.ppd,
                     "subjek": scenario.subject if hasattr(scenario, "subject") else "SAINS",
@@ -629,8 +656,10 @@ class MockWorkforceTools:
     def health_check(self) -> dict[str, Any]:
         return {"database": self.database_path.name, "access_mode": "read_only", "model": self.model_path.name}
 
-    def get_filter_options(self, field: str, negeri: str = "SEMUA", ppd: str = "SEMUA") -> list[str]:
+    def get_filter_options(self, field: str, negeri: str = "SEMUA", ppd: str = "SEMUA") -> list[Any]:
         # Minimal, deterministic options for tests
+        if field == "kod_sekolah":
+            return [{"code": "SEMUA", "name": None}, {"code": "S1", "name": "Mock School S1"}]
         return ["SEMUA", "JOHOR", "KEDAH"]
 
     def load_coteaching_scope(self, scenario: ScenarioRequest):
@@ -656,6 +685,7 @@ class MockWorkforceTools:
                 {
                     "source_year": 2026,
                     "kod_sekolah": "S1",
+                    "school_name": "Mock School S1",
                     "negeri": scenario.negeri,
                     "ppd": scenario.ppd,
                     "subjek": scenario.subject if hasattr(scenario, "subject") else "SAINS",

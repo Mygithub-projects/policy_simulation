@@ -170,6 +170,7 @@ def serialize_output(output: dict[str, Any]) -> dict[str, Any]:
     provider = get_ai_provider_label() if scenario_uses_ai or explanation_uses_ai else None
     recommendation_columns = [
         "kod_sekolah",
+        "school_name",
         "negeri",
         "ppd",
         "subjek",

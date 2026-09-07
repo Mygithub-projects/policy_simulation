@@ -256,7 +256,7 @@ outputs/
 
 Do not modify these unless the user clearly asks:
 
-- PostgreSQL schema for `users`, `audit_log`, `simulation_run_log`, and the analytical tables (`master_model_2022_2026`, `base_murid_detail_2022_2026`). (Exception, pre-approved: the two additive changes listed under [RBAC](#role-based-access-control-rbac--approved-design-in-progress) — new `audit_log` table and new `users.can_view_audit_log` column. No existing table's structure changes.)
+- PostgreSQL schema for `users`, `audit_log`, `simulation_run_log`, and the analytical tables (`master_model_2022_2026`, `base_murid_detail_2022_2026`, `tssekolah`). (Exception, pre-approved: the two additive changes listed under [RBAC](#role-based-access-control-rbac--approved-design-in-progress) — new `audit_log` table and new `users.can_view_audit_log` column. No existing table's structure changes.)
 - The original `data/*.duckdb` file (retained as a migration-source backup — do not delete).
 - `models/random_forest_teacher_demand.pk1`.
 - `.env` secrets.
@@ -415,6 +415,19 @@ Key decisions:
 - **The guided tour ([tour.js](frontend/tour.js)) was re-themed too, not left dark-only.** Its injected `<style>` block used to hardcode the original dark palette directly; it now reads the same CSS custom properties as the rest of the app, so the tour card matches whichever theme is active — including if the user toggles theme mid-tour. A new tour step was added introducing the toggle itself. Growing the tour to 13 steps (one progress dot per step) also outgrew the footer's fixed button/dot layout, clipping the Previous/Next buttons — fixed by widening the tooltip and tightening the dot spacing and button padding.
 - **Left unthemed for now**: the marketing landing pages (`landing.html`/`landing-en.html`) and native `<select>` dropdown popups (`.form-control option`, browser-rendered chrome that's unreliable to restyle across browsers) — both minor, out of scope for this pass.
 - **Chart.js charts were not touched.** They were never given explicit tick/grid colors, only Chart.js's own defaults (a mid-gray), which already read acceptably on both a dark and a light background — so no theme-aware chart re-render logic was needed.
+
+## School Name Lookup (tssekolah) (implemented)
+
+Adds the official school name alongside the school code (`kod_sekolah`) in the school filter dropdown and the recommendation priority table, sourced from a separately-imported reference table `tssekolah` (10,500 rows, one row per `KODSEKOLAH`, columns `KODSEKOLAH`/`NAMASEKOLAH` among ~90 school-metadata fields). Previously the dropdown and table only ever showed the bare code. Design discussion: 2026-09-07.
+
+Key decisions:
+
+- **`tssekolah` is joined in, not merged into `master_model_2022_2026`.** It is a standalone reference table (imported separately from the yearly demand/supply snapshots) in the same `g5_p1` schema. Every query that needs the name does a `LEFT JOIN tssekolah t ON t."KODSEKOLAH" = m.kod_sekolah` — never an `INNER JOIN` — because not every historical `kod_sekolah` has a matching row (23 of 10,223 school codes in `master_model_2022_2026` were unmatched as of the initial import, e.g. closed/merged schools). The app falls back to displaying the code itself (`COALESCE(t."NAMASEKOLAH", m.kod_sekolah)`) when no name is found.
+- **`KODSEKOLAH`/`NAMASEKOLAH` are mixed-case identifiers** and must be double-quoted in SQL, the same pattern already used for `"KODTINGKATANTAHUN"` elsewhere in `tools.py`.
+- **School dropdown response shape changed for `kod_sekolah` only.** `GET /api/filters/kod_sekolah` now returns `values` as a list of `{code, name}` objects instead of plain strings — the other three fields (`negeri`, `ppd`, `kodtingkatantahun`) are unchanged. The frontend submits `code` as the `kod_sekolah` scenario value (so nothing downstream in scenario building or simulation queries changed) and displays `"KODSEKOLAH — NAMASEKOLAH"` as the option label. `app.js`'s `onPPDChange()` also filters out the `SEMUA` entry from the API response before populating options, since `resetSelect()` already adds its own translated "All schools" default option — matching the pattern `loadNegeri()` already used for the state dropdown (this incidentally fixed a pre-existing duplicate-"SEMUA"-option issue in the school dropdown, not introduced by this change).
+- **Priority table shows the name, code stays visible underneath.** `renderRecTable()` renders the school name in bold on the first line and the code in small muted text underneath, rather than replacing the code or adding a new column (which would have required colspan/header rework). The `th.school.code` header label changed from "Kod Sekolah"/"School Code" to "Sekolah"/"School" accordingly.
+- **`school_name` flows through the whole simulation pipeline for free.** The join lives in `WorkforceTools.load_2026_features()` in `tools.py`, so every downstream DataFrame (`forecast_2027`, `simulate_policy`, the `RecommendationAgent` output, `top_recommendations` in the API response, and the saved `{run_id}_detail.csv`) already carries `school_name` without additional joins. `main.py`'s `serialize_output()` adds `"school_name"` to the `recommendation_columns` allow-list so it reaches the frontend.
+- **Not touched**: the server-side PDF report (`reports/pdf_report.py`) — it only renders aggregated KPI + per-subject data (no per-school detail), so it never referenced `kod_sekolah` and needs no change; the detailed CSV export (`GET /api/runs/{run_id}/detail.csv`) gains `school_name` automatically as a side effect of the shared pipeline, but this wasn't a deliberate scope addition.
 
 ## Future Enhancement Ideas
 

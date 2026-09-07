@@ -32,7 +32,18 @@ const ppds = await fetch(
 const levels = await fetch(
   "http://127.0.0.1:8002/api/filters/kodtingkatantahun?negeri=JOHOR"
 ).then(r => r.json());
+
+const schools = await fetch(
+  "http://127.0.0.1:8002/api/filters/kod_sekolah?negeri=JOHOR&ppd=JOHOR%20BAHRU"
+).then(r => r.json());
 ```
+
+`negeri`, `ppd`, and `kodtingkatantahun` return `values` as a plain list of strings
+(the first entry is always `"SEMUA"`). `kod_sekolah` is the one exception: it
+returns `values` as a list of `{code, name}` objects (name is looked up from the
+`tssekolah` reference table and falls back to the code itself if no match
+exists), so the frontend can show `"KODSEKOLAH — NAMASEKOLAH"` in the dropdown
+while still submitting the bare code as `kod_sekolah` in every other request.
 
 ## Forecast 2027
 
@@ -188,3 +199,5 @@ If the local fallback parser or deterministic explanation was used, the relevant
 boolean is `false` and no AI model is claimed.
 
 Use `summary` for KPI cards, `subject_summary` for charts and `top_recommendations` for the priority table.
+Each `top_recommendations` row includes both `kod_sekolah` (code) and `school_name`
+(looked up from `tssekolah`, falling back to the code if unmatched).

@@ -811,7 +811,17 @@ async function onPPDChange() {
       `/api/filters/kod_sekolah?negeri=${encodeURIComponent(negeri)}&ppd=${encodeURIComponent(ppd)}`
     );
     const values = data.values ?? data;
-    values.forEach(s => addOption(selSek, s, s));
+    // Each entry is normally {code, name} (joined against tssekolah server-side);
+    // fall back to a plain code string in case an older/mock API is in use.
+    values
+      .filter(s => (typeof s === 'string' ? s !== 'SEMUA' : s.code !== 'SEMUA'))
+      .forEach(s => {
+        if (typeof s === 'string') {
+          addOption(selSek, s, s);
+        } else {
+          addOption(selSek, s.code, `${s.code} — ${s.name || s.code}`);
+        }
+      });
     selSek.disabled = false;
   } catch {
     showToast(t('toast.load.school'), 'error');
@@ -1957,7 +1967,7 @@ function renderRecTable(rows) {
     const pri  = row.priority_label || 'RENDAH';
     tr.innerHTML = `
       <td>${i + 1}</td>
-      <td><strong>${row.kod_sekolah || '—'}</strong></td>
+      <td><strong>${row.school_name || row.kod_sekolah || '—'}</strong><br><span style="font-size:11px;color:var(--text-muted)">${row.kod_sekolah || ''}</span></td>
       <td>${toTitleCase(row.negeri || '—')}</td>
       <td>${toTitleCase(row.ppd    || '—')}</td>
       <td>${formatSubject(row.subjek || '—')}</td>
