@@ -367,6 +367,19 @@ _BULLET_RE = re.compile(r"^[-*]\s+(.*)$")
 _BOLD_RE = re.compile(r"\*\*(.+?)\*\*")
 _ITALIC_RE = re.compile(r"\*(.+?)\*")
 
+# AI-generated explanation text sometimes uses a non-breaking hyphen (U+2011,
+# used by some LLMs in compound words like "co-teaching" to stop them
+# wrapping mid-line) or other narrow hyphen variants. ReportLab's base-14
+# fonts only cover WinAnsiEncoding, which has no glyph for these, so they
+# render as a solid black ".notdef" box. Normalize them to a plain ASCII
+# hyphen, which WinAnsiEncoding does support.
+_UNSUPPORTED_HYPHENS = str.maketrans({
+    "‐": "-",  # HYPHEN
+    "‑": "-",  # NON-BREAKING HYPHEN
+    "‒": "-",  # FIGURE DASH
+    "−": "-",  # MINUS SIGN
+})
+
 
 def _inline_markup(text: str) -> str:
     """Escapes raw text for ReportLab's mini-XML, then converts the small
@@ -374,7 +387,7 @@ def _inline_markup(text: str) -> str:
     Escaping MUST happen first — otherwise literal '&'/'<'/'>' in
     AI-generated text would corrupt the tags this function itself inserts.
     """
-    escaped = escape(text)
+    escaped = escape(text.translate(_UNSUPPORTED_HYPHENS))
     escaped = _BOLD_RE.sub(r"<b>\1</b>", escaped)
     escaped = _ITALIC_RE.sub(r"<i>\1</i>", escaped)
     return escaped
