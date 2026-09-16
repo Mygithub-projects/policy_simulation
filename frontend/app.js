@@ -1458,7 +1458,11 @@ function renderResults(data, payload) {
     btnDlSummaryCsv.style.display = 'inline-flex';
     btnSave.style.display = state.auth.role_name === 'user' ? 'inline-flex' : 'none';
     btnSave.disabled = false;
-    btnSave.textContent = t('btn.save.simulation');
+    btnSave.querySelector('.btn-text').textContent = t('btn.save.simulation');
+    btnSave.querySelector('#btnSaveSimulationIcon').innerHTML =
+      '<path d="M4 3h9l4 4v10a1 1 0 01-1 1H4a1 1 0 01-1-1V4a1 1 0 011-1z" stroke-width="1.5" stroke-linejoin="round" />' +
+      '<path d="M6 3v5h7V3" stroke-width="1.5" stroke-linejoin="round" />' +
+      '<path d="M6 12h8v5H6z" stroke-width="1.5" stroke-linejoin="round" />';
     if (reportHint) reportHint.style.display = 'none';
   } else {
     btnDl.style.display = 'none';
@@ -2285,7 +2289,9 @@ async function submitSaveSimulation() {
 
     const btnSave = document.getElementById('btnSaveSimulation');
     btnSave.disabled = true;
-    btnSave.textContent = t('btn.save.saved');
+    btnSave.querySelector('.btn-text').textContent = t('btn.save.saved');
+    btnSave.querySelector('#btnSaveSimulationIcon').innerHTML =
+      '<path d="M4 10l4 4 8-9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />';
   } catch (err) {
     showToast(`${t('toast.save.fail')} ${err.message}`, 'error');
   } finally {

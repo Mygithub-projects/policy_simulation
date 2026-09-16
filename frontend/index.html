@@ -396,7 +396,11 @@
                 </button>
                 <div style="margin-top: 8px;">
                   <button class="btn btn-outline btn-block btn-sm" onclick="resetAll()">
-                    <span data-i18n="btn.reset">↺ Set Semula</span>
+                    <svg class="btn-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                      <path d="M15.5 8A5.5 5.5 0 105 11.5" stroke-width="1.5" stroke-linecap="round" />
+                      <path d="M15.5 4v4h-4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    <span data-i18n="btn.reset">Set Semula</span>
                   </button>
                 </div>
                 <div id="formValidation"></div>
@@ -485,21 +489,45 @@
             </button>
             <div class="sidebar-group-body">
               <div class="sidebar-report-actions">
-                <button class="btn btn-teal btn-sm" id="btnDownload" onclick="downloadCSV()" style="display:none;"
-                  data-i18n="btn.download">
-                  ⬇ Muat Turun CSV
+                <button class="btn btn-teal btn-sm" id="btnDownload" onclick="downloadCSV()" style="display:none;">
+                  <svg class="btn-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M10 3v9m0 0l-3.5-3.5M10 12l3.5-3.5" stroke-width="1.5" stroke-linecap="round"
+                      stroke-linejoin="round" />
+                    <path d="M3 14v2a1 1 0 001 1h12a1 1 0 001-1v-2" stroke-width="1.5" stroke-linecap="round"
+                      stroke-linejoin="round" />
+                  </svg>
+                  <span class="btn-text" data-i18n="btn.download">Muat Turun CSV</span>
                 </button>
                 <button class="btn btn-outline btn-sm" id="btnDownloadSummary" onclick="downloadReportPDF()"
-                  style="display:none;" data-i18n="btn.download.summary">
-                  ⬇ Muat Turun Laporan PDF
+                  style="display:none;">
+                  <svg class="btn-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M10 3v9m0 0l-3.5-3.5M10 12l3.5-3.5" stroke-width="1.5" stroke-linecap="round"
+                      stroke-linejoin="round" />
+                    <path d="M3 14v2a1 1 0 001 1h12a1 1 0 001-1v-2" stroke-width="1.5" stroke-linecap="round"
+                      stroke-linejoin="round" />
+                  </svg>
+                  <span class="btn-text" data-i18n="btn.download.summary">Muat Turun Laporan PDF</span>
                 </button>
                 <button class="btn btn-outline btn-sm" id="btnDownloadSummaryCsv" onclick="downloadSummaryCSV()"
-                  style="display:none;" data-i18n="btn.download.summary.csv">
-                  ⬇ Muat Turun Ringkasan (CSV)
+                  style="display:none;">
+                  <svg class="btn-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M10 3v9m0 0l-3.5-3.5M10 12l3.5-3.5" stroke-width="1.5" stroke-linecap="round"
+                      stroke-linejoin="round" />
+                    <path d="M3 14v2a1 1 0 001 1h12a1 1 0 001-1v-2" stroke-width="1.5" stroke-linecap="round"
+                      stroke-linejoin="round" />
+                  </svg>
+                  <span class="btn-text" data-i18n="btn.download.summary.csv">Muat Turun Ringkasan (CSV)</span>
                 </button>
                 <button class="btn btn-outline btn-sm" id="btnSaveSimulation" onclick="openSaveSimulationModal()"
-                  style="display:none;" data-i18n="btn.save.simulation">
-                  💾 Save Simulation
+                  style="display:none;">
+                  <svg class="btn-icon" id="btnSaveSimulationIcon" viewBox="0 0 20 20" fill="none"
+                    xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M4 3h9l4 4v10a1 1 0 01-1 1H4a1 1 0 01-1-1V4a1 1 0 011-1z" stroke-width="1.5"
+                      stroke-linejoin="round" />
+                    <path d="M6 3v5h7V3" stroke-width="1.5" stroke-linejoin="round" />
+                    <path d="M6 12h8v5H6z" stroke-width="1.5" stroke-linejoin="round" />
+                  </svg>
+                  <span class="btn-text" data-i18n="btn.save.simulation">Save Simulation</span>
                 </button>
               </div>
               <p class="hint" id="reportEmptyHint" data-i18n="sidebar.report.hint">Run a simulation or ask the AI agent
@@ -690,7 +718,10 @@
       <main class="main-panel" id="adminPage" style="display:none;">
         <div style="padding: 32px; max-width: 900px; margin: 0 auto;">
           <button class="btn btn-outline btn-sm" onclick="goToDashboard()" style="margin-bottom: 24px;">
-            <span data-i18n="nav.back">← Kembali ke Papan Pemuka</span>
+            <svg class="btn-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M12 4l-6 6 6 6M6 10h10" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <span data-i18n="nav.back">Kembali ke Papan Pemuka</span>
           </button>
 
           <div class="admin-panel">
@@ -760,7 +791,10 @@
       <main class="main-panel" id="auditLogPage" style="display:none;">
         <div style="padding: 32px; max-width: 1100px; margin: 0 auto;">
           <button class="btn btn-outline btn-sm" onclick="goToDashboard()" style="margin-bottom: 24px;">
-            <span data-i18n="nav.back">← Kembali ke Papan Pemuka</span>
+            <svg class="btn-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M12 4l-6 6 6 6M6 10h10" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <span data-i18n="nav.back">Kembali ke Papan Pemuka</span>
           </button>
           <div class="admin-panel">
             <div class="result-card">
@@ -790,7 +824,10 @@
       <main class="main-panel" id="myRunsPage" style="display:none;">
         <div style="padding: 32px; max-width: 1100px; margin: 0 auto;">
           <button class="btn btn-outline btn-sm" onclick="goToDashboard()" style="margin-bottom: 24px;">
-            <span data-i18n="nav.back">← Kembali ke Papan Pemuka</span>
+            <svg class="btn-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M12 4l-6 6 6 6M6 10h10" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <span data-i18n="nav.back">Kembali ke Papan Pemuka</span>
           </button>
           <div class="admin-panel">
             <div class="result-card">
@@ -853,6 +890,7 @@
   <script src="lang.js?v=14"></script>
   <script src="app.js?v=34"></script>
   <script src="tour.js?v=5"></script>
+  <script src="btn-fill.js?v=1"></script>
 
   <!-- ===================== SAVE SIMULATION MODAL ===================== -->
   <div class="modal-overlay" id="saveSimModal" style="display:none;">

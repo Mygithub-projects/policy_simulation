@@ -108,7 +108,7 @@ const LANG_STRINGS = {
 
     'step3.title': 'Jalankan Simulasi',
     'btn.run': 'Jalankan Simulasi 2027',
-    'btn.reset': '↺ Set Semula',
+    'btn.reset': 'Set Semula',
 
     /* ── SIDEBAR GROUPS (collapsible nav) ────── */
     'sidebar.group.forecast': 'Analisis Ramalan',
@@ -155,7 +155,7 @@ const LANG_STRINGS = {
     'admin.create.success': 'Pengguna berjaya dicipta',
     'admin.create.error': 'Gagal mencipta pengguna',
     'nav.admin': 'Pengurusan Pengguna',
-    'nav.back': '← Kembali ke Papan Pemuka',
+    'nav.back': 'Kembali ke Papan Pemuka',
     'toast.no.permission': 'Anda tidak mempunyai kebenaran untuk melakukan tindakan ini.',
     'nav.audit': 'Log Audit',
     'nav.myruns': 'Simulasi Saya',
@@ -171,11 +171,11 @@ const LANG_STRINGS = {
     'audit.col.role': 'Peranan',
     'audit.col.action': 'Tindakan',
     'audit.col.details': 'Butiran',
-    'btn.download': '⬇ Muat Turun CSV',
-    'btn.download.summary': '⬇ Muat Turun Laporan PDF',
-    'btn.download.summary.csv': '⬇ Muat Turun Ringkasan (CSV)',
-    'btn.save.simulation': '💾 Simpan Simulasi',
-    'btn.save.saved': '✅ Disimpan',
+    'btn.download': 'Muat Turun CSV',
+    'btn.download.summary': 'Muat Turun Laporan PDF',
+    'btn.download.summary.csv': 'Muat Turun Ringkasan (CSV)',
+    'btn.save.simulation': 'Simpan Simulasi',
+    'btn.save.saved': 'Disimpan',
     'modal.save.title': 'Simpan Simulasi',
     'modal.save.hint': 'Namakan simulasi ini supaya anda boleh menjumpainya kembali di Simulasi Saya.',
     'modal.save.label': 'Nama Simulasi',
@@ -470,7 +470,7 @@ const LANG_STRINGS = {
 
     'step3.title': 'Run Simulation',
     'btn.run': 'Run 2027 Simulation',
-    'btn.reset': '↺ Reset',
+    'btn.reset': 'Reset',
 
     /* ── SIDEBAR GROUPS (collapsible nav) ────── */
     'sidebar.group.forecast': 'Forecast Analysis',
@@ -517,7 +517,7 @@ const LANG_STRINGS = {
     'admin.create.success': 'User created successfully',
     'admin.create.error': 'Failed to create user',
     'nav.admin': 'User Management',
-    'nav.back': '← Back to Dashboard',
+    'nav.back': 'Back to Dashboard',
     'toast.no.permission': 'You do not have permission to perform this action.',
     'nav.audit': 'Audit Log',
     'nav.myruns': 'My Runs',
@@ -533,11 +533,11 @@ const LANG_STRINGS = {
     'audit.col.role': 'Role',
     'audit.col.action': 'Action',
     'audit.col.details': 'Details',
-    'btn.download': '⬇ Download CSV',
-    'btn.download.summary': '⬇ Download PDF Report',
-    'btn.download.summary.csv': '⬇ Download Summary (CSV)',
-    'btn.save.simulation': '💾 Save Simulation',
-    'btn.save.saved': '✅ Saved',
+    'btn.download': 'Download CSV',
+    'btn.download.summary': 'Download PDF Report',
+    'btn.download.summary.csv': 'Download Summary (CSV)',
+    'btn.save.simulation': 'Save Simulation',
+    'btn.save.saved': 'Saved',
     'modal.save.title': 'Save Simulation',
     'modal.save.hint': 'Give this simulation a name so you can find it later in My Runs.',
     'modal.save.label': 'Simulation Name',
@@ -647,7 +647,7 @@ const LANG_STRINGS = {
     'chip2': 'Simulate an 80% subject-option ratio for Mathematics in Johor',
     'chip3': 'What happens if annual Science teaching hours increase by 10%?',
     'chip4': 'Apply co-teaching to 40% of classes in Kedah',
-    'btn.download': '⬇ Download CSV',
+    'btn.download': 'Download CSV',
 
     /* ── DYNAMIC STRINGS ─────────────────────── */
     'all': 'All',

@@ -953,8 +953,20 @@ html, body {
   color: var(--teal);
 }
 
-/* ===== BUTTONS ===== */
+/* ===== BUTTONS =====
+   Cursor-origin expanding fill: resting state is a transparent, accent-tinted
+   surface with a 1px accent border and accent-colored text/icon. On hover the
+   ::after circle expands (transform: scale only, GPU-cheap) from the pointer's
+   entry point to cover the button in a dark ink fill; text/icon brighten for
+   contrast. Keyboard focus and touch both use the button's center as the
+   origin instead of a real pointer position. See btn-fill.js for the JS half
+   (sets --fill-x/--fill-y/--fill-d and toggles .is-filling; delegated on
+   document so it also covers buttons injected later, e.g. the error-retry
+   button in renderError()). */
 .btn {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -966,27 +978,55 @@ html, body {
   font-size: 13.5px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.18s;
+  transition: color 0.35s ease, border-color 0.35s ease, box-shadow 0.25s ease;
   white-space: nowrap;
   letter-spacing: 0.01em;
   text-decoration: none;
 }
 .btn:disabled { opacity: 0.38; cursor: not-allowed; }
 
+/* The expanding fill itself. Sized to --fill-d (diameter set in JS from the
+   button's own diagonal, so it always fully covers the button regardless of
+   where the origin point is) and driven purely by `transform` per the spec -
+   width/height never animate. */
+.btn::after {
+  content: '';
+  position: absolute;
+  left: var(--fill-x, 50%);
+  top: var(--fill-y, 50%);
+  width: var(--fill-d, 200%);
+  height: var(--fill-d, 200%);
+  background: #07091A;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+  z-index: -1;
+  pointer-events: none;
+}
+.btn.is-filling::after { transform: translate(-50%, -50%) scale(1); }
+
+.btn-icon {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  fill: none;
+  flex-shrink: 0;
+  transition: color 0.35s ease;
+}
+
 .btn-primary {
-  background: var(--teal);
-  color: #07091A;
+  background: rgba(var(--teal-rgb), 0.10);
+  border: 1px solid var(--teal);
+  color: var(--teal);
   font-weight: 800;
   box-shadow: 0 2px 8px rgba(12,200,168,0.25);
   animation: btn-ready-pulse 3s ease-in-out infinite;
 }
-.btn-primary:hover:not(:disabled) {
-  background: #0ee8c4;
+.btn-primary.is-filling {
+  color: #0ee8c4;
   box-shadow: 0 4px 16px rgba(12,200,168,0.40);
-  transform: translateY(-1px);
   animation: none;
 }
-.btn-primary:active:not(:disabled) { transform: translateY(0); animation: none; }
 .btn-primary.loading { animation: none; }
 
 @keyframes btn-ready-pulse {
@@ -995,37 +1035,35 @@ html, body {
 }
 
 .btn-teal {
-  background: var(--teal);
-  color: #07091A;
+  background: var(--teal-muted);
+  border: 1px solid var(--teal);
+  color: var(--teal);
   font-weight: 700;
   box-shadow: 0 2px 6px rgba(12,200,168,0.22);
 }
-.btn-teal:hover:not(:disabled) {
-  background: #0ee8c4;
-  transform: translateY(-1px);
-}
+.btn-teal.is-filling { color: #0ee8c4; }
 
 .btn-outline {
   background: rgba(var(--fg-rgb),0.05);
-  border: 1px solid rgba(var(--fg-rgb),0.12);
-  color: rgba(var(--fg-rgb),0.50);
+  border: 1px solid rgba(var(--fg-rgb),0.20);
+  color: rgba(var(--fg-rgb),0.62);
 }
-.btn-outline:hover:not(:disabled) {
-  border-color: rgba(var(--fg-rgb),0.24);
-  color: rgba(var(--fg-rgb),0.78);
-  background: rgba(var(--fg-rgb),0.08);
-}
+/* The ::after fill is a fixed dark ink in both themes (see .btn::after), so
+   the filled-state text must be a fixed bright color too, not a theme token
+   - var(--text)/var(--gold-lt) flip to dark-on-light in light mode and would
+   go dark-on-dark against this fill. */
+.btn-outline.is-filling { color: #F0F4FF; }
 
 .btn-secondary {
   background: var(--gold-muted);
-  border: 1px solid rgba(196,120,28,0.35);
-  color: var(--gold-lt);
+  border: 1px solid var(--gold);
+  color: var(--gold);
 }
-.btn-secondary:hover:not(:disabled) {
-  background: rgba(196,120,28,0.20);
-  border-color: var(--gold);
-  color: var(--gold-lt);
-  transform: translateY(-1px);
+.btn-secondary.is-filling { color: #E8A04A; }
+
+.btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(var(--teal-rgb), 0.25);
 }
 
 .btn-sm { padding: 5px 11px; font-size: 12.5px; }
@@ -1034,8 +1072,8 @@ html, body {
 .btn-spinner {
   width: 13px;
   height: 13px;
-  border: 2px solid rgba(7,9,26,0.3);
-  border-top-color: #07091A;
+  border: 2px solid rgba(var(--fg-rgb),0.25);
+  border-top-color: currentColor;
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
   display: none;
@@ -1044,6 +1082,12 @@ html, body {
 .btn.loading .btn-text { opacity: 0.58; }
 
 @keyframes spin { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .btn::after { transition: opacity 0.15s linear; transform: translate(-50%, -50%) scale(1); opacity: 0; }
+  .btn.is-filling::after { opacity: 1; }
+  .btn, .btn-icon { transition-duration: 0.01ms; }
+}
 
 #formValidation {
   display: none;
