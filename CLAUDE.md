@@ -374,6 +374,18 @@ Key decisions:
 - **New superadmin-only endpoints**: `GET /api/admin/users` (list, includes inactive), `POST /api/admin/users/{id}/reset-password`, `POST /api/admin/users/{id}/deactivate`.
 - **Every action writes to `audit_log`**: `user_created`, `password_reset`, `user_deactivated`, `password_changed` — extends the existing audit trail from the RBAC feature above, no new tables.
 
+## Self-Service Forgot Password (implemented)
+
+Adds a "Forgot password?" link on the login screen so a user who has lost their temporary/current password can request a new one by email, without needing a superadmin to trigger `POST /api/admin/users/{id}/reset-password` on their behalf. Design discussion: 2026-09-18.
+
+Key decisions:
+
+- **New public, unauthenticated endpoint** `POST /api/auth/forgot-password` (`{email, lang}` in, via `ForgotPasswordInput` in `api_models.py`) — reuses the same temp-password generation (`email_utils.generate_temp_password`), hashing, and emailing (`email_utils.send_temp_password_email`) infrastructure as the admin `reset-password` endpoint, rather than a parallel implementation.
+- **Deliberately confirms whether the email is registered or active**, instead of the generic "if this email exists, we sent something" wording usually preferred to prevent account enumeration. An unregistered email returns `404` and an inactive account returns `403`, each telling the user to contact the system administrator — an explicit product decision for this internal decision-support tool, not an oversight; both cases also write a `password_reset_failed` `audit_log` row (with no password/email side effect) so repeated probing is visible to an admin.
+- **A valid, active account gets a real reset**: new temp password hashed and saved, `is_first_login` set `TRUE` (so the existing forced "Set New Password" screen kicks in on next login, same as the admin-triggered reset), temp password emailed, and an `audit_log` row written as `password_reset_self_service` (distinct from the admin-triggered `password_reset` action, so the audit trail shows which path was used).
+- **Frontend is a new modal on the login screen** (`frontend/index.html`), reusing the existing `.modal-overlay`/`.modal-box`/`.modal-actions` styling already introduced for the Save Simulation modal rather than adding new modal CSS. Uses a plain `fetch` call in `app.js` (not the shared `apiFetch` helper), because `apiFetch` treats any `403` as "you lack permission" and shows a generic toast for it — wrong here, where `403` specifically means "this account is inactive."
+- **No rate limiting added.** Anyone can call this endpoint repeatedly for any email; the `password_reset_failed` audit log entries are the only current mitigation. Flagged as a possible future hardening, not implemented now since it wasn't requested.
+
 ## Policy Maker "Simulasi Saya" (My Runs) — Approved Design (implemented)
 
 Lets the Policy Maker (`user`) role browse their own last 20 simulation runs and re-download the summary PDF for any of them, without re-configuring the sidebar from scratch — added because Policy Makers typically run several scenarios in one session, then compare/download reports later (e.g. to present to the Minister), and previously lost that ability the moment the dashboard state was gone (navigation, logout, browser close). Design discussion: 2026-07-12. Spec: `docs/superpowers/specs/2026-07-12-policy-maker-my-runs-design.md`. Plan: `docs/superpowers/plans/2026-07-12-policy-maker-my-runs-implementation.md`.
