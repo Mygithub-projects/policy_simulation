@@ -521,6 +521,64 @@ async function runLogin() {
   }
 }
 
+/** Opens the "forgot password" modal, pre-filling the email the user already typed on the login form. */
+function openForgotPasswordModal() {
+  document.getElementById('fpEmailInput').value = document.getElementById('loginUsername').value.trim();
+  document.getElementById('fpError').textContent = '';
+  document.getElementById('forgotPasswordModal').style.display = 'flex';
+  document.getElementById('fpEmailInput').focus();
+}
+
+function closeForgotPasswordModal() {
+  document.getElementById('forgotPasswordModal').style.display = 'none';
+}
+
+/**
+ * Submits the email to POST /api/auth/forgot-password. This is a public,
+ * unauthenticated endpoint (called from the login screen, before any
+ * session exists), so it uses a plain fetch rather than apiFetch — apiFetch's
+ * automatic 401/403 "no permission" toast doesn't fit here since a 403 from
+ * this endpoint means "inactive account", not "you lack permission".
+ */
+async function submitForgotPassword() {
+  const email = document.getElementById('fpEmailInput').value.trim();
+  const errorEl = document.getElementById('fpError');
+  const btn = document.getElementById('fpSubmitBtn');
+  errorEl.textContent = '';
+
+  if (!email) {
+    errorEl.textContent = t('forgot.error.missing');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.classList.add('loading');
+  try {
+    const res = await fetch(`${API_BASE}/api/auth/forgot-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, lang: (typeof getLang === 'function') ? getLang() : 'bm' }),
+    });
+    if (!res.ok) {
+      if (res.status === 404) {
+        errorEl.textContent = t('forgot.error.notfound');
+      } else if (res.status === 403) {
+        errorEl.textContent = t('forgot.error.inactive');
+      } else {
+        errorEl.textContent = t('forgot.error.network');
+      }
+      return;
+    }
+    closeForgotPasswordModal();
+    showToast(t('forgot.success'), 'success');
+  } catch (err) {
+    errorEl.textContent = t('forgot.error.network');
+  } finally {
+    btn.disabled = false;
+    btn.classList.remove('loading');
+  }
+}
+
 /** All available grade/form codes that a user can select */
 const ALL_GRADES = ['D1','D2','D3','D4','D5','D6','T1','T2','T3','T4','T5'];
 

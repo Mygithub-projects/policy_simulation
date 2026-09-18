@@ -41,6 +41,11 @@ class LoginInput(BaseModel):
     password: str = Field(min_length=6, max_length=128)
 
 
+class ForgotPasswordInput(BaseModel):
+    email: str = Field(min_length=5, max_length=120)
+    lang: Literal["bm", "en"] = "bm"
+
+
 class CreateUserInput(BaseModel):
     username: str = Field(min_length=2, max_length=80)
     email: str = Field(min_length=5, max_length=120)

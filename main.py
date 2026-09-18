@@ -24,6 +24,7 @@ from api_models import (
     ChangePasswordInput,
     CreateUserInput,
     ForecastInput,
+    ForgotPasswordInput,
     LoginInput,
     ReportChartSpec,
     ReportPdfInput,
@@ -308,6 +309,59 @@ def logout(x_auth_token: str | None = Header(default=None)) -> dict[str, Any]:
         session = SESSIONS.pop(x_auth_token)
         write_audit_log(session["username"], session["role_name"], "logout", "")
     return {"ok": True}
+
+
+@app.post("/api/auth/forgot-password")
+def forgot_password(payload: ForgotPasswordInput) -> dict[str, Any]:
+    """Public, unauthenticated self-service password reset by email.
+
+    Deliberately confirms whether the email is registered / active (per the
+    2026-09-18 design discussion) so the user knows to contact the system
+    administrator instead of retrying a dead end, rather than the generic
+    "if this email exists" wording usually preferred to prevent account
+    enumeration — an accepted tradeoff for this internal decision-support MVP.
+    """
+    connection = db.get_connection(read_only=True)
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT id, username, email, role_name, is_active FROM users WHERE email = %s LIMIT 1",
+                [payload.email],
+            )
+            row = cursor.fetchone()
+    finally:
+        connection.close()
+
+    if not row:
+        write_audit_log(payload.email, "unknown", "password_reset_failed", "unknown email")
+        raise HTTPException(status_code=404, detail="No account found with this email address")
+
+    user_id, username, email, role_name, is_active = row
+    if not is_active:
+        write_audit_log(username, role_name, "password_reset_failed", "inactive account")
+        raise HTTPException(status_code=403, detail="This account is inactive")
+
+    temp_password = email_utils.generate_temp_password()
+    password_hash = hash_password(temp_password)
+
+    write_connection = db.get_connection(read_only=False)
+    try:
+        with write_connection.cursor() as cursor:
+            cursor.execute(
+                "UPDATE users SET password_hash = %s, is_first_login = TRUE WHERE id = %s",
+                [password_hash, user_id],
+            )
+        write_connection.commit()
+    finally:
+        write_connection.close()
+
+    email_sent = email_utils.send_temp_password_email(email, username, temp_password, payload.lang)
+    write_audit_log(username, role_name, "password_reset_self_service", "requested via forgot-password")
+
+    return {
+        "email_sent": email_sent,
+        "message": f"A temporary password has been emailed to {email}.",
+    }
 
 
 @app.post("/api/admin/create-user")

@@ -12,7 +12,7 @@
       document.documentElement.setAttribute('data-theme', saved === 'light' ? 'light' : 'dark');
     })();
   </script>
-  <link rel="stylesheet" href="styles.css?v=20" />
+  <link rel="stylesheet" href="styles.css?v=21" />
   <link rel="stylesheet" href="aurora-bg.css?v=1" />
   <link rel="stylesheet" href="logo-loop.css?v=1" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
@@ -117,6 +117,9 @@
           <label for="loginPassword" data-i18n="login.password">Katalaluan</label>
           <input id="loginPassword" class="form-control" type="password" autocomplete="current-password"
             data-i18n-placeholder="login.placeholder.password" placeholder="••••••••" />
+
+          <button type="button" class="login-forgot-link" id="btnForgotPasswordLink"
+            onclick="openForgotPasswordModal()" data-i18n="login.forgot.link">Lupa kata laluan?</button>
 
           <div id="loginError" class="form-error"></div>
 
@@ -887,8 +890,8 @@
       if (window.matchMedia('(prefers-reduced-motion:reduce)').matches) { draw(); } else { tick(); }
     })();
   </script>
-  <script src="lang.js?v=14"></script>
-  <script src="app.js?v=34"></script>
+  <script src="lang.js?v=15"></script>
+  <script src="app.js?v=35"></script>
   <script src="tour.js?v=5"></script>
   <script src="btn-fill.js?v=1"></script>
 
@@ -905,6 +908,25 @@
           data-i18n="modal.save.cancel">Cancel</button>
         <button class="btn btn-primary btn-sm" id="saveSimConfirmBtn" onclick="submitSaveSimulation()"
           data-i18n="modal.save.confirm">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== FORGOT PASSWORD MODAL ===================== -->
+  <div class="modal-overlay" id="forgotPasswordModal" style="display:none;">
+    <div class="modal-box">
+      <h3 data-i18n="forgot.title">Forgot Password</h3>
+      <p class="hint" data-i18n="forgot.hint">Enter your registered email address. A temporary password will be sent
+        to it.</p>
+      <label for="fpEmailInput" data-i18n="forgot.label">Email</label>
+      <input id="fpEmailInput" class="form-control" type="email" autocomplete="email"
+        data-i18n-placeholder="login.placeholder.username" placeholder="nama@contoh.com" />
+      <div id="fpError" class="form-error"></div>
+      <div class="modal-actions">
+        <button class="btn btn-outline btn-sm" id="fpCancelBtn" onclick="closeForgotPasswordModal()"
+          data-i18n="forgot.cancel">Cancel</button>
+        <button class="btn btn-primary btn-sm" id="fpSubmitBtn" onclick="submitForgotPassword()"
+          data-i18n="forgot.submit">Send Temporary Password</button>
       </div>
     </div>
   </div>
