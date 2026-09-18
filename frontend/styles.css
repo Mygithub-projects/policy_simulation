@@ -1606,6 +1606,12 @@ html, body {
   font-size: 14px;
   color: var(--text);
 }
+.explanation-box .explanation-text { margin: 0 0 12px; }
+.explanation-box .explanation-text:last-child { margin-bottom: 0; }
+.explanation-box .table-container { margin: 4px 0 14px; }
+.explanation-box .table-container:last-child { margin-bottom: 0; }
+.explanation-box .explanation-table th { white-space: normal; }
+
 .explanation-source {
   display: inline-block;
   margin-top: 10px;

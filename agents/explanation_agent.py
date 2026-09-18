@@ -13,6 +13,35 @@ from .common import _generate_ai_text
 class ExplanationAgent:
     """Explains verified simulation results without changing calculations."""
 
+    @staticmethod
+    def _level_scope_label(scenario: ScenarioRequest, lang: str = "en") -> str:
+        """Human-readable school-level scope, computed deterministically so
+        neither the fallback text nor the AI provider has to interpret the
+        raw kodtingkatantahun codes itself: D1-D6 are Darjah/Tahun (primary,
+        sekolah rendah), T1-T5 are Tingkatan (secondary, sekolah menengah).
+        """
+        levels = scenario.kodtingkatantahun
+        if levels == ["SEMUA"]:
+            return "semua tahun dan tingkatan" if lang == "bm" else "all years and forms"
+        d_codes = sorted(level for level in levels if level.startswith("D"))
+        t_codes = sorted(level for level in levels if level.startswith("T"))
+        parts = []
+        if d_codes:
+            codes_text = ", ".join(d_codes)
+            parts.append(
+                f"Tahun {codes_text} (sekolah rendah)" if lang == "bm"
+                else f"Year {codes_text} (primary school)"
+            )
+        if t_codes:
+            codes_text = ", ".join(t_codes)
+            parts.append(
+                f"Tingkatan {codes_text} (sekolah menengah)" if lang == "bm"
+                else f"Form {codes_text} (secondary school)"
+            )
+        if not parts:
+            return ", ".join(levels)
+        return (" dan " if lang == "bm" else " and ").join(parts)
+
     def run(
         self,
         scenario: ScenarioRequest,
@@ -24,6 +53,7 @@ class ExplanationAgent:
         if not has_ai_key():
             return fallback, "Deterministic explanation"
         try:
+            level_scope_label = self._level_scope_label(scenario, lang)
             if lang == "bm":
                 instructions = (
                     "Anda adalah Ejen Penjelasan. Terangkan simulasi tenaga kerja guru Malaysia yang "
@@ -33,6 +63,11 @@ class ExplanationAgent:
                     "keperluan guru, kekurangan guru sebelum dasar, kekurangan guru selepas dasar, dan kekurangan baru "
                     "akibat dasar. Jangan huraikan change_required sebagai bilangan guru yang perlu diambil terus. "
                     "Terangkan apa yang berubah dan tindakan yang perlu dipertimbangkan. Jangan cipta nombor. "
+                    "Apabila menyebut skop tahun/tingkatan yang diliputi, gunakan field 'level_scope_label' yang "
+                    "disediakan dalam data secara terus — jangan tafsir semula kod kodtingkatantahun sendiri. "
+                    "Kod bermula 'D' (D1-D6) ialah Darjah di sekolah rendah; kod bermula 'T' (T1-T5) ialah "
+                    "Tingkatan di sekolah menengah. Jangan sekali-kali labelkan kod 'D' sebagai sekolah menengah "
+                    "atau kod 'T' sebagai sekolah rendah. "
                     "Nyatakan andaian dan bahawa ini adalah sokongan keputusan, bukan keputusan automatik."
                 )
             else:
@@ -44,11 +79,17 @@ class ExplanationAgent:
                     "effect on teacher need, teacher shortage before policy, teacher shortage after policy, and "
                     "the new shortage caused by policy. Never describe change_required as the number that must "
                     "be recruited directly. Explain what changed and what action should be considered. Do not invent numbers. "
+                    "When stating which years/forms are covered, use the provided 'level_scope_label' field "
+                    "verbatim — do not reinterpret the raw kodtingkatantahun codes yourself. Codes starting "
+                    "with 'D' (D1-D6) are Darjah/Year levels in primary school; codes starting with 'T' (T1-T5) "
+                    "are Tingkatan/Form levels in secondary school. Never label a 'D' code as secondary school "
+                    "or a 'T' code as primary school. "
                     "State assumptions and that this is decision support, not an automatic decision."
                 )
             prompt = json.dumps(
                 {
                     "scenario": scenario.to_dict(),
+                    "level_scope_label": level_scope_label,
                     "summary": summary,
                     "subject_summary": subject_summary.to_dict(orient="records"),
                 },
@@ -83,11 +124,7 @@ class ExplanationAgent:
                 if scenario.policy_mode == PolicyMode.COMBINED
                 else policy_labels[scenario.policy_type]
             )
-            level_scope = (
-                "semua tahun dan tingkatan"
-                if scenario.kodtingkatantahun == ["SEMUA"]
-                else ", ".join(scenario.kodtingkatantahun)
-            )
+            level_scope = ExplanationAgent._level_scope_label(scenario, lang)
             change = summary["change_required"]
             baseline_gap = summary.get("baseline_teacher_gap", 0)
             scenario_gap = summary.get("scenario_teacher_gap", 0)
@@ -140,11 +177,7 @@ class ExplanationAgent:
                 if scenario.policy_mode == PolicyMode.COMBINED
                 else policy_labels[scenario.policy_type]
             )
-            level_scope = (
-                "all years and forms"
-                if scenario.kodtingkatantahun == ["SEMUA"]
-                else ", ".join(scenario.kodtingkatantahun)
-            )
+            level_scope = ExplanationAgent._level_scope_label(scenario, lang)
             change = summary["change_required"]
             baseline_gap = summary.get("baseline_teacher_gap", 0)
             scenario_gap = summary.get("scenario_teacher_gap", 0)

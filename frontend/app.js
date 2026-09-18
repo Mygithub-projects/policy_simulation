@@ -608,6 +608,73 @@ function formatExplanationSource(source) {
   return source;
 }
 
+/**
+ * Renders the Explanation Agent's text (plain prose, occasionally markdown
+ * tables + **bold** from the AI providers) as safe HTML. Escapes first, so
+ * every subsequent regex only ever matches characters we put there — no
+ * user/AI-controlled text can inject markup.
+ */
+function _escapeHtmlText(str) {
+  return String(str || '').replace(/[&<>"']/g, (ch) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+  }[ch]));
+}
+
+function _applyInlineMarkdown(escapedLine) {
+  return escapedLine.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+}
+
+function _isMarkdownTableRow(line) {
+  const trimmed = line.trim();
+  return trimmed.startsWith('|') && trimmed.endsWith('|') && trimmed.length > 1;
+}
+
+function _isMarkdownTableSeparatorRow(line) {
+  if (!_isMarkdownTableRow(line)) return false;
+  const cells = line.trim().slice(1, -1).split('|');
+  return cells.length > 0 && cells.every((cell) => /^:?-+:?$/.test(cell.trim()));
+}
+
+function _splitMarkdownTableRow(line) {
+  return line.trim().slice(1, -1).split('|').map((cell) => cell.trim());
+}
+
+function renderExplanationMarkdown(rawText) {
+  const lines = _escapeHtmlText(rawText).split('\n');
+  const htmlParts = [];
+  let textBuffer = [];
+
+  function flushText() {
+    if (!textBuffer.length) return;
+    const rendered = textBuffer.map((line) => _applyInlineMarkdown(line)).join('<br/>');
+    htmlParts.push(`<p class="explanation-text">${rendered}</p>`);
+    textBuffer = [];
+  }
+
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i];
+    if (_isMarkdownTableRow(line) && i + 1 < lines.length && _isMarkdownTableSeparatorRow(lines[i + 1])) {
+      flushText();
+      const headerCells = _splitMarkdownTableRow(line).map((c) => _applyInlineMarkdown(c));
+      i += 2; // skip header row + separator row
+      const bodyRows = [];
+      while (i < lines.length && _isMarkdownTableRow(lines[i])) {
+        bodyRows.push(_splitMarkdownTableRow(lines[i]).map((c) => _applyInlineMarkdown(c)));
+        i++;
+      }
+      const theadHtml = `<thead><tr>${headerCells.map((c) => `<th>${c}</th>`).join('')}</tr></thead>`;
+      const tbodyHtml = `<tbody>${bodyRows.map((row) => `<tr>${row.map((c) => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody>`;
+      htmlParts.push(`<div class="table-container"><table class="rec-table explanation-table">${theadHtml}${tbodyHtml}</table></div>`);
+      continue;
+    }
+    textBuffer.push(line);
+    i++;
+  }
+  flushText();
+  return htmlParts.join('');
+}
+
 // ============================================================
 // STATE — keeps track of current selections and run info
 // ============================================================
@@ -1422,7 +1489,7 @@ function renderResults(data, payload) {
   const _noExp = _uiLang() === 'bm' ? 'Tiada penjelasan tersedia.' : 'No explanation available.';
   const _srcLabel = _uiLang() === 'bm' ? 'Sumber' : 'Source';
   const explanationText = explanation || _noExp;
-  expBox.innerHTML = explanationText.replace(/\n/g, '<br/>');
+  expBox.innerHTML = renderExplanationMarkdown(explanationText);
   state.lastExplanation = explanationText;
   state.lastExplanationSourceLabel = '';
   if (explanation_source) {
